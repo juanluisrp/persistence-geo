@@ -1,5 +1,5 @@
 /*
- * StyleEntityDao.java
+ * LayerEntityDaoHibernateImpl.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,43 +27,58 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.dao.impl;
 
 import java.util.List;
 
-import com.emergya.persistenceGeo.model.StyleEntity;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.emergya.persistenceGeo.dao.LayerEntityDao;
+import com.emergya.persistenceGeo.model.LayerEntity;
 
 /**
- * DAO that represents the style
+ * Layer DAO Hibernate Implementation
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface StyleEntityDao extends GenericDAO<StyleEntity, Long> {
+@Repository("layerEntityDao")
+public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEntity, Long> implements LayerEntityDao {
 
 	/**
-	 * Create a new style in the system
+	 * Save the layer in the system
 	 * 
-	 * @param <code>style</code>
+	 * @param <code>layerEntity</code>
 	 * 
-	 * @return Entity from the created style
+	 * @return Entity identifier from the save layer
 	 */
-	public StyleEntity createStyle(String style);
-	
+	public Long save(LayerEntity layerEntity) {
+		return (Long) getHibernateTemplate().save(layerEntity);
+	}
+
 	/**
-	 * Get a style list by the style name
+	 * Get a layers list by the private layer name 
 	 * 
-	 * @param <code>styleName</code>
+	 * @param <code>layerName</code>
 	 * 
-	 * @return Entities list associated with the style name or null if not found 
+	 * @return Entities list associated with the layer name or null if not found 
 	 */
-	public List<StyleEntity> getStyles(String styleName);
-	
+	public List<LayerEntity> getLayers(String layerName) {
+		return findByCriteria(Restrictions.eq("name", layerName));
+	}
+
 	/**
-	 * Delete a style by the style identifier 
+	 * Delete a layer by the layer identifier 
 	 * 
-	 * @param <code>styleID</code>
+	 * @param <code>layerID</code>
 	 * 
 	 */
-	public void deleteStyle(Long styleID);
+	public void delete(Long layerID) {
+		LayerEntity entity = findById(layerID, false);
+		if(entity != null){
+			getHibernateTemplate().delete(entity);
+		}
+	}
+
 }

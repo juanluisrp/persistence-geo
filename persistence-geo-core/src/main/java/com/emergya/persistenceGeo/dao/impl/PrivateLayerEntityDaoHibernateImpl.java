@@ -1,5 +1,5 @@
 /*
- * PrivateLayerEntityDao.java
+ * PrivateLayerEntityDaoHibernateImpl.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,19 +27,25 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.dao.impl;
 
 import java.util.List;
 
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.emergya.persistenceGeo.dao.PrivateLayerEntityDao;
 import com.emergya.persistenceGeo.model.PrivateLayerEntity;
 
 /**
- * DAO that represents the private layer
+ * Private Layer DAO Hibernate Implementation
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface PrivateLayerEntityDao extends GenericDAO<PrivateLayerEntity, Long> {
+@Repository("privateLayerEntityDao")
+public class PrivateLayerEntityDaoHibernateImpl extends
+		GenericHibernateDAOImpl<PrivateLayerEntity, Long> implements PrivateLayerEntityDao {
 
 	/**
 	 * Save the private layer in the system
@@ -48,8 +54,10 @@ public interface PrivateLayerEntityDao extends GenericDAO<PrivateLayerEntity, Lo
 	 * 
 	 * @return Entity identifier from the save private layer
 	 */
-	public Long save(PrivateLayerEntity privateLayerEntity);
-	
+	public Long save(PrivateLayerEntity privateLayerEntity) {
+		return (Long) getHibernateTemplate().save(privateLayerEntity);
+	}
+
 	/**
 	 * Get a private layers list by the private layer name 
 	 * 
@@ -57,13 +65,21 @@ public interface PrivateLayerEntityDao extends GenericDAO<PrivateLayerEntity, Lo
 	 * 
 	 * @return Entities list associated with the private layer name or null if not found 
 	 */
-	public List<PrivateLayerEntity> getPrivateLayers(String privateLayerName);
-	
+	public List<PrivateLayerEntity> getPrivateLayers(String privateLayerName) {
+		return findByCriteria(Restrictions.eq("name", privateLayerName));
+	}
+
 	/**
 	 * Delete a private layer by the private layer identifier 
 	 * 
 	 * @param <code>privateLayerID</code>
 	 * 
 	 */
-	public void delete(Long privateLayerID);
+	public void delete(Long privateLayerID) {
+		PrivateLayerEntity entity = findById(privateLayerID, false);
+		if(entity != null){
+			getHibernateTemplate().delete(entity);
+		}
+	}
+
 }

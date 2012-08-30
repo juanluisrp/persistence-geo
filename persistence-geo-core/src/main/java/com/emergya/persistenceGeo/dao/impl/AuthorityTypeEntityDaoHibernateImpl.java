@@ -1,5 +1,5 @@
 /*
- * StyleEntityDao.java
+ * AuthorityTypeEntityDaoHibernateImpl.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,43 +27,45 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.dao.impl;
 
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
-import com.emergya.persistenceGeo.model.StyleEntity;
+import com.emergya.persistenceGeo.dao.AuthorityTypeEntityDao;
+import com.emergya.persistenceGeo.model.AuthorityTypeEntity;
 
 /**
- * DAO that represents the style
+ * Folder DAO Hibernate Implementation
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface StyleEntityDao extends GenericDAO<StyleEntity, Long> {
+@Repository("authorityTypeEntityDao")
+public class AuthorityTypeEntityDaoHibernateImpl extends
+		GenericHibernateDAOImpl<AuthorityTypeEntity, Long> implements AuthorityTypeEntityDao {
 
 	/**
-	 * Create a new style in the system
+	 * Save an authority type in the system
 	 * 
-	 * @param <code>style</code>
+	 * @param <code>authTypeEntity</code>
 	 * 
-	 * @return Entity from the created style
+	 * @return Identifier from the save entity 
 	 */
-	public StyleEntity createStyle(String style);
-	
+	public Long save(AuthorityTypeEntity authTypeEntity) {
+		return (Long) getHibernateTemplate().save(authTypeEntity);
+	}
+
 	/**
-	 * Get a style list by the style name
+	 * Delete an authority type in the system
 	 * 
-	 * @param <code>styleName</code>
-	 * 
-	 * @return Entities list associated with the style name or null if not found 
-	 */
-	public List<StyleEntity> getStyles(String styleName);
-	
-	/**
-	 * Delete a style by the style identifier 
-	 * 
-	 * @param <code>styleID</code>
+	 * @param <code>auth_id</code>
 	 * 
 	 */
-	public void deleteStyle(Long styleID);
+	public void delete(Long auth_id) {
+		AuthorityTypeEntity entity = findById(auth_id, false);
+		if(entity != null){
+			getHibernateTemplate().delete(entity);
+		}
+	}
+
 }

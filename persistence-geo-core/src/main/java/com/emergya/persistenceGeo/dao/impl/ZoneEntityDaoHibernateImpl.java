@@ -1,5 +1,5 @@
 /*
- * StyleEntityDao.java
+ * ZoneEntityDaoHibernateImpl.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,43 +27,60 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.dao.impl;
 
 import java.util.List;
 
-import com.emergya.persistenceGeo.model.StyleEntity;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.emergya.persistenceGeo.dao.ZoneEntityDao;
+import com.emergya.persistenceGeo.model.ZoneEntity;
 
 /**
- * DAO that represents the style
+ * Zone DAO Hibernate Implementation
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface StyleEntityDao extends GenericDAO<StyleEntity, Long> {
+@Repository("zoneEntityDao")
+public class ZoneEntityDaoHibernateImpl extends GenericHibernateDAOImpl<ZoneEntity, Long> implements ZoneEntityDao {
 
 	/**
-	 * Create a new style in the system
+	 * Create a new zone in the system
 	 * 
-	 * @param <code>style</code>
+	 * @param <code>zone</code>
 	 * 
-	 * @return Entity from the created style
+	 * @return Entity from the created zone
 	 */
-	public StyleEntity createStyle(String style);
-	
+	public ZoneEntity createZone(String zone) {
+		ZoneEntity zoneEntity = new ZoneEntity(zone);
+		getHibernateTemplate().save(zoneEntity);
+		return zoneEntity;
+	}
+
 	/**
-	 * Get a style list by the style name
+	 * Get a zones list by the zone name 
 	 * 
-	 * @param <code>styleName</code>
+	 * @param <code>zoneName</code>
 	 * 
-	 * @return Entities list associated with the style name or null if not found 
+	 * @return Entities list associated with the zone name or null if not found 
 	 */
-	public List<StyleEntity> getStyles(String styleName);
-	
+	public List<ZoneEntity> getZones(String zoneName) {
+		return findByCriteria(Restrictions.eq("name", zoneName));
+	}
+
 	/**
-	 * Delete a style by the style identifier 
+	 * Delete a zone by the zone identifier 
 	 * 
-	 * @param <code>styleID</code>
+	 * @param <code>zoneID</code>
 	 * 
 	 */
-	public void deleteStyle(Long styleID);
+	public void deleteZone(Long zoneID) {
+		ZoneEntity zoneEntity = findById(zoneID, false);
+		if(zoneEntity != null){
+			getHibernateTemplate().delete(zoneEntity);
+		}
+	}
+
 }

@@ -33,25 +33,25 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
- * Entidad de grupo de usuarios
+ * Entity that represents the users group
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
+ * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
 @Entity
-@Table(name = "institucion")
+@Table(name = "authority")
 public class AuthorityEntity extends AbstractEntity{
 
     /**
@@ -61,9 +61,15 @@ public class AuthorityEntity extends AbstractEntity{
 	
 	private Long id;
     private String authority;
+    
+    private Date createDate;
+    private Date updateDate;
+    
     private List<UserEntity> people;
-    private Date fechaCreacion;
-    private Date fechaActualizacion;
+    private AuthorityTypeEntity authType;
+    private LayerEntity layer;
+    private PrivateLayerEntity privateLayer;
+    private ZoneEntity zone;
 
     public AuthorityEntity() {
     }
@@ -92,13 +98,7 @@ public class AuthorityEntity extends AbstractEntity{
         this.id = (Long) id;
     }
 
-    @ManyToMany(targetEntity = UserEntity.class,
-    cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "usuarios_por_institucion",
-    joinColumns =
-    @JoinColumn(name = "intitucion_id"),
-    inverseJoinColumns =
-    @JoinColumn(name = "usuario_id"))
+    @OneToMany(mappedBy = "authority")
     public List<UserEntity> getPeople() {
         return people;
     }
@@ -107,22 +107,62 @@ public class AuthorityEntity extends AbstractEntity{
         this.people = people;
     }
 
-    @Column(name = "fechaCreacion")
-	public Date getFechaCreacion() {
-		return fechaCreacion;
+    @Column(name = "createDate")
+	public Date getCreateDate() {
+		return createDate;
 	}
 
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
+	public void setcreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 
-    @Column(name = "fechaActualizacion")
-	public Date getFechaActualizacion() {
-		return fechaActualizacion;
+    @Column(name = "updateDate")
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	@ManyToOne
+    @JoinColumn(name = "id")
+	public AuthorityTypeEntity getAuthType() {
+		return authType;
+	}
+
+	public void setAuthType(AuthorityTypeEntity authType) {
+		this.authType = authType;
+	}
+
+	@ManyToOne
+    @JoinColumn(name = "id")
+	public LayerEntity getLayer() {
+		return layer;
+	}
+
+	public void setLayer(LayerEntity layer) {
+		this.layer = layer;
+	}
+
+	@ManyToOne
+    @JoinColumn(name = "id")
+	public PrivateLayerEntity getPrivateLayer() {
+		return privateLayer;
+	}
+
+	public void setPrivateLayer(PrivateLayerEntity privateLayer) {
+		this.privateLayer = privateLayer;
+	}
+
+	@ManyToOne
+    @JoinColumn(name = "id")
+	public ZoneEntity getZone() {
+		return zone;
+	}
+
+	public void setZone(ZoneEntity zone) {
+		this.zone = zone;
 	}
 
 }

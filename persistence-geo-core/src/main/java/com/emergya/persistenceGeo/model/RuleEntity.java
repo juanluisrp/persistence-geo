@@ -53,7 +53,6 @@ public class RuleEntity extends AbstractEntity {
 	private static final long serialVersionUID = -6713894139265469251L;
 	
 	private Long rule_id;
-	private String rule;
 	
 	private String symbolizer;
 	private String filter;
@@ -64,19 +63,6 @@ public class RuleEntity extends AbstractEntity {
 	
 	public RuleEntity(){
 		
-	}
-	
-	public RuleEntity(String ruleString){
-		rule = ruleString;
-	}
-
-	@Column(name = "rule", nullable = false)
-	public String getRule() {
-		return rule;
-	}
-
-	public void setRule(String rule) {
-		this.rule = rule;
 	}
 
 	@Column(name = "symbolizer")

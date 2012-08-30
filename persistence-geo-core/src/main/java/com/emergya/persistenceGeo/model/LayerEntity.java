@@ -31,12 +31,18 @@ package com.emergya.persistenceGeo.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -55,7 +61,6 @@ public class LayerEntity extends AbstractEntity {
 	private static final long serialVersionUID = -2844502275010469666L;
 
 	private Long id;
-	private String layer;
 	
 	private String name;
 	private String order;
@@ -67,22 +72,20 @@ public class LayerEntity extends AbstractEntity {
 	private Date fechaCreacion;
 	private Date fechaActualizacion;
 	
+	private List<UserEntity> userList;
+	private List<AuthorityEntity> authList;
+	private List<StyleEntity> styleList;
+	private List<FolderEntity> folderList;
+	
 	public LayerEntity(){
 		
 	}
 	
-	public LayerEntity(String layerString){
-		layer = layerString;
-	}
-	
-	public String getLayer() {
-		return layer;
+	public LayerEntity(String layerName){
+		name = layerName;
 	}
 
-	public void setLayer(String layer) {
-		this.layer = layer;
-	}
-
+	@Column(name = "name")
 	public String getName() {
 		return name;
 	}
@@ -91,6 +94,7 @@ public class LayerEntity extends AbstractEntity {
 		this.name = name;
 	}
 
+	@Column(name = "order")
 	public String getOrder() {
 		return order;
 	}
@@ -99,6 +103,7 @@ public class LayerEntity extends AbstractEntity {
 		this.order = order;
 	}
 
+	@Column(name = "type")
 	public String getType() {
 		return type;
 	}
@@ -107,6 +112,7 @@ public class LayerEntity extends AbstractEntity {
 		this.type = type;
 	}
 
+	@Column(name = "server_resource")
 	public String getServer_resource() {
 		return server_resource;
 	}
@@ -115,6 +121,7 @@ public class LayerEntity extends AbstractEntity {
 		this.server_resource = server_resource;
 	}
 
+	@Column(name = "publicized")
 	public Boolean getPublicized() {
 		return publicized;
 	}
@@ -123,6 +130,7 @@ public class LayerEntity extends AbstractEntity {
 		this.publicized = publicized;
 	}
 
+	@Column(name = "enabled")
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -131,6 +139,7 @@ public class LayerEntity extends AbstractEntity {
 		this.enabled = enabled;
 	}
 
+	@Column(name = "pertenece_a_canal")
 	public Boolean getPertenece_a_canal() {
 		return pertenece_a_canal;
 	}
@@ -139,6 +148,7 @@ public class LayerEntity extends AbstractEntity {
 		this.pertenece_a_canal = pertenece_a_canal;
 	}
 
+	@Column(name = "fechaCreacion")
 	public Date getFechaCreacion() {
 		return fechaCreacion;
 	}
@@ -147,16 +157,13 @@ public class LayerEntity extends AbstractEntity {
 		this.fechaCreacion = fechaCreacion;
 	}
 
+	@Column(name = "fechaActualizacion")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
 	}
 
 	public void setFechaActualizacion(Date fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	@Id
@@ -168,6 +175,48 @@ public class LayerEntity extends AbstractEntity {
 
 	public void setId(Serializable id) {
 		this.id = (Long) id;
+	}
+	
+	@OneToMany(mappedBy = "layer")
+	public List<UserEntity> getUserList() {
+		return userList;
+	}
+
+	public void setUserList(List<UserEntity> userList) {
+		this.userList = userList;
+	}
+
+	@OneToMany(mappedBy = "layer")
+	public List<AuthorityEntity> getAuthList() {
+		return authList;
+	}
+
+	public void setAuthList(List<AuthorityEntity> authList) {
+		this.authList = authList;
+	}
+
+	@ManyToMany(targetEntity = StyleEntity.class,
+	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(name = "layer_with_style",
+	joinColumns =
+	@JoinColumn(name = "id"),
+	inverseJoinColumns =
+	@JoinColumn(name = "id"))
+	public List<StyleEntity> getStyleList() {
+		return styleList;
+	}
+
+	public void setStyleList(List<StyleEntity> styleList) {
+		this.styleList = styleList;
+	}
+
+	@OneToMany(mappedBy = "layer")
+	public List<FolderEntity> getFolderList() {
+		return folderList;
+	}
+
+	public void setFolderList(List<FolderEntity> folderList) {
+		this.folderList = folderList;
 	}
 
 }

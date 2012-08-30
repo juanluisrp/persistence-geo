@@ -37,6 +37,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -66,7 +68,10 @@ public class UserEntity implements Serializable {
     private Boolean valid;
     private Date fechaCreacion;
     private Date fechaActualizacion;
-//    private Set<AuthorityEntity> authorities;
+    
+    private AuthorityEntity authority;
+    private LayerEntity layer;
+    private PrivateLayerEntity privateLayer;
 
     public UserEntity() {
 
@@ -177,12 +182,33 @@ public class UserEntity implements Serializable {
 		this.fechaActualizacion = fechaActualizacion;
 	}
 	
-//    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "authorities")
-//	public Set<AuthorityEntity> getAuthorities() {
-//		return authorities;
-//	}
-//
-//	public void setAuthorities(Set<AuthorityEntity> authorities) {
-//		this.authorities = authorities;
-//	}
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+	public AuthorityEntity getAuthority() {
+		return authority;
+	}
+
+	public void setAuthority(AuthorityEntity authority) {
+		this.authority = authority;
+	}
+
+	@ManyToOne
+    @JoinColumn(name = "user_id")
+	public LayerEntity getLayer() {
+		return layer;
+	}
+
+	public void setLayer(LayerEntity layer) {
+		this.layer = layer;
+	}
+
+	@ManyToOne
+    @JoinColumn(name = "user_id")
+	public PrivateLayerEntity getPrivateLayer() {
+		return privateLayer;
+	}
+
+	public void setPrivateLayer(PrivateLayerEntity privateLayer) {
+		this.privateLayer = privateLayer;
+	}
 }

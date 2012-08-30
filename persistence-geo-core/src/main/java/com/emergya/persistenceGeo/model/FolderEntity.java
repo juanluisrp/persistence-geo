@@ -36,11 +36,14 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -60,7 +63,8 @@ public class FolderEntity extends AbstractEntity {
 	private static final long serialVersionUID = -2877181555393537995L;
 	
 	private Long id;
-	private String folder;
+	
+	private String name;
 	private Boolean enabled;
 	private Boolean es_canal;
 	private Boolean es_instrumento_planificacion;
@@ -68,22 +72,24 @@ public class FolderEntity extends AbstractEntity {
 	private Date fechaActualizacion;
 	
 	private List<FolderEntity> folderList;
+	private List<ZoneEntity> zoneList;
+	private LayerEntity layer;
 
 	public FolderEntity(){
 		
 	}
 	
-	public FolderEntity(String folderString){
-		folder = folderString;
+	public FolderEntity(String folderName){
+		name = folderName;
 	}
 	
-	@Column(name = "folder", nullable = false)
-	public String getFolder() {
-		return folder;
+	@Column(name = "name")
+	public String getName() {
+		return name;
 	}
 
-	public void setFolder(String folder) {
-		this.folder = folder;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	@Column(name = "enabled")
@@ -142,7 +148,7 @@ public class FolderEntity extends AbstractEntity {
 		this.id = (Long) id;
 	}
 	
-	@OneToMany(targetEntity = ZoneEntity.class,
+	@OneToMany(targetEntity = FolderEntity.class,
 	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "folders_in_folder",
 	joinColumns =
@@ -155,5 +161,24 @@ public class FolderEntity extends AbstractEntity {
 
 	public void setFolderList(List<FolderEntity> folderList) {
 		this.folderList = folderList;
+	}
+
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "zoneList")
+	public List<ZoneEntity> getZoneList() {
+		return zoneList;
+	}
+
+	public void setZoneList(List<ZoneEntity> zoneList) {
+		this.zoneList = zoneList;
+	}
+
+	@ManyToOne
+    @JoinColumn(name = "id")
+	public LayerEntity getLayer() {
+		return layer;
+	}
+
+	public void setLayer(LayerEntity layer) {
+		this.layer = layer;
 	}
 }

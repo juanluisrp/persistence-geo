@@ -42,20 +42,10 @@ public interface RuleEntityDao extends GenericDAO<RuleEntity, Long> {
 	/**
 	 * Create a new rule in the system
 	 * 
-	 * @param <code>rule</code>
 	 * 
 	 * @return Entity from the created rule
 	 */
-	public RuleEntity createRule(String rule);
-	
-	/**
-	 * Get a rule by the id rule 
-	 * 
-	 * @param <code>ruleID</code>
-	 * 
-	 * @return Entity associated with the rule identifier or null if not found 
-	 */
-	public RuleEntity getRule(String ruleID);
+	public RuleEntity createRule();
 	
 	/**
 	 * Delete a rule by the rule identifier 
@@ -63,5 +53,5 @@ public interface RuleEntityDao extends GenericDAO<RuleEntity, Long> {
 	 * @param <code>ruleID</code>
 	 * 
 	 */
-	public void deleteRule(String ruleID);
+	public void deleteRule(Long ruleID);
 }

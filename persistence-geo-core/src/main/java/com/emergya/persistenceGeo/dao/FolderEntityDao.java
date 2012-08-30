@@ -29,6 +29,8 @@
  */
 package com.emergya.persistenceGeo.dao;
 
+import java.util.List;
+
 import com.emergya.persistenceGeo.model.FolderEntity;
 
 /**
@@ -49,13 +51,13 @@ public interface FolderEntityDao extends GenericDAO<FolderEntity, Long> {
 	public FolderEntity createFolder(String nameFolder);
 	
 	/**
-	 * Get a folder by the id folder 
+	 * Get a folders list by the folder name 
 	 * 
-	 * @param <code>folderID</code>
+	 * @param <code>folderName</code>
 	 * 
-	 * @return Entity associated with the folder identifier or null if not found 
+	 * @return Entities list associated with the folder name or null if not found 
 	 */
-	public FolderEntity getFolder(String folderID);
+	public List<FolderEntity> getFolders(String folderName);
 	
 	/**
 	 * Delete a folder by the folder identifier 
@@ -63,7 +65,7 @@ public interface FolderEntityDao extends GenericDAO<FolderEntity, Long> {
 	 * @param <code>folderID</code>
 	 * 
 	 */
-	public void deleteFolder(String folderID);
+	public void deleteFolder(Long folderID);
 	
 	
 }

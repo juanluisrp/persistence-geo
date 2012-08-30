@@ -41,6 +41,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -60,7 +61,6 @@ public class ZoneEntity extends AbstractEntity {
 	private static final long serialVersionUID = -7702334870312919540L;
 	
 	private Long id;
-	private String zone;
 	
 	private String code;
 	private String name;
@@ -71,22 +71,14 @@ public class ZoneEntity extends AbstractEntity {
 	
 	private List<ZoneEntity> zoneList;
 	private List<FolderEntity> folderList;
+	private List<AuthorityEntity> authList;
 	
 	public ZoneEntity(){
 		
 	}
 
-	public ZoneEntity(String zoneString){
-		zone = zoneString;
-	}
-	
-	@Column(name = "zone", nullable = false)
-	public String getZone() {
-		return zone;
-	}
-
-	public void setZone(String zone) {
-		this.zone = zone;
+	public ZoneEntity(String zoneName){
+		name = zoneName;
 	}
 
 	@Column(name = "code")
@@ -142,10 +134,6 @@ public class ZoneEntity extends AbstractEntity {
 	public void setFechaActualizacion(Date fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
 	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
  
 	@Id
     @Column(name = "id")
@@ -173,7 +161,7 @@ public class ZoneEntity extends AbstractEntity {
 		this.zoneList = zoneList;
 	}
 	
-	@OneToMany(targetEntity = ZoneEntity.class,
+	@ManyToMany(targetEntity = FolderEntity.class,
 	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "folder_in_zone",
 	joinColumns =
@@ -186,6 +174,15 @@ public class ZoneEntity extends AbstractEntity {
 
 	public void setFolderList(List<FolderEntity> folderList) {
 		this.folderList = folderList;
+	}
+
+	@OneToMany(mappedBy = "authority")
+	public List<AuthorityEntity> getAuthList() {
+		return authList;
+	}
+
+	public void setAuthList(List<AuthorityEntity> authList) {
+		this.authList = authList;
 	}
 
 }

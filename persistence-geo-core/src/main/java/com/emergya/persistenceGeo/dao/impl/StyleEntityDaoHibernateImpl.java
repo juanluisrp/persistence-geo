@@ -1,5 +1,5 @@
 /*
- * StyleEntityDao.java
+ * StyleEntityDaoHibernateImpl.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,19 +27,24 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.dao.impl;
 
 import java.util.List;
 
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.emergya.persistenceGeo.dao.StyleEntityDao;
 import com.emergya.persistenceGeo.model.StyleEntity;
 
 /**
- * DAO that represents the style
+ * Style DAO Hibernate Implementation
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface StyleEntityDao extends GenericDAO<StyleEntity, Long> {
+@Repository("styleEntityDao")
+public class StyleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<StyleEntity, Long> implements StyleEntityDao {
 
 	/**
 	 * Create a new style in the system
@@ -48,22 +53,34 @@ public interface StyleEntityDao extends GenericDAO<StyleEntity, Long> {
 	 * 
 	 * @return Entity from the created style
 	 */
-	public StyleEntity createStyle(String style);
-	
+	public StyleEntity createStyle(String style) {
+		StyleEntity styleEntity = new StyleEntity(style);
+		getHibernateTemplate().save(styleEntity);
+		return styleEntity;
+	}
+
 	/**
-	 * Get a style list by the style name
+	 * Get a styles list by the style name
 	 * 
 	 * @param <code>styleName</code>
 	 * 
 	 * @return Entities list associated with the style name or null if not found 
 	 */
-	public List<StyleEntity> getStyles(String styleName);
-	
+	public List<StyleEntity> getStyles(String styleName) {
+		return findByCriteria(Restrictions.eq("name", styleName));
+	}
+
 	/**
 	 * Delete a style by the style identifier 
 	 * 
 	 * @param <code>styleID</code>
 	 * 
 	 */
-	public void deleteStyle(Long styleID);
+	public void deleteStyle(Long styleID) {
+		StyleEntity styleEntity = findById(styleID, false);
+		if(styleEntity != null){
+			getHibernateTemplate().delete(styleEntity);
+		}
+	}
+
 }

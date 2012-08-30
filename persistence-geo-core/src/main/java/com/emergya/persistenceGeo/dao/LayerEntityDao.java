@@ -29,6 +29,8 @@
  */
 package com.emergya.persistenceGeo.dao;
 
+import java.util.List;
+
 import com.emergya.persistenceGeo.model.LayerEntity;
 
 /**
@@ -49,13 +51,13 @@ public interface LayerEntityDao extends GenericDAO<LayerEntity, Long> {
 	public Long save(LayerEntity layerEntity);
 	
 	/**
-	 * Get a layer by the id layer 
+	 * Get a layers list by the private layer name 
 	 * 
-	 * @param <code>layerID</code>
+	 * @param <code>layerName</code>
 	 * 
-	 * @return Entity associated with the layer identifier or null if not found 
+	 * @return Entities list associated with the layer name or null if not found 
 	 */
-	public LayerEntity getLayer(String layerID);
+	public List<LayerEntity> getLayers(String layerName);
 	
 	/**
 	 * Delete a layer by the layer identifier 
@@ -63,5 +65,5 @@ public interface LayerEntityDao extends GenericDAO<LayerEntity, Long> {
 	 * @param <code>layerID</code>
 	 * 
 	 */
-	public void delete(String layerID);
+	public void delete(Long layerID);
 }

@@ -35,16 +35,16 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 /**
- * Entidad de tipo de grupos de usuario
+ * Entity that represents the types users group
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
@@ -57,11 +57,10 @@ public class AuthorityTypeEntity extends AbstractEntity {
 	private static final long serialVersionUID = -2355239823795963260L;
 	
 	private Long auth_type_id;
-	private String auth_type;
 	
 	private String name;
-	private Date fechaCreacion;
-	private Date fechaActualizacion;
+	private Date createDate;
+    private Date updateDate;
 	
 	private List<AuthorityEntity> authList;
 	private List<PermissionEntity> permissionList;
@@ -71,16 +70,7 @@ public class AuthorityTypeEntity extends AbstractEntity {
 	}
 	
 	public AuthorityTypeEntity(String auth_type_str){
-		auth_type = auth_type_str;
-	}
-
-	@Column(name = "auth_type", nullable = false)
-	public String getAuth_type() {
-		return auth_type;
-	}
-
-	public void setAuth_type(String auth_type) {
-		this.auth_type = auth_type;
+		name = auth_type_str;
 	}
 
 	@Column(name = "name")
@@ -92,22 +82,22 @@ public class AuthorityTypeEntity extends AbstractEntity {
 		this.name = name;
 	}
 
-	@Column(name = "fechaCreacion")
-	public Date getFechaCreacion() {
-		return fechaCreacion;
+	@Column(name = "createDate")
+	public Date getCreateDate() {
+		return createDate;
 	}
 
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
+	public void setcreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 
-	@Column(name = "fechaActualizacion")
-	public Date getFechaActualizacion() {
-		return fechaActualizacion;
+    @Column(name = "updateDate")
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
 
 	@Id
@@ -121,7 +111,7 @@ public class AuthorityTypeEntity extends AbstractEntity {
 		auth_type_id = (Long) id;
 	}
 	
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "authList")
+	@OneToMany(mappedBy = "authType")
 	public List<AuthorityEntity> getAuthList() {
 		return authList;
 	}

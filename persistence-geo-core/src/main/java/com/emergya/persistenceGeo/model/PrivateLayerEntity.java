@@ -41,6 +41,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 /**
  * Entidad de capa privada
@@ -56,7 +57,6 @@ public class PrivateLayerEntity extends AbstractEntity {
 	private static final long serialVersionUID = -8182484032046594841L;
 	
 	private Long privateLayer_id;
-	private String privateLayer;
 	
 	private String name;
 	private String type;
@@ -72,17 +72,8 @@ public class PrivateLayerEntity extends AbstractEntity {
 		
 	}
 	
-	public PrivateLayerEntity(String privateLayerString){
-		privateLayer = privateLayerString;
-	}
-
-	@Column(name = "privateLayer", nullable = false)
-	public String getPrivateLayer() {
-		return privateLayer;
-	}
-
-	public void setPrivateLayer(String privateLayer) {
-		this.privateLayer = privateLayer;
+	public PrivateLayerEntity(String privateLayerName){
+		name = privateLayerName;
 	}
 
 	@Column(name = "name")
@@ -156,13 +147,7 @@ public class PrivateLayerEntity extends AbstractEntity {
 		this.styleList = styleList;
 	}
 
-	@ManyToMany(targetEntity = AuthorityEntity.class,
-	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "pravateLayer_in_group",
-	joinColumns =
-	@JoinColumn(name = "privateLayer_id"),
-	inverseJoinColumns =
-	@JoinColumn(name = "auth_id"))
+	@OneToMany(mappedBy = "authority")
 	public List<AuthorityEntity> getAuthList() {
 		return authList;
 	}
@@ -171,13 +156,7 @@ public class PrivateLayerEntity extends AbstractEntity {
 		this.authList = authList;
 	}
 
-	@ManyToMany(targetEntity = UserEntity.class,
-	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "privateLayer_by_users",
-	joinColumns =
-	@JoinColumn(name = "privateLayer_id"),
-	inverseJoinColumns =
-	@JoinColumn(name = "user_id"))
+	@OneToMany(mappedBy = "privateLayer")
 	public List<UserEntity> getUserList() {
 		return userList;
 	}

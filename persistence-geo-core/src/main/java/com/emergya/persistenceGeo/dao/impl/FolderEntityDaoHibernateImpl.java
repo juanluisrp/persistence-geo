@@ -1,5 +1,5 @@
 /*
- * StyleEntityDao.java
+ * FolderEntityDaoHibernateImpl.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,43 +27,60 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.dao.impl;
 
 import java.util.List;
 
-import com.emergya.persistenceGeo.model.StyleEntity;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Repository;
+
+import com.emergya.persistenceGeo.dao.FolderEntityDao;
+import com.emergya.persistenceGeo.model.FolderEntity;
 
 /**
- * DAO that represents the style
+ * Folder DAO Hibernate Implementation
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface StyleEntityDao extends GenericDAO<StyleEntity, Long> {
+@Repository("folderEntityDao")
+public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<FolderEntity, Long> implements FolderEntityDao {
 
 	/**
-	 * Create a new style in the system
+	 * Create a new folder in the system
 	 * 
-	 * @param <code>style</code>
+	 * @param <code>nameFolder</code>
 	 * 
-	 * @return Entity from the created style
+	 * @return Entity from the created folder
 	 */
-	public StyleEntity createStyle(String style);
-	
+	public FolderEntity createFolder(String nameFolder) {
+		FolderEntity entity = new FolderEntity(nameFolder);
+		getHibernateTemplate().save(entity);
+		return entity;
+	}
+
 	/**
-	 * Get a style list by the style name
+	 * Get a folders list by the folder name 
 	 * 
-	 * @param <code>styleName</code>
+	 * @param <code>folderName</code>
 	 * 
-	 * @return Entities list associated with the style name or null if not found 
+	 * @return Entities list associated with the folder name or null if not found 
 	 */
-	public List<StyleEntity> getStyles(String styleName);
-	
+	public List<FolderEntity> getFolders(String folderName) {
+		return findByCriteria(Restrictions.eq("name", folderName));
+	}
+
 	/**
-	 * Delete a style by the style identifier 
+	 * Delete a folder by the folder identifier 
 	 * 
-	 * @param <code>styleID</code>
+	 * @param <code>folderID</code>
 	 * 
 	 */
-	public void deleteStyle(Long styleID);
+	public void deleteFolder(Long folderID) {
+		FolderEntity entity = findById(folderID, false);
+		if(entity != null){
+			getHibernateTemplate().delete(entity);
+		}
+	}
+
 }

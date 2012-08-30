@@ -1,5 +1,5 @@
 /*
- * StyleEntityDao.java
+ * RuleEntityDaoHibernateImpl.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,43 +27,46 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.dao.impl;
 
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
-import com.emergya.persistenceGeo.model.StyleEntity;
+import com.emergya.persistenceGeo.dao.RuleEntityDao;
+import com.emergya.persistenceGeo.model.RuleEntity;
 
 /**
- * DAO that represents the style
+ * Rule DAO Hibernate Implementation
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface StyleEntityDao extends GenericDAO<StyleEntity, Long> {
+@Repository("ruleEntityDao")
+public class RuleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<RuleEntity, Long> implements RuleEntityDao {
 
 	/**
-	 * Create a new style in the system
+	 * Create a new rule in the system
 	 * 
-	 * @param <code>style</code>
 	 * 
-	 * @return Entity from the created style
+	 * @return Entity from the created rule
 	 */
-	public StyleEntity createStyle(String style);
-	
+	public RuleEntity createRule() {
+		RuleEntity ruleEntity = new RuleEntity();
+		getHibernateTemplate().save(ruleEntity);
+		return ruleEntity;
+	}
+
 	/**
-	 * Get a style list by the style name
+	 * Delete a rule by the rule identifier 
 	 * 
-	 * @param <code>styleName</code>
-	 * 
-	 * @return Entities list associated with the style name or null if not found 
-	 */
-	public List<StyleEntity> getStyles(String styleName);
-	
-	/**
-	 * Delete a style by the style identifier 
-	 * 
-	 * @param <code>styleID</code>
+	 * @param <code>ruleID</code>
 	 * 
 	 */
-	public void deleteStyle(Long styleID);
+	public void deleteRule(Long ruleID) {
+		RuleEntity ruleEntity = findById(ruleID, false);
+		if(ruleEntity != null){
+			getHibernateTemplate().delete(ruleEntity);
+		}
+
+	}
+
 }

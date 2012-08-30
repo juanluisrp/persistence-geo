@@ -54,7 +54,6 @@ public class PermissionEntity extends AbstractEntity {
 	private static final long serialVersionUID = 8185264482816302475L;
 	
 	private Long permission_id;
-	private String permission;
 	
 	private String name;
 	private Date fechaCreacion;
@@ -66,17 +65,8 @@ public class PermissionEntity extends AbstractEntity {
 		
 	}
 	
-	public PermissionEntity(String permissionString){
-		permission = permissionString;
-	}
-	
-	@Column(name = "permission", nullable = false)
-	public String getPermission() {
-		return permission;
-	}
-
-	public void setPermission(String permission) {
-		this.permission = permission;
+	public PermissionEntity(String permissionName){
+		name = permissionName;
 	}
 
 	@Column(name = "name")
