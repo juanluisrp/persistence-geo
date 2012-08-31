@@ -31,7 +31,10 @@ package com.emergya.persistenceGeo.dao;
 
 import java.util.List;
 
+import com.emergya.persistenceGeo.model.FolderEntity;
 import com.emergya.persistenceGeo.model.LayerEntity;
+import com.emergya.persistenceGeo.model.StyleEntity;
+import com.emergya.persistenceGeo.model.UserEntity;
 
 /**
  * DAO that represents the layer
@@ -41,6 +44,15 @@ import com.emergya.persistenceGeo.model.LayerEntity;
  */
 public interface LayerEntityDao extends GenericDAO<LayerEntity, Long> {
 
+	/**
+	 * Create a new layer in the system
+	 * 
+	 * @param <code>layerName</code>
+	 * 
+	 * @return Entity from the new layer
+	 */
+	public LayerEntity createLayer(String layerName);
+	
 	/**
 	 * Save the layer in the system
 	 * 
@@ -66,4 +78,31 @@ public interface LayerEntityDao extends GenericDAO<LayerEntity, Long> {
 	 * 
 	 */
 	public void delete(Long layerID);
+	
+	/**
+	 * Get a users list by a layer id
+	 * 
+	 * @param layerID
+	 * 
+	 * @return Entities list associated with the layer identifier or null if not found 
+	 */
+	public UserEntity findByLayer(Long layerID);
+	
+	/**
+	 * Get a folders list by the layer identifier
+	 * 
+	 * @param <code>layerID</code>
+	 * 
+	 * @return Entities list associated with the layer identifier or null if not found 
+	 */
+	public List<FolderEntity> findFolderByLayer(Long layerID);
+	
+	/**
+	 * Get a style list by the layer identifier
+	 * 
+	 * @param <code>layerID</code>
+	 * 
+	 * @return Entities list associated with the layer identifier or null if not found 
+	 */
+	public List<StyleEntity> findStyleByLayer(Long layerID);
 }

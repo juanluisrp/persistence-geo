@@ -31,6 +31,7 @@ package com.emergya.persistenceGeo.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,6 +40,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -70,8 +72,8 @@ public class UserEntity implements Serializable {
     private Date fechaActualizacion;
     
     private AuthorityEntity authority;
-    private LayerEntity layer;
-    private PrivateLayerEntity privateLayer;
+    private List<LayerEntity> layerList;
+    private List<PrivateLayerEntity> privateLayerList;
 
     public UserEntity() {
 
@@ -192,23 +194,21 @@ public class UserEntity implements Serializable {
 		this.authority = authority;
 	}
 
-	@ManyToOne
-    @JoinColumn(name = "user_id")
-	public LayerEntity getLayer() {
-		return layer;
+	@OneToMany(mappedBy = "user")
+	public List<LayerEntity> getLayerList() {
+		return layerList;
 	}
 
-	public void setLayer(LayerEntity layer) {
-		this.layer = layer;
+	public void setLayerList(List<LayerEntity> layerList) {
+		this.layerList = layerList;
 	}
 
-	@ManyToOne
-    @JoinColumn(name = "user_id")
-	public PrivateLayerEntity getPrivateLayer() {
-		return privateLayer;
+	@OneToMany(mappedBy = "user")
+	public List<PrivateLayerEntity> getPrivateLayerList() {
+		return privateLayerList;
 	}
 
-	public void setPrivateLayer(PrivateLayerEntity privateLayer) {
-		this.privateLayer = privateLayer;
+	public void setPrivateLayerList(List<PrivateLayerEntity> privateLayerList) {
+		this.privateLayerList = privateLayerList;
 	}
 }

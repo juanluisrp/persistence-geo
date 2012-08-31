@@ -30,7 +30,7 @@ package com.emergya.persistenceGeo.model;
 import java.io.Serializable;
 
 /**
- * Entidad a la que extenderan todos los mapeos
+ * Entity from which extend the rest of the entities
  * 
  * @author <a href="mailto:adiaz@emergya.es">adiaz</a>
  */

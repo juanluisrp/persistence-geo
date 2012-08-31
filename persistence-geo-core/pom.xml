@@ -38,6 +38,16 @@
 				<role>Analista</role>
 			</roles>
 		</developer>
+		<developer>
+			<id>marcos</id>
+			<name>Moisés Arcos Santiago</name>
+			<email>marcos@emergya.com</email>
+			<organization>Emergya Consultoria</organization>
+			<organizationUrl>http://www.emergya.es</organizationUrl>
+			<roles>
+				<role>Junior Programmer</role>
+			</roles>
+		</developer>
 	</developers>
 
 

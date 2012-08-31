@@ -29,6 +29,7 @@
  */
 package com.emergya.persistenceGeo.dao.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
@@ -81,6 +82,23 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Folder
 		if(entity != null){
 			getHibernateTemplate().delete(entity);
 		}
+	}
+
+	/**
+	 * Get a folders list by the names folders list
+	 * 
+	 * @param <code>names</code>
+	 * 
+	 * @return Entities list associated with the names folders list or null if not found 
+	 */
+	public List<FolderEntity> findByName(List<String> names) {
+		List<FolderEntity> folderList = new LinkedList<FolderEntity>();
+		if(names != null){
+			for(String name: names){
+				folderList.addAll(getFolders(name));
+			}
+		}
+		return folderList;
 	}
 
 }

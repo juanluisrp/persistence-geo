@@ -1,5 +1,5 @@
 /*
- * FolderEntityDao.java
+ * RuleDto.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,54 +27,80 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.dto;
 
-import java.util.List;
-
-import com.emergya.persistenceGeo.model.FolderEntity;
+import java.io.Serializable;
+import java.util.Date;
 
 /**
- * DAO that represents the folder
+ * Rule data transfer object
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface FolderEntityDao extends GenericDAO<FolderEntity, Long> {
+public class RuleDto implements Serializable {
 
 	/**
-	 * Create a new folder in the system
-	 * 
-	 * @param <code>nameFolder</code>
-	 * 
-	 * @return Entity from the created folder
-	 */
-	public FolderEntity createFolder(String nameFolder);
-	
-	/**
-	 * Get a folders list by the folder name 
-	 * 
-	 * @param <code>folderName</code>
-	 * 
-	 * @return Entities list associated with the folder name or null if not found 
-	 */
-	public List<FolderEntity> getFolders(String folderName);
-	
-	/**
-	 * Delete a folder by the folder identifier 
-	 * 
-	 * @param <code>folderID</code>
 	 * 
 	 */
-	public void deleteFolder(Long folderID);
+	private static final long serialVersionUID = -7549984301491958577L;
 	
-	/**
-	 * Get a folders list by the names folders list
-	 * 
-	 * @param <code>names</code>
-	 * 
-	 * @return Entities list associated with the names folders list or null if not found 
-	 */
-	public List<FolderEntity> findByName(List<String> names);
+	private Long rule_id;
 	
+	private String symbolizer;
+	private String filter;
+	private Date createDate;
+	private Date updateDate;
 	
+	private String style;
+
+	public Long getRule_id() {
+		return rule_id;
+	}
+
+	public void setRule_id(Long rule_id) {
+		this.rule_id = rule_id;
+	}
+
+	public String getSymbolizer() {
+		return symbolizer;
+	}
+
+	public void setSymbolizer(String symbolizer) {
+		this.symbolizer = symbolizer;
+	}
+
+	public String getFilter() {
+		return filter;
+	}
+
+	public void setFilter(String filter) {
+		this.filter = filter;
+	}
+
+	public Date getCreateDate() {
+		return createDate;
+	}
+
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+
+	public String getStyle() {
+		return style;
+	}
+
+	public void setStyle(String style) {
+		this.style = style;
+	}
+	
+
 }

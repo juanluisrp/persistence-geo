@@ -30,11 +30,14 @@
 package com.emergya.persistenceGeo.dto;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 
 /**
- * Dto de capa
+ * Layer Data Transfer Object 
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
+ * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
 public class LayerDto implements Serializable {
@@ -44,6 +47,106 @@ public class LayerDto implements Serializable {
 	 */
 	private static final long serialVersionUID = -488299965208355171L;
 	
-	//TODO
+	private Long id;
+	
+	private String name;
+	private String order;
+	private String type;
+	private String server_resource;
+	private Boolean publicized;
+	private Boolean enabled;
+	private Boolean pertenece_a_canal;
+	private Date createDate;
+	private Date updateDate;
+	
+	private List<String> userList;
+	private List<String> authList;
+	private List<String> styleList;
+	private List<String> folderList;
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getOrder() {
+		return order;
+	}
+	public void setOrder(String order) {
+		this.order = order;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public String getServer_resource() {
+		return server_resource;
+	}
+	public void setServer_resource(String server_resource) {
+		this.server_resource = server_resource;
+	}
+	public Boolean getPublicized() {
+		return publicized;
+	}
+	public void setPublicized(Boolean publicized) {
+		this.publicized = publicized;
+	}
+	public Boolean getEnabled() {
+		return enabled;
+	}
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+	public Boolean getPertenece_a_canal() {
+		return pertenece_a_canal;
+	}
+	public void setPertenece_a_canal(Boolean pertenece_a_canal) {
+		this.pertenece_a_canal = pertenece_a_canal;
+	}
+	public Date getCreateDate() {
+		return createDate;
+	}
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
+	}
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+	public List<String> getUserList() {
+		return userList;
+	}
+	public void setUserList(List<String> userList) {
+		this.userList = userList;
+	}
+	public List<String> getAuthList() {
+		return authList;
+	}
+	public void setAuthList(List<String> authList) {
+		this.authList = authList;
+	}
+	public List<String> getStyleList() {
+		return styleList;
+	}
+	public void setStyleList(List<String> styleList) {
+		this.styleList = styleList;
+	}
+	public List<String> getFolderList() {
+		return folderList;
+	}
+	public void setFolderList(List<String> folderList) {
+		this.folderList = folderList;
+	}
 
 }

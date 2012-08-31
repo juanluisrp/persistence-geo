@@ -35,7 +35,10 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.LayerEntityDao;
+import com.emergya.persistenceGeo.model.FolderEntity;
 import com.emergya.persistenceGeo.model.LayerEntity;
+import com.emergya.persistenceGeo.model.StyleEntity;
+import com.emergya.persistenceGeo.model.UserEntity;
 
 /**
  * Layer DAO Hibernate Implementation
@@ -46,6 +49,19 @@ import com.emergya.persistenceGeo.model.LayerEntity;
 @Repository("layerEntityDao")
 public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEntity, Long> implements LayerEntityDao {
 
+	/**
+	 * Create a new layer in the system
+	 * 
+	 * @param <code>layerName</code>
+	 * 
+	 * @return Entity from the new layer
+	 */
+	public LayerEntity createLayer(String layerName) {
+		LayerEntity entity = new LayerEntity(layerName);
+		this.save(entity);
+		return entity;
+	}
+	
 	/**
 	 * Save the layer in the system
 	 * 
@@ -79,6 +95,42 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEn
 		if(entity != null){
 			getHibernateTemplate().delete(entity);
 		}
+	}
+
+	/**
+	 * Get a users list by a layer id
+	 * 
+	 * @param layerID
+	 * 
+	 * @return Entities list associated with the layer identifier or null if not found 
+	 */
+	public UserEntity findByLayer(Long layerID) {
+		LayerEntity entity = findById(layerID, false);
+		return entity.getUser();
+	}
+
+	/**
+	 * Get a folders list by the layer identifier
+	 * 
+	 * @param <code>layerID</code>
+	 * 
+	 * @return Entities list associated with the layer identifier or null if not found 
+	 */
+	public List<FolderEntity> findFolderByLayer(Long layerID) {
+		LayerEntity entity = findById(layerID, false);
+		return entity.getFolderList();
+	}
+
+	/**
+	 * Get a style list by the layer identifier
+	 * 
+	 * @param <code>layerID</code>
+	 * 
+	 * @return Entities list associated with the layer identifier or null if not found 
+	 */
+	public List<StyleEntity> findStyleByLayer(Long layerID) {
+		LayerEntity entity = findById(layerID, false);
+		return entity.getStyleList();
 	}
 
 }

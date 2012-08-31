@@ -29,6 +29,7 @@
  */
 package com.emergya.persistenceGeo.dao.impl;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
@@ -81,6 +82,23 @@ public class StyleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<StyleEn
 		if(styleEntity != null){
 			getHibernateTemplate().delete(styleEntity);
 		}
+	}
+
+	/**
+	 * Get a style list by the names users list
+	 * 
+	 * @param <code>names</code>
+	 * 
+	 * @return Entities list associated with the names users list or null if not found 
+	 */
+	public List<StyleEntity> findByName(List<String> names) {
+		List<StyleEntity> styles = new LinkedList<StyleEntity>();
+		if(names != null){
+			for(String name: names){
+				styles.addAll(getStyles(name));
+			}
+		}
+		return styles;
 	}
 
 }

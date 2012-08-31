@@ -55,7 +55,6 @@ public class StyleEntity extends AbstractEntity {
 	private static final long serialVersionUID = 8414310574032934037L;
 	
 	private Long id;
-	private String style;
 	
 	private String name;
 	private Date fechaCreacion;
@@ -70,16 +69,7 @@ public class StyleEntity extends AbstractEntity {
 	}
 	
 	public StyleEntity(String styleString){
-		style = styleString;
-	}
-	
-	@Column(name = "style", nullable = false)
-	public String getStyle() {
-		return style;
-	}
-
-	public void setStyle(String style) {
-		this.style = style;
+		name = styleString;
 	}
 
 	@Column(name = "name")

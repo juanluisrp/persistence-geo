@@ -67,8 +67,8 @@ public class AuthorityEntity extends AbstractEntity{
     
     private List<UserEntity> people;
     private AuthorityTypeEntity authType;
-    private LayerEntity layer;
-    private PrivateLayerEntity privateLayer;
+    private List<LayerEntity> layerList;
+    private List<PrivateLayerEntity> privateLayerList;
     private ZoneEntity zone;
 
     public AuthorityEntity() {
@@ -135,24 +135,22 @@ public class AuthorityEntity extends AbstractEntity{
 		this.authType = authType;
 	}
 
-	@ManyToOne
-    @JoinColumn(name = "id")
-	public LayerEntity getLayer() {
-		return layer;
+	@OneToMany(mappedBy = "auth")
+	public List<LayerEntity> getLayerList() {
+		return layerList;
 	}
 
-	public void setLayer(LayerEntity layer) {
-		this.layer = layer;
+	public void setLayerList(List<LayerEntity> layerList) {
+		this.layerList = layerList;
 	}
 
-	@ManyToOne
-    @JoinColumn(name = "id")
-	public PrivateLayerEntity getPrivateLayer() {
-		return privateLayer;
+	@OneToMany(mappedBy = "auth")
+	public List<PrivateLayerEntity> getPrivateLayerList() {
+		return privateLayerList;
 	}
 
-	public void setPrivateLayer(PrivateLayerEntity privateLayer) {
-		this.privateLayer = privateLayer;
+	public void setPrivateLayer(List<PrivateLayerEntity> privateLayerList) {
+		this.privateLayerList = privateLayerList;
 	}
 
 	@ManyToOne

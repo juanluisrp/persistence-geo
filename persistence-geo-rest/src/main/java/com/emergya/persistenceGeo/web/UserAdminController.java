@@ -156,8 +156,7 @@ public class UserAdminController extends AbstractController
 		usuario.setUsername(username);
 		usuario.setValid(BOOL_SI.equals(valid) ? Boolean.TRUE : Boolean.FALSE);
 		
-		//TODO
-		usuario.setGrupos(null);
+		// TODO relations
 		
 		if(usuario.getId() != null){
 			usuario = (UserDto) userAdminService.update(usuario);

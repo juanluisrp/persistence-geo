@@ -41,7 +41,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 
 /**
  * Entidad de capa privada
@@ -65,8 +65,8 @@ public class PrivateLayerEntity extends AbstractEntity {
 	private Date fechaActualizacion;
 	
 	private List<StyleEntity> styleList;
-	private List<AuthorityEntity> authList;
-	private List<UserEntity> userList;
+	private AuthorityEntity auth;
+	private UserEntity user;
 	
 	public PrivateLayerEntity(){
 		
@@ -147,22 +147,24 @@ public class PrivateLayerEntity extends AbstractEntity {
 		this.styleList = styleList;
 	}
 
-	@OneToMany(mappedBy = "authority")
-	public List<AuthorityEntity> getAuthList() {
-		return authList;
+	@ManyToOne
+    @JoinColumn(name = "id")
+	public AuthorityEntity getAuth() {
+		return auth;
 	}
 
-	public void setAuthList(List<AuthorityEntity> authList) {
-		this.authList = authList;
+	public void setAuth(AuthorityEntity auth) {
+		this.auth = auth;
 	}
 
-	@OneToMany(mappedBy = "privateLayer")
-	public List<UserEntity> getUserList() {
-		return userList;
+	@ManyToOne
+    @JoinColumn(name = "user_id")
+	public UserEntity getUser() {
+		return user;
 	}
 
-	public void setUserList(List<UserEntity> userList) {
-		this.userList = userList;
+	public void setUser(UserEntity user) {
+		this.user = user;
 	}
 
 }

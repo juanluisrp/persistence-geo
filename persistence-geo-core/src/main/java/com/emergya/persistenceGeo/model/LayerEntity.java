@@ -42,6 +42,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -72,8 +73,8 @@ public class LayerEntity extends AbstractEntity {
 	private Date fechaCreacion;
 	private Date fechaActualizacion;
 	
-	private List<UserEntity> userList;
-	private List<AuthorityEntity> authList;
+	private UserEntity user;
+	private AuthorityEntity auth;
 	private List<StyleEntity> styleList;
 	private List<FolderEntity> folderList;
 	
@@ -177,22 +178,24 @@ public class LayerEntity extends AbstractEntity {
 		this.id = (Long) id;
 	}
 	
-	@OneToMany(mappedBy = "layer")
-	public List<UserEntity> getUserList() {
-		return userList;
+	@ManyToOne
+    @JoinColumn(name = "user_id")
+	public UserEntity getUser() {
+		return user;
 	}
 
-	public void setUserList(List<UserEntity> userList) {
-		this.userList = userList;
+	public void setUser(UserEntity user) {
+		this.user = user;
 	}
 
-	@OneToMany(mappedBy = "layer")
-	public List<AuthorityEntity> getAuthList() {
-		return authList;
+	@ManyToOne
+    @JoinColumn(name = "id")
+	public AuthorityEntity getAuth() {
+		return auth;
 	}
 
-	public void setAuthList(List<AuthorityEntity> authList) {
-		this.authList = authList;
+	public void setAuth(AuthorityEntity auth) {
+		this.auth = auth;
 	}
 
 	@ManyToMany(targetEntity = StyleEntity.class,

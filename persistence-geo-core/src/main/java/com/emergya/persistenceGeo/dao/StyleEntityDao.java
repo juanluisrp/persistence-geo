@@ -66,4 +66,13 @@ public interface StyleEntityDao extends GenericDAO<StyleEntity, Long> {
 	 * 
 	 */
 	public void deleteStyle(Long styleID);
+	
+	/**
+	 * Get a style list by the names users list
+	 * 
+	 * @param <code>names</code>
+	 * 
+	 * @return Entities list associated with the names users list or null if not found 
+	 */
+	public List<StyleEntity> findByName(List<String> names);
 }
