@@ -34,11 +34,13 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 /**
  * Entidad de permisos
@@ -46,6 +48,8 @@ import javax.persistence.ManyToMany;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@Entity
+@Table(name = "permission")
 public class PermissionEntity extends AbstractEntity {
 
 	/**
@@ -107,7 +111,7 @@ public class PermissionEntity extends AbstractEntity {
 		permission_id = (Long) id;
 	}
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "authTypeList")
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "permissionList")
 	public List<AuthorityTypeEntity> getAuthTypeList() {
 		return authTypeList;
 	}

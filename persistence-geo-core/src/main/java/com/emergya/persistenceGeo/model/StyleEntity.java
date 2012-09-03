@@ -34,12 +34,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * Entidad de estilo
@@ -47,6 +49,8 @@ import javax.persistence.OneToMany;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@Entity
+@Table(name = "style")
 public class StyleEntity extends AbstractEntity {
 	
 	/**
@@ -110,7 +114,7 @@ public class StyleEntity extends AbstractEntity {
 		this.id = (Long) id;
 	}
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "layerList")
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "styleList")
 	public List<LayerEntity> getLayerList() {
 		return layerList;
 	}
@@ -119,7 +123,7 @@ public class StyleEntity extends AbstractEntity {
 		this.layerList = layerList;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ruleList")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "style")
 	public List<RuleEntity> getRuleList() {
 		return ruleList;
 	}
@@ -128,7 +132,7 @@ public class StyleEntity extends AbstractEntity {
 		this.ruleList = ruleList;
 	}
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "privateLayerList")
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "styleList")
 	public List<PrivateLayerEntity> getPrivateLayerList() {
 		return privateLayerList;
 	}

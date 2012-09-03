@@ -54,8 +54,8 @@ public class AuthorityDto implements Serializable {
     
     private List<String> usuarios;
     private String authType;
-    private String layer;
-    private String privateLayer;
+    private List<String> layerList;
+    private List<String> privateLayerList;
     private String zone;
     
 	public Long getId() {
@@ -94,17 +94,17 @@ public class AuthorityDto implements Serializable {
 	public void setAuthType(String authType) {
 		this.authType = authType;
 	}
-	public String getLayer() {
-		return layer;
+	public List<String> getLayerList() {
+		return layerList;
 	}
-	public void setLayer(String layer) {
-		this.layer = layer;
+	public void setLayerList(List<String> layerList) {
+		this.layerList = layerList;
 	}
-	public String getPrivateLayer() {
-		return privateLayer;
+	public List<String> getPrivateLayerList() {
+		return privateLayerList;
 	}
-	public void setPrivateLayer(String privateLayer) {
-		this.privateLayer = privateLayer;
+	public void setPrivateLayerList(List<String> privateLayerList) {
+		this.privateLayerList = privateLayerList;
 	}
 	public String getZone() {
 		return zone;

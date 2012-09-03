@@ -173,7 +173,7 @@ public class FolderEntity extends AbstractEntity {
 	}
 
 	@ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id", insertable = false, updatable = false)
 	public LayerEntity getLayer() {
 		return layer;
 	}

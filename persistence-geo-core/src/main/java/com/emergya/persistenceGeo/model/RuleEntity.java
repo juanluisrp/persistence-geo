@@ -34,10 +34,12 @@ import java.util.Date;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * Entidad de regla
@@ -45,6 +47,8 @@ import javax.persistence.OneToOne;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@Entity
+@Table(name = "rule")
 public class RuleEntity extends AbstractEntity {
 
 	/**

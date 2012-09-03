@@ -53,14 +53,14 @@ public class LayerDto implements Serializable {
 	private String order;
 	private String type;
 	private String server_resource;
-	private Boolean publicized;
+	private Boolean published;
 	private Boolean enabled;
 	private Boolean pertenece_a_canal;
 	private Date createDate;
 	private Date updateDate;
 	
-	private List<String> userList;
-	private List<String> authList;
+	private String user;
+	private String auth;
 	private List<String> styleList;
 	private List<String> folderList;
 	
@@ -95,10 +95,10 @@ public class LayerDto implements Serializable {
 		this.server_resource = server_resource;
 	}
 	public Boolean getPublicized() {
-		return publicized;
+		return published;
 	}
 	public void setPublicized(Boolean publicized) {
-		this.publicized = publicized;
+		this.published = publicized;
 	}
 	public Boolean getEnabled() {
 		return enabled;
@@ -124,17 +124,18 @@ public class LayerDto implements Serializable {
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-	public List<String> getUserList() {
-		return userList;
+	
+	public String getUser() {
+		return user;
 	}
-	public void setUserList(List<String> userList) {
-		this.userList = userList;
+	public void setUser(String user) {
+		this.user = user;
 	}
-	public List<String> getAuthList() {
-		return authList;
+	public String getAuth() {
+		return auth;
 	}
-	public void setAuthList(List<String> authList) {
-		this.authList = authList;
+	public void setAuth(String auth) {
+		this.auth = auth;
 	}
 	public List<String> getStyleList() {
 		return styleList;

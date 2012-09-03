@@ -75,7 +75,8 @@ public class RestLayersAdminController implements Serializable{
 	 * 
 	 * @return JSON file with layers
 	 */
-	@RequestMapping(value = "/rest/loadLayers/{username}", method = RequestMethod.GET, produces = {MediaType.APPLICATION_JSON_VALUE})
+	@RequestMapping(value = "/rest/loadLayers/{username}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody
 	List<LayerDto> loadLayers(@PathVariable String username){
 		List<LayerDto> layers = null;
@@ -96,7 +97,7 @@ public class RestLayersAdminController implements Serializable{
 				}
 			}
 		}catch (Exception e){
-			return null;
+			System.out.println(e);
 		}
 		return layers;
 	}
@@ -121,21 +122,21 @@ public class RestLayersAdminController implements Serializable{
 			if(group != null){
 				layers = new LinkedList<LayerDto>();
 				List<AuthorityDto> authosDto = userAdminService.obtenerGruposUsuarios();
-				String layerName = null;
+				List<String> namesList = null;
 				if(authosDto != null){
 					for(AuthorityDto authoDto: authosDto){
 						if(authoDto.getNombre().equals(group)){
-							layerName = authoDto.getLayer();
+							namesList = authoDto.getLayerList();
 							break;
 						}
 					}
-					if(layerName != null){
-						layers = layerAdminService.getLayersByName(layerName);
+					if(namesList != null){
+						layers = layerAdminService.getLayersByName(namesList);
 					}
 				}
 			}
 		}catch (Exception e){
-			return null;
+			System.out.println(e);
 		}
 		return layers;
 	}
@@ -149,7 +150,8 @@ public class RestLayersAdminController implements Serializable{
 	@RequestMapping(value = "/rest/saveLayerByUser/{username}", method = RequestMethod.POST)
 	public @ResponseBody 
 	void saveLayerByUser(@PathVariable String username,
-			//TODO: Parametros obligatorios y opcionales de la capa
+			@RequestParam("name") String name,
+			@RequestParam("type") String type,
 			@RequestParam("uploadfile") MultipartFile uploadfile){
 		try{
 			/*
@@ -168,12 +170,17 @@ public class RestLayersAdminController implements Serializable{
 			// Save the user
 			userAdminService.update(user);
 			// Create the layerDto
-			LayerDto layer = new LayerDto(); 
+			LayerDto layer = new LayerDto();
 			// Assign the user
+			layer.setUser(username);
+			// Add request parameter
+			layer.setName(name);
+			layer.setType(type);
+			// Load the layer depend on the layer type
 			// Save the layer
 			layerAdminService.create(layer);
 		}catch (Exception e){
-			//TODO
+			System.out.println(e);
 		}
 	}
 
@@ -185,8 +192,9 @@ public class RestLayersAdminController implements Serializable{
 	 */
 	@RequestMapping(value = "/rest/saveLayerByGroup/{group}", method = RequestMethod.POST)
 	public @ResponseBody 
-	void saveLayerByGroup(@PathVariable String group,
-			//TODO: Parametros obligatorios y opcionales de la capa
+	void saveLayerByGroup(@PathVariable Long group,
+			@RequestParam("name") String name,
+			@RequestParam("type") String type,
 			@RequestParam("uploadfile") MultipartFile uploadfile){
 		try{
 			/*
@@ -194,9 +202,28 @@ public class RestLayersAdminController implements Serializable{
 			String username = ((UserDetails) SecurityContextHolder.getContext()
 					.getAuthentication().getPrincipal()).getUsername(); 
 			 */
-			//TODO: Implementar servicios, daos...
+			// Get the group and his layers
+			AuthorityDto auth = userAdminService.obtenerGrupoUsuarios(group);
+			List<String> layersFromGroup = auth.getLayerList();
+			// Add the new layer
+			if(layersFromGroup != null){
+				layersFromGroup.add(name);
+				auth.setLayerList(layersFromGroup);
+			}
+			// Save the grouop
+			userAdminService.modificarGrupoUsuarios(auth);
+			// Create the layerDto
+			LayerDto layer = new LayerDto();
+			// Assign the authority
+			layer.setAuth(auth.getNombre());
+			// Add the request parameters
+			layer.setName(name);
+			layer.setType(type);
+			// Load the layer depend on the layer type 
+			// Save the layer
+			layerAdminService.create(layer);
 		}catch (Exception e){
-			//TODO
+			System.out.println(e);
 		}
 	}
 

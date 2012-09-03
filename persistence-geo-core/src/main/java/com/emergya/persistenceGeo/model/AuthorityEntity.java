@@ -126,7 +126,7 @@ public class AuthorityEntity extends AbstractEntity{
 	}
 
 	@ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "auth_type_id")
 	public AuthorityTypeEntity getAuthType() {
 		return authType;
 	}
@@ -149,12 +149,12 @@ public class AuthorityEntity extends AbstractEntity{
 		return privateLayerList;
 	}
 
-	public void setPrivateLayer(List<PrivateLayerEntity> privateLayerList) {
+	public void setPrivateLayerList(List<PrivateLayerEntity> privateLayerList) {
 		this.privateLayerList = privateLayerList;
 	}
 
 	@ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id", insertable = false, updatable = false)
 	public ZoneEntity getZone() {
 		return zone;
 	}

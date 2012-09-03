@@ -35,6 +35,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,6 +43,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  * Entidad de capa privada
@@ -49,6 +51,8 @@ import javax.persistence.ManyToOne;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@Entity
+@Table(name = "privateLayer")
 public class PrivateLayerEntity extends AbstractEntity {
 
 	/**
@@ -148,7 +152,7 @@ public class PrivateLayerEntity extends AbstractEntity {
 	}
 
 	@ManyToOne
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "id", insertable = false, updatable = false)
 	public AuthorityEntity getAuth() {
 		return auth;
 	}

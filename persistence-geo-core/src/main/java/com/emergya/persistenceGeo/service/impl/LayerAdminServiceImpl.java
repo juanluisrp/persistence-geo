@@ -106,6 +106,21 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, LayerEn
 		}
 		return layersDto;
 	}
+	
+	/**
+	 * Get a layer list by names list
+	 * 
+	 * @param namesList
+	 * 
+	 * @return If not found, it's created
+	 */
+	public List<LayerDto> getLayersByName(List<String> namesList) {
+		List<LayerDto> layersDto = new LinkedList<LayerDto>();
+		for(String name: namesList){
+			layersDto.addAll(this.getLayersByName(name));
+		}
+		return layersDto;
+	}
 
 	/**
 	 * Get a styles list by layer
@@ -307,21 +322,16 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, LayerEn
 			
 			// Add relational parameters
 			// Add users
-			List<String> usersDto = new LinkedList<String>();
 			UserEntity user = layerDao.findByLayer(entity.getId());
 			if(user != null){
-				usersDto.add(user.getNombreCompleto());
+				dto.setUser(user.getNombreCompleto());
 			}
-			dto.setUserList(usersDto);
 			// Add authorities
-			List<String> authDto = new LinkedList<String>();
 			List<AuthorityEntity> authorities = authDao.findByLayer(entity.getId());
 			if(authorities != null){
-				for(AuthorityEntity  authEntity: authorities){
-					usersDto.add(authEntity.getAuthority());
-				}
+				// Authorities have just one element
+				dto.setAuth(authorities.get(0).getAuthority());
 			}
-			dto.setAuthList(authDto);
 			// Add style
 			List<String> styleDto = new LinkedList<String>();
 			List<StyleEntity> styles = layerDao.findStyleByLayer(entity.getId());
@@ -369,17 +379,15 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, LayerEn
 			entity.setFechaActualizacion(dto.getUpdateDate());
 			// Add relational parameters
 			// Add users
-			List<String> usersDto = dto.getUserList();
+			String usersDto = dto.getUser();
 			if(usersDto != null){
-				List<UserEntity> users = userDao.findByName(usersDto);
-				if(users != null){
-					for(UserEntity userEntity: users){
-						this.addUserToLayer(userEntity.getUser_id(), dto.getId());
-					}
+				UserEntity user = userDao.getUser(usersDto);
+				if(user != null){
+					this.addUserToLayer(user.getUser_id(), dto.getId());
 				}
 			}
 			// Add authorities
-			List<String> authDto = dto.getAuthList();
+			String authDto = dto.getAuth();
 			if(authDto != null){
 				List<AuthorityEntity> authorities = authDao.findByName(authDto);
 				if(authorities != null){
@@ -469,5 +477,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, LayerEn
 		}
 		return dto;
 	}
+
+	
 
 }
