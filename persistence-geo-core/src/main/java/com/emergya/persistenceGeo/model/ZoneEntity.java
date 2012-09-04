@@ -49,7 +49,7 @@ import javax.persistence.Table;
  * Entidad de ámbito territorial
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
- *
+ * 
  */
 @Entity
 @Table(name = "zones")
@@ -59,25 +59,25 @@ public class ZoneEntity extends AbstractEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = -7702334870312919540L;
-	
+
 	private Long id;
-	
+
 	private String code;
 	private String name;
 	private String type;
 	private String extension;
 	private Date fechaCreacion;
 	private Date fechaActualizacion;
-	
-	private List<ZoneEntity> zoneList;
+
+	private ZoneEntity zone;
 	private List<FolderEntity> folderList;
 	private List<AuthorityEntity> authList;
-	
-	public ZoneEntity(){
-		
+
+	public ZoneEntity() {
+
 	}
 
-	public ZoneEntity(String zoneName){
+	public ZoneEntity(String zoneName) {
 		name = zoneName;
 	}
 
@@ -125,7 +125,7 @@ public class ZoneEntity extends AbstractEntity {
 	public void setFechaCreacion(Date fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
 	}
-	
+
 	@Column(name = "fechaActualizacion")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
@@ -134,40 +134,30 @@ public class ZoneEntity extends AbstractEntity {
 	public void setFechaActualizacion(Date fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
 	}
- 
+
 	@Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "zone_id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
 		return id;
 	}
-	
+
 	public void setId(Serializable id) {
 		this.id = (Long) id;
 	}
 
-	@OneToMany(targetEntity = ZoneEntity.class,
-	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "zones_in_zone",
-	joinColumns =
-	@JoinColumn(name = "zone_id"),
-	inverseJoinColumns =
-	@JoinColumn(name = "subzone_id"))
-	public List<ZoneEntity> getZoneList() {
-		return zoneList;
+	@Column(name = "zone_parent")
+	public ZoneEntity getZone() {
+		return zone;
 	}
 
-	public void setZoneList(List<ZoneEntity> zoneList) {
-		this.zoneList = zoneList;
+	public void setZone(ZoneEntity zone) {
+		this.zone = zone;
 	}
-	
-	@ManyToMany(targetEntity = FolderEntity.class,
-	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "folder_in_zone",
-	joinColumns =
-	@JoinColumn(name = "folder_id"),
-	inverseJoinColumns =
-	@JoinColumn(name = "zone_id"))
+
+	@ManyToMany(targetEntity = FolderEntity.class, cascade = {
+			CascadeType.PERSIST, CascadeType.MERGE })
+	@JoinTable(name = "folder_in_zone", joinColumns = @JoinColumn(name = "folder_id"), inverseJoinColumns = @JoinColumn(name = "zone_id"))
 	public List<FolderEntity> getFolderList() {
 		return folderList;
 	}

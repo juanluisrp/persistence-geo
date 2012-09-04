@@ -43,7 +43,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -71,9 +70,10 @@ public class FolderEntity extends AbstractEntity {
 	private Date fechaCreacion;
 	private Date fechaActualizacion;
 	
+	
 	private List<FolderEntity> folderList;
 	private List<ZoneEntity> zoneList;
-	private LayerEntity layer;
+	private List<LayerEntity> layerList;
 
 	public FolderEntity(){
 		
@@ -163,7 +163,7 @@ public class FolderEntity extends AbstractEntity {
 		this.folderList = folderList;
 	}
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "zoneList")
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "folderList")
 	public List<ZoneEntity> getZoneList() {
 		return zoneList;
 	}
@@ -172,13 +172,12 @@ public class FolderEntity extends AbstractEntity {
 		this.zoneList = zoneList;
 	}
 
-	@ManyToOne
-    @JoinColumn(name = "id", insertable = false, updatable = false)
-	public LayerEntity getLayer() {
-		return layer;
+	@OneToMany(mappedBy = "folder")
+	public List<LayerEntity> getLayerList() {
+		return layerList;
 	}
 
-	public void setLayer(LayerEntity layer) {
-		this.layer = layer;
+	public void setLayerList(List<LayerEntity> layerList) {
+		this.layerList = layerList;
 	}
 }

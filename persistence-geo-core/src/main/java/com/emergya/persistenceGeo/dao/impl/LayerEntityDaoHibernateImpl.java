@@ -110,27 +110,27 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEn
 	}
 
 	/**
-	 * Get a folders list by the layer identifier
+	 * Get a folder by the layer identifier
 	 * 
 	 * @param <code>layerID</code>
 	 * 
-	 * @return Entities list associated with the layer identifier or null if not found 
+	 * @return Entities associated with the layer identifier or null if not found 
 	 */
-	public List<FolderEntity> findFolderByLayer(Long layerID) {
+	public FolderEntity findFolderByLayer(Long layerID) {
 		LayerEntity entity = findById(layerID, false);
-		return entity.getFolderList();
+		return entity.getFolder();
 	}
 
 	/**
-	 * Get a style list by the layer identifier
+	 * Get a style by the layer identifier
 	 * 
 	 * @param <code>layerID</code>
 	 * 
-	 * @return Entities list associated with the layer identifier or null if not found 
+	 * @return Entities associated with the layer identifier or null if not found 
 	 */
-	public List<StyleEntity> findStyleByLayer(Long layerID) {
+	public StyleEntity findStyleByLayer(Long layerID) {
 		LayerEntity entity = findById(layerID, false);
-		return entity.getStyleList();
+		return entity.getStyle();
 	}
 
 }

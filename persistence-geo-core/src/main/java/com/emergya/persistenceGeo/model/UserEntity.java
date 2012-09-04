@@ -185,7 +185,7 @@ public class UserEntity implements Serializable {
 	}
 	
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "auth_id", insertable = false, updatable = false)
 	public AuthorityEntity getAuthority() {
 		return authority;
 	}

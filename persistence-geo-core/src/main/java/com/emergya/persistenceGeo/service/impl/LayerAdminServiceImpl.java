@@ -210,20 +210,16 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, LayerEn
 	 */
 	public void addStyleToLayer(Long layerID, Long styleID) {
 		LayerEntity layerEntity = layerDao.findById(layerID, false);
-		List<StyleEntity> styles = layerEntity.getStyleList();
-		if(styles == null){
-			styles = new LinkedList<StyleEntity>();
+		StyleEntity style = layerEntity.getStyle();
+		if(style == null){
+			style = new StyleEntity();
 		}
 		boolean enc = false;
-		for(StyleEntity se: styles){
-			if(se.getId().equals(styleID)){
-				enc = true;
-				break;
-			}
+		if(style.getId().equals(styleID)){
+			enc = true;
 		}
 		if(!enc){
-			styles.add(styleDao.findById(styleID, false));
-			layerEntity.setStyleList(styles);
+			layerEntity.setStyle(style);
 			layerDao.save(layerEntity);
 		}
 
@@ -286,20 +282,16 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, LayerEn
 	 */
 	public void addFolderToLayer(Long folder_id, Long layer_id){
 		LayerEntity entity = layerDao.findById(layer_id, false);
-		List<FolderEntity> folders = entity.getFolderList();
-		if(folders == null){
-			folders = new LinkedList<FolderEntity>();
+		FolderEntity folder = entity.getFolder();
+		if(folder == null){
+			folder = new FolderEntity();
 		}
 		boolean enc = false;
-		for(FolderEntity fe: folders){
-			if(fe.getId().equals(folder_id)){
-				enc = true;
-				break;
-			}
+		if(folder.getId().equals(folder_id)){
+			enc = true;
 		}
 		if(!enc){
-			folders.add(folderDao.findById(folder_id, false));
-			entity.setFolderList(folders);
+			entity.setFolder(folder);
 			layerDao.save(entity);
 		}
 	}
@@ -334,20 +326,16 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, LayerEn
 			}
 			// Add style
 			List<String> styleDto = new LinkedList<String>();
-			List<StyleEntity> styles = layerDao.findStyleByLayer(entity.getId());
-			if(styles != null){
-				for(StyleEntity styleEntity: styles){
-					styleDto.add(styleEntity.getName());
-				}
+			StyleEntity style = layerDao.findStyleByLayer(entity.getId());
+			if(style != null){
+				styleDto.add(style.getName());
 			}
 			dto.setStyleList(styleDto);
 			// Add folder
 			List<String> folderDto = new LinkedList<String>();
-			List<FolderEntity> folders = layerDao.findFolderByLayer(entity.getId());
-			if(folders != null){
-				for(FolderEntity folderEntity: folders){
-					folderDto.add(folderEntity.getName());
-				}
+			FolderEntity folder = layerDao.findFolderByLayer(entity.getId());
+			if(folder != null){
+				folderDto.add(folder.getName());
 			}
 			dto.setFolderList(folderDto);
 		}

@@ -31,19 +31,14 @@ package com.emergya.persistenceGeo.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -75,8 +70,8 @@ public class LayerEntity extends AbstractEntity {
 	
 	private UserEntity user;
 	private AuthorityEntity auth;
-	private List<StyleEntity> styleList;
-	private List<FolderEntity> folderList;
+	private StyleEntity style;
+	private FolderEntity folder;
 	
 	public LayerEntity(){
 		
@@ -122,7 +117,7 @@ public class LayerEntity extends AbstractEntity {
 		this.server_resource = server_resource;
 	}
 
-	@Column(name = "publicized")
+	@Column(name = "published")
 	public Boolean getPublicized() {
 		return publicized;
 	}
@@ -189,7 +184,7 @@ public class LayerEntity extends AbstractEntity {
 	}
 
 	@ManyToOne
-    @JoinColumn(name = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "auth_id", insertable = false, updatable = false)
 	public AuthorityEntity getAuth() {
 		return auth;
 	}
@@ -198,28 +193,24 @@ public class LayerEntity extends AbstractEntity {
 		this.auth = auth;
 	}
 
-	@ManyToMany(targetEntity = StyleEntity.class,
-	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "layer_with_style",
-	joinColumns =
-	@JoinColumn(name = "id", insertable = false, updatable = false),
-	inverseJoinColumns =
-	@JoinColumn(name = "layerList"))
-	public List<StyleEntity> getStyleList() {
-		return styleList;
+	@ManyToOne
+    @JoinColumn(name = "style_id")
+	public StyleEntity getStyle() {
+		return style;
 	}
 
-	public void setStyleList(List<StyleEntity> styleList) {
-		this.styleList = styleList;
+	public void setStyle(StyleEntity style) {
+		this.style = style;
 	}
 
-	@OneToMany(mappedBy = "layer")
-	public List<FolderEntity> getFolderList() {
-		return folderList;
+	@ManyToOne
+    @JoinColumn(name = "folder_id")
+	public FolderEntity getFolder() {
+		return folder;
 	}
 
-	public void setFolderList(List<FolderEntity> folderList) {
-		this.folderList = folderList;
+	public void setFolder(FolderEntity folder) {
+		this.folder = folder;
 	}
 
 }

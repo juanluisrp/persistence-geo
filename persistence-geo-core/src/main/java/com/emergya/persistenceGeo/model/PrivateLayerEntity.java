@@ -31,17 +31,13 @@ package com.emergya.persistenceGeo.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -68,7 +64,7 @@ public class PrivateLayerEntity extends AbstractEntity {
 	private Date fechaCreacion;
 	private Date fechaActualizacion;
 	
-	private List<StyleEntity> styleList;
+	private StyleEntity style;
 	private AuthorityEntity auth;
 	private UserEntity user;
 	
@@ -136,23 +132,18 @@ public class PrivateLayerEntity extends AbstractEntity {
 		privateLayer_id = (Long) id;
 	}
 
-	@ManyToMany(targetEntity = StyleEntity.class,
-	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "layerPrivate_with_style",
-	joinColumns =
-	@JoinColumn(name = "privateLayer_id"),
-	inverseJoinColumns =
-	@JoinColumn(name = "style_id"))
-	public List<StyleEntity> getStyleList() {
-		return styleList;
+	@ManyToOne
+    @JoinColumn(name = "style_id")
+	public StyleEntity getStyle() {
+		return style;
 	}
 
-	public void setStyleList(List<StyleEntity> styleList) {
-		this.styleList = styleList;
+	public void setStyle(StyleEntity style) {
+		this.style = style;
 	}
 
 	@ManyToOne
-    @JoinColumn(name = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "auth_id", insertable = false, updatable = false)
 	public AuthorityEntity getAuth() {
 		return auth;
 	}

@@ -65,12 +65,13 @@ public class AuthorityEntity extends AbstractEntity{
     
     private Date createDate;
     private Date updateDate;
+    private AuthorityTypeEntity authType;
+    private ZoneEntity zone;
     
     private Set<UserEntity> people;
-    private AuthorityTypeEntity authType;
     private List<LayerEntity> layerList;
     private List<PrivateLayerEntity> privateLayerList;
-    private ZoneEntity zone;
+    
 
     public AuthorityEntity() {
     }
@@ -155,7 +156,7 @@ public class AuthorityEntity extends AbstractEntity{
 	}
 
 	@ManyToOne
-    @JoinColumn(name = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "zone_id", insertable = false, updatable = false)
 	public ZoneEntity getZone() {
 		return zone;
 	}
