@@ -48,7 +48,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "rule")
+@Table(name = "rules")
 public class RuleEntity extends AbstractEntity {
 
 	/**

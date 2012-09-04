@@ -32,6 +32,7 @@ package com.emergya.persistenceGeo.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -51,7 +52,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "authority")
+@Table(name = "authorities")
 public class AuthorityEntity extends AbstractEntity{
 
     /**
@@ -65,7 +66,7 @@ public class AuthorityEntity extends AbstractEntity{
     private Date createDate;
     private Date updateDate;
     
-    private List<UserEntity> people;
+    private Set<UserEntity> people;
     private AuthorityTypeEntity authType;
     private List<LayerEntity> layerList;
     private List<PrivateLayerEntity> privateLayerList;
@@ -99,11 +100,11 @@ public class AuthorityEntity extends AbstractEntity{
     }
 
     @OneToMany(mappedBy = "authority")
-    public List<UserEntity> getPeople() {
+    public Set<UserEntity> getPeople() {
         return people;
     }
 
-    public void setPeople(List<UserEntity> people) {
+    public void setPeople(Set<UserEntity> people) {
         this.people = people;
     }
 

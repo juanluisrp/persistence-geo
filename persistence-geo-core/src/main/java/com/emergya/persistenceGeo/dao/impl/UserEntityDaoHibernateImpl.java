@@ -61,7 +61,7 @@ public class UserEntityDaoHibernateImpl extends GenericHibernateDAOImpl<UserEnti
 	public UserEntity createUser(String userName, String password){
 		UserEntity entity = new UserEntity(userName);
 		entity.setPassword(password);
-		getHibernateTemplate().save(entity);
+		this.makePersistent(entity);
 		return entity;
 	}
 	

@@ -52,7 +52,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "authorityType")
+@Table(name = "authorityTypes")
 public class AuthorityTypeEntity extends AbstractEntity {
 
 	/**
@@ -77,7 +77,7 @@ public class AuthorityTypeEntity extends AbstractEntity {
 		name = auth_type_str;
 	}
 
-	@Column(name = "name")
+	@Column(name = "name_auth_type")
 	public String getName() {
 		return name;
 	}

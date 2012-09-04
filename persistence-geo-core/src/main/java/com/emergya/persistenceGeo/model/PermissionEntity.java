@@ -49,7 +49,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "permission")
+@Table(name = "permissions")
 public class PermissionEntity extends AbstractEntity {
 
 	/**
@@ -73,7 +73,7 @@ public class PermissionEntity extends AbstractEntity {
 		name = permissionName;
 	}
 
-	@Column(name = "name")
+	@Column(name = "name_permission")
 	public String getName() {
 		return name;
 	}

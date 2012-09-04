@@ -30,8 +30,10 @@
 package com.emergya.persistenceGeo.service.impl;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -146,7 +148,8 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, UserEntit
 	 * @return id
 	 */
 	public Long crearGrupoUsuarios(AuthorityDto dto) {
-		return authorityDao.save(dtoToEntity(dto));
+		AuthorityEntity entity = authorityDao.makePersistent(dtoToEntity(dto));
+		return entity.getId();
 	}
 
 	/**
@@ -157,9 +160,9 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, UserEntit
 	 */
 	public void addUsuarioAGrupo(Long idGrupo, String usuario) {
 		AuthorityEntity authorityEntity = authorityDao.findById(idGrupo, false);
-		List<UserEntity> usuarios = authorityEntity.getPeople();
+		Set<UserEntity> usuarios = authorityEntity.getPeople();
 		if (usuarios == null) {
-			usuarios = new LinkedList<UserEntity>();
+			usuarios = new HashSet<UserEntity>();
 		}
 		boolean enc = false;
 		for (UserEntity usuarioEntity : usuarios) {
@@ -183,9 +186,9 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, UserEntit
 	 */
 	public void eliminaUsuarioDeGrupo(Long idGrupo, String usuario) {
 		AuthorityEntity authorityEntity = authorityDao.findById(idGrupo, false);
-		List<UserEntity> usuarios = authorityEntity.getPeople();
+		Set<UserEntity> usuarios = authorityEntity.getPeople();
 		if (usuarios == null) {
-			usuarios = new LinkedList<UserEntity>();
+			usuarios = new HashSet<UserEntity>();
 		}
 		boolean enc = false;
 		for (UserEntity usuarioEntity : usuarios) {
@@ -216,7 +219,8 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, UserEntit
 	 * @param dto
 	 */
 	public void modificarGrupoUsuarios(AuthorityDto dto) {
-		authorityDao.save(dtoToEntity(dto));
+		//authorityDao.save(dtoToEntity(dto));
+		authorityDao.makePersistent(dtoToEntity(dto));
 	}
 
 	protected UserDto entityToDto(UserEntity user) {
@@ -244,7 +248,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, UserEntit
 			// Add layer
 			List<LayerEntity> layers = userDao.findLayerByUserID(user.getUser_id());
 			List<String> layersDto = new LinkedList<String>();
-			if (layersDto != null) {
+			if (layersDto != null && layers != null) {
 				for(LayerEntity layer: layers){
 					layersDto.add(layer.getName());
 				}
@@ -291,7 +295,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, UserEntit
 			entity.setAuthority(dto.getNombre());
 
 			// People
-			List<UserEntity> people = new LinkedList<UserEntity>();
+			Set<UserEntity> people = new HashSet<UserEntity>();
 			if (dto.getUsuarios() != null) {
 				for (String userName : dto.getUsuarios()) {
 					people.add(userDao.getUser(userName));

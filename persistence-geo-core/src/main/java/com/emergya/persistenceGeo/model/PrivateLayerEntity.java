@@ -52,7 +52,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "privateLayer")
+@Table(name = "privateLayers")
 public class PrivateLayerEntity extends AbstractEntity {
 
 	/**
@@ -80,7 +80,7 @@ public class PrivateLayerEntity extends AbstractEntity {
 		name = privateLayerName;
 	}
 
-	@Column(name = "name")
+	@Column(name = "name_private_layer")
 	public String getName() {
 		return name;
 	}
@@ -89,7 +89,7 @@ public class PrivateLayerEntity extends AbstractEntity {
 		this.name = name;
 	}
 
-	@Column(name = "type")
+	@Column(name = "type_private_layer")
 	public String getType() {
 		return type;
 	}

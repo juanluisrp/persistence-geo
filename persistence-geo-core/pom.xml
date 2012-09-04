@@ -232,7 +232,7 @@
 	    	<id>devel</id>
 	      	<properties>
 				<!-- Database validate -->
-				<database.hibernate.hbm2ddl.auto>validate</database.hibernate.hbm2ddl.auto>
+				<database.hibernate.hbm2ddl.auto>create</database.hibernate.hbm2ddl.auto>
 	    		<filter.profile>devel.properties</filter.profile>
 	    	</properties>
 	    </profile>

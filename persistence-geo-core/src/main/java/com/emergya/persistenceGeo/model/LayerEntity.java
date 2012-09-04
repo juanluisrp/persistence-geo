@@ -1,5 +1,5 @@
 /*
- * FolderEntity.java
+ * LayerEntity.java
  * 
  * Copyright (C) 2011
  * 
@@ -53,7 +53,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "layer")
+@Table(name = "layers")
 public class LayerEntity extends AbstractEntity {
 
 	/**
@@ -86,7 +86,7 @@ public class LayerEntity extends AbstractEntity {
 		name = layerName;
 	}
 
-	@Column(name = "name")
+	@Column(name = "name_layer")
 	public String getName() {
 		return name;
 	}
@@ -95,7 +95,7 @@ public class LayerEntity extends AbstractEntity {
 		this.name = name;
 	}
 
-	@Column(name = "order")
+	@Column(name = "order_layer")
 	public String getOrder() {
 		return order;
 	}
@@ -104,7 +104,7 @@ public class LayerEntity extends AbstractEntity {
 		this.order = order;
 	}
 
-	@Column(name = "type")
+	@Column(name = "type_layer")
 	public String getType() {
 		return type;
 	}

@@ -54,7 +54,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "folder")
+@Table(name = "folders")
 public class FolderEntity extends AbstractEntity {
 
 	/**
@@ -83,7 +83,7 @@ public class FolderEntity extends AbstractEntity {
 		name = folderName;
 	}
 	
-	@Column(name = "name")
+	@Column(name = "name_folder")
 	public String getName() {
 		return name;
 	}
@@ -119,7 +119,7 @@ public class FolderEntity extends AbstractEntity {
 		this.es_instrumento_planificacion = es_instrumento_planificacion;
 	}
 
-	@Column(name = "fechaCreacion")
+	@Column(name = "createDate")
 	public Date getFechaCreacion() {
 		return fechaCreacion;
 	}
@@ -128,7 +128,7 @@ public class FolderEntity extends AbstractEntity {
 		this.fechaCreacion = fechaCreacion;
 	}
 
-	@Column(name = "fechaActualizacion")
+	@Column(name = "updateDate")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
 	}

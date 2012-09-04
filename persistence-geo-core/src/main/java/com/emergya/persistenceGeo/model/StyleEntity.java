@@ -50,7 +50,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "style")
+@Table(name = "styles")
 public class StyleEntity extends AbstractEntity {
 	
 	/**
@@ -76,7 +76,7 @@ public class StyleEntity extends AbstractEntity {
 		name = styleString;
 	}
 
-	@Column(name = "name")
+	@Column(name = "name_style")
 	public String getName() {
 		return name;
 	}

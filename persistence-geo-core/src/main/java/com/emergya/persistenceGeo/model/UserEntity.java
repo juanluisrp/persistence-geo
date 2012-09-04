@@ -50,7 +50,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "usuario")
+@Table(name = "users")
 public class UserEntity implements Serializable {
 
     /**
@@ -148,7 +148,7 @@ public class UserEntity implements Serializable {
 		this.telefono = telefono;
 	}
 
-    @Column(name = "admin")
+    @Column(name = "admin_user")
 	public Boolean getAdmin() {
 		return admin;
 	}
@@ -157,7 +157,7 @@ public class UserEntity implements Serializable {
 		this.admin = admin;
 	}
 
-    @Column(name = "valid")
+    @Column(name = "valid_user")
 	public Boolean getValid() {
 		return valid;
 	}

@@ -52,7 +52,7 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "zone")
+@Table(name = "zones")
 public class ZoneEntity extends AbstractEntity {
 
 	/**
@@ -90,7 +90,7 @@ public class ZoneEntity extends AbstractEntity {
 		this.code = code;
 	}
 
-	@Column(name = "name")
+	@Column(name = "name_zone")
 	public String getName() {
 		return name;
 	}
@@ -99,7 +99,7 @@ public class ZoneEntity extends AbstractEntity {
 		this.name = name;
 	}
 
-	@Column(name = "type")
+	@Column(name = "type_zone")
 	public String getType() {
 		return type;
 	}
@@ -176,7 +176,7 @@ public class ZoneEntity extends AbstractEntity {
 		this.folderList = folderList;
 	}
 
-	@OneToMany(mappedBy = "authority")
+	@OneToMany(mappedBy = "zone")
 	public List<AuthorityEntity> getAuthList() {
 		return authList;
 	}
