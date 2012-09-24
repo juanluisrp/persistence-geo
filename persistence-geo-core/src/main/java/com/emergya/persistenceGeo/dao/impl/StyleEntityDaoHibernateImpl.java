@@ -32,11 +32,16 @@ package com.emergya.persistenceGeo.dao.impl;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.StyleEntityDao;
-import com.emergya.persistenceGeo.model.StyleEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractStyleEntity;
+import com.emergya.persistenceGeo.metaModel.Instancer;
 
 /**
  * Style DAO Hibernate Implementation
@@ -44,8 +49,18 @@ import com.emergya.persistenceGeo.model.StyleEntity;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Repository("styleEntityDao")
-public class StyleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<StyleEntity, Long> implements StyleEntityDao {
+public class StyleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<AbstractStyleEntity, Long> implements StyleEntityDao {
+
+	@Resource
+	private Instancer instancer;
+
+	@Autowired
+    public void init(SessionFactory sessionFactory) {
+        super.init(sessionFactory);
+		this.persistentClass = (Class<AbstractStyleEntity>) instancer.createStyle().getClass();
+    }
 
 	/**
 	 * Create a new style in the system
@@ -54,8 +69,9 @@ public class StyleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<StyleEn
 	 * 
 	 * @return Entity from the created style
 	 */
-	public StyleEntity createStyle(String style) {
-		StyleEntity styleEntity = new StyleEntity(style);
+	public AbstractStyleEntity createStyle(String style) {
+		AbstractStyleEntity styleEntity = instancer.createStyle();
+		styleEntity.setName(style);
 		getHibernateTemplate().save(styleEntity);
 		return styleEntity;
 	}
@@ -67,7 +83,7 @@ public class StyleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<StyleEn
 	 * 
 	 * @return Entities list associated with the style name or null if not found 
 	 */
-	public List<StyleEntity> getStyles(String styleName) {
+	public List<AbstractStyleEntity> getStyles(String styleName) {
 		return findByCriteria(Restrictions.eq("name", styleName));
 	}
 
@@ -78,7 +94,7 @@ public class StyleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<StyleEn
 	 * 
 	 */
 	public void deleteStyle(Long styleID) {
-		StyleEntity styleEntity = findById(styleID, false);
+		AbstractStyleEntity styleEntity = findById(styleID, false);
 		if(styleEntity != null){
 			getHibernateTemplate().delete(styleEntity);
 		}
@@ -91,8 +107,8 @@ public class StyleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<StyleEn
 	 * 
 	 * @return Entities list associated with the names users list or null if not found 
 	 */
-	public List<StyleEntity> findByName(List<String> names) {
-		List<StyleEntity> styles = new LinkedList<StyleEntity>();
+	public List<AbstractStyleEntity> findByName(List<String> names) {
+		List<AbstractStyleEntity> styles = new LinkedList<AbstractStyleEntity>();
 		if(names != null){
 			for(String name: names){
 				styles.addAll(getStyles(name));

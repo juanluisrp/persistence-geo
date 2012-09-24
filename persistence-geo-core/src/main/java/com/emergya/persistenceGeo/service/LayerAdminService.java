@@ -42,6 +42,49 @@ import com.emergya.persistenceGeo.dto.StyleDto;
  *
  */
 public interface LayerAdminService extends AbstractService {
+	
+	/**
+	 * Layer type KML
+	 */
+	public static final String TYPE_KML = "KML";
+	
+	/**
+	 * Layer type GML
+	 */
+	public static final String TYPE_GML = "GML";
+	
+	/**
+	 * Layer type TEXT
+	 */
+	public static final String TYPE_TEXT = "TEXT";
+	
+	/**
+	 * Layer type WMS
+	 */
+	public static final String TYPE_WMS = "WMS";
+	
+	/**
+	 * Layer type WFS
+	 */
+	public static final String TYPE_WFS = "WFS";
+
+	/**
+	 * Get a layer list by user id
+	 * 
+	 * @param layerName
+	 * 
+	 * @return list
+	 */
+	public List<LayerDto> getLayersByUser(Long idUser);
+
+	/**
+	 * Get a layer list by authority id
+	 * 
+	 * @param layerName
+	 * 
+	 * @return list
+	 */
+	public List<LayerDto> getLayersByAuthority(Long id);
 
 	/**
 	 * Get a layer list by name
@@ -123,4 +166,18 @@ public interface LayerAdminService extends AbstractService {
 	 * 
 	 */
 	public void addFolderToLayer(Long folder_id, Long layer_id);
+	
+	/**
+	 * Get all layer types
+	 * 
+	 * @return supported layer types
+	 */
+	public List<String> getAllLayerTypes();
+	
+	/**
+	 * Get all layer type properties by name
+	 * 
+	 * @return layer type properties
+	 */
+	public List<String> getAllLayerTypeProperties(String layerType);
 }

@@ -29,10 +29,15 @@
  */
 package com.emergya.persistenceGeo.dao.impl;
 
+import javax.annotation.Resource;
+
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.AuthorityTypeEntityDao;
-import com.emergya.persistenceGeo.model.AuthorityTypeEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractAuthorityTypeEntity;
+import com.emergya.persistenceGeo.metaModel.Instancer;
 
 /**
  * Folder DAO Hibernate Implementation
@@ -40,9 +45,19 @@ import com.emergya.persistenceGeo.model.AuthorityTypeEntity;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Repository("authorityTypeEntityDao")
 public class AuthorityTypeEntityDaoHibernateImpl extends
-		GenericHibernateDAOImpl<AuthorityTypeEntity, Long> implements AuthorityTypeEntityDao {
+		GenericHibernateDAOImpl<AbstractAuthorityTypeEntity, Long> implements AuthorityTypeEntityDao {
+
+	@Resource
+	private Instancer instancer;
+
+	@Autowired
+    public void init(SessionFactory sessionFactory) {
+        super.init(sessionFactory);
+		this.persistentClass = (Class<AbstractAuthorityTypeEntity>) instancer.createAuthorityTypeEntity().getClass();
+    }
 
 	/**
 	 * Save an authority type in the system
@@ -51,7 +66,7 @@ public class AuthorityTypeEntityDaoHibernateImpl extends
 	 * 
 	 * @return Identifier from the save entity 
 	 */
-	public Long save(AuthorityTypeEntity authTypeEntity) {
+	public Long save(AbstractAuthorityTypeEntity authTypeEntity) {
 		return (Long) getHibernateTemplate().save(authTypeEntity);
 	}
 
@@ -62,7 +77,7 @@ public class AuthorityTypeEntityDaoHibernateImpl extends
 	 * 
 	 */
 	public void delete(Long auth_id) {
-		AuthorityTypeEntity entity = findById(auth_id, false);
+		AbstractAuthorityTypeEntity entity = findById(auth_id, false);
 		if(entity != null){
 			getHibernateTemplate().delete(entity);
 		}

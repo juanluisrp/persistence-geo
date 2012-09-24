@@ -35,11 +35,15 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.emergya.persistenceGeo.metaModel.AbstractStyleEntity;
 
 /**
  * Entidad de estilo
@@ -47,24 +51,15 @@ import javax.persistence.Table;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Entity
-@Table(name = "styles")
-public class StyleEntity extends AbstractEntity {
+@Table(name = "style")
+public class StyleEntity extends AbstractStyleEntity {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8414310574032934037L;
-	
-	private Long id;
-	
-	private String name;
-	private Date fechaCreacion;
-	private Date fechaActualizacion;
-	
-	private List<LayerEntity> layerList;
-	private List<RuleEntity> ruleList;
-	private List<PrivateLayerEntity> privateLayerList;
 
 	public StyleEntity(){
 		
@@ -79,26 +74,14 @@ public class StyleEntity extends AbstractEntity {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	@Column(name = "fechaCreacion")
 	public Date getFechaCreacion() {
 		return fechaCreacion;
 	}
 
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
 	@Column(name = "fechaActualizacion")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
-	}
-
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
 	}
 
 	@Id
@@ -112,31 +95,14 @@ public class StyleEntity extends AbstractEntity {
 		this.id = (Long) id;
 	}
 
-	@OneToMany(mappedBy = "style")
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "styleList")
 	public List<LayerEntity> getLayerList() {
 		return layerList;
 	}
 
-	public void setLayerList(List<LayerEntity> layerList) {
-		this.layerList = layerList;
-	}
-
-	@OneToMany(mappedBy = "style")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "style")
 	public List<RuleEntity> getRuleList() {
 		return ruleList;
-	}
-
-	public void setRuleList(List<RuleEntity> ruleList) {
-		this.ruleList = ruleList;
-	}
-
-	@OneToMany(mappedBy = "style")
-	public List<PrivateLayerEntity> getPrivateLayerList() {
-		return privateLayerList;
-	}
-
-	public void setPrivateLayerList(List<PrivateLayerEntity> privateLayerList) {
-		this.privateLayerList = privateLayerList;
 	}
 
 }

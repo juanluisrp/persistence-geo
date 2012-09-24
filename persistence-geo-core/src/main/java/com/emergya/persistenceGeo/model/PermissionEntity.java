@@ -29,7 +29,6 @@
  */
 package com.emergya.persistenceGeo.model;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -42,28 +41,23 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import com.emergya.persistenceGeo.metaModel.AbstractPermissionEntity;
+
 /**
  * Entidad de permisos
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Entity
-@Table(name = "permissions")
-public class PermissionEntity extends AbstractEntity {
+@Table(name = "permission")
+public class PermissionEntity extends AbstractPermissionEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 8185264482816302475L;
-	
-	private Long permission_id;
-	
-	private String name;
-	private Date fechaCreacion;
-	private Date fechaActualizacion;
-	
-	private List<AuthorityTypeEntity> authTypeList;
 	
 	public PermissionEntity(){
 		
@@ -78,26 +72,14 @@ public class PermissionEntity extends AbstractEntity {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	@Column(name = "fechaCreacion")
 	public Date getFechaCreacion() {
 		return fechaCreacion;
 	}
 
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
 	@Column(name = "fechaActualizacion")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
-	}
-
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
 	}
 
 	@Id
@@ -107,17 +89,9 @@ public class PermissionEntity extends AbstractEntity {
 		return permission_id;
 	}
 
-	public void setId(Serializable id) {
-		permission_id = (Long) id;
-	}
-
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "permissionList")
 	public List<AuthorityTypeEntity> getAuthTypeList() {
 		return authTypeList;
-	}
-
-	public void setAuthTypeList(List<AuthorityTypeEntity> authTypeList) {
-		this.authTypeList = authTypeList;
 	}
 
 }

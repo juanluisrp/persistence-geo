@@ -30,47 +30,109 @@
 package com.emergya.persistenceGeo.web;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.annotation.Resource;
 
+import org.apache.commons.collections.ListUtils;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.emergya.persistenceGeo.dto.AuthorityDto;
+import com.emergya.persistenceGeo.dto.UserDto;
+import com.emergya.persistenceGeo.service.UserAdminService;
 
 /**
- * Simple index page controller for user admin
+ * Simple REST controller for user admin
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  */
 @Controller
 public class RestUserAdminController implements Serializable{
-
+	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -1811767661679593998L;
+	
+	@Resource
+	private UserAdminService userAdminService;
 
-	/**
-	 * Sube una nueva plantilla al sistema
-	 * 
-	 * @param uploadfile
-	 * @param model
-	 * @param httpServletRequest
-	 * @param response
-	 * 
-	 * @return
-	 */
-	@RequestMapping(value = "submitTemplate", method = RequestMethod.POST)
-	public String submitTemplate(
-			@RequestParam("uploadfile") MultipartFile uploadfile, Model model,
-			HttpServletRequest httpServletRequest, HttpServletResponse response) {
+	@RequestMapping(value = "/persistenceGeo/admin/createUser", method = RequestMethod.POST)
+	public @ResponseBody
+		UserDto createUser(
+			@RequestParam("username") String username,
+			@RequestParam("userGroup") String userGroup,
+			@RequestParam(value="userZone", required=false) String userZone) {
 		
-		return "";
+		UserDto user = new UserDto();
+		user.setUsername(username);
+		user.setPassword(username);
+		user.setAuthority(userGroup);
+		if(userZone != null){
+			//TODO:
+		}
+		
+		return (UserDto) userAdminService.create(user);
 	}
 
+	@RequestMapping(value = "/persistenceGeo/admin/modifyUser", method = RequestMethod.POST)
+	public @ResponseBody
+		UserDto modifyUser(
+			@RequestParam("username") String username,
+			@RequestParam("userGroup") String userGroup,
+			@RequestParam("userAuth") String userAuth,
+			@RequestParam(value="userZone", required=false) String userZone) {
+
+		//TODO: Core call 
+		
+		return null;
+	}
+
+	@RequestMapping(value = "/persistenceGeo/admin/createGroup", method = RequestMethod.POST)
+	public @ResponseBody
+		AuthorityDto createGroup(
+			@RequestParam("userGroup") String userGroup,
+			@RequestParam(value="userZone", required=false) String userZone) {
+
+		//TODO: Core call 
+		
+		return null;
+	}
+	
+	protected final String RESULTS= "results";
+	protected final String ROOT= "data";
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/persistenceGeo/getAllUsers", method = RequestMethod.GET)
+	public @ResponseBody
+	Map<String, Object> getAllUsers() {
+		Map<String, Object> result = new HashMap<String, Object>();
+		//TODO: get user by authority group of user logged
+		List<UserDto> users = (List<UserDto>) userAdminService.getAll();
+		
+		result.put(RESULTS, users != null ? users.size() : 0);
+		result.put(ROOT, users != null ? users : ListUtils.EMPTY_LIST);
+		
+		return result;
+	}
+	
+	@RequestMapping(value = "/persistenceGeo/getAllGroups", method = RequestMethod.GET)
+	public @ResponseBody
+	Map<String, Object> getAllGroups() {
+		Map<String, Object> result = new HashMap<String, Object>();
+		//TODO: get user by authority group of user logged
+		List<AuthorityDto> groups = (List<AuthorityDto>) userAdminService.obtenerGruposUsuarios();
+		
+		result.put(RESULTS, groups != null ? groups.size() : 0);
+		result.put(ROOT, groups != null ? groups : ListUtils.EMPTY_LIST);
+		
+		return result;
+	}
 
 }

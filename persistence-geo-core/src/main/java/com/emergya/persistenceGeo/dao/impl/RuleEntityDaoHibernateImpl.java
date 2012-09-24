@@ -29,10 +29,15 @@
  */
 package com.emergya.persistenceGeo.dao.impl;
 
+import javax.annotation.Resource;
+
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.RuleEntityDao;
-import com.emergya.persistenceGeo.model.RuleEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractRuleEntity;
+import com.emergya.persistenceGeo.metaModel.Instancer;
 
 /**
  * Rule DAO Hibernate Implementation
@@ -40,8 +45,18 @@ import com.emergya.persistenceGeo.model.RuleEntity;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Repository("ruleEntityDao")
-public class RuleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<RuleEntity, Long> implements RuleEntityDao {
+public class RuleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<AbstractRuleEntity, Long> implements RuleEntityDao {
+
+	@Resource
+	private Instancer instancer;
+
+	@Autowired
+    public void init(SessionFactory sessionFactory) {
+        super.init(sessionFactory);
+		this.persistentClass = (Class<AbstractRuleEntity>) instancer.createRule().getClass();
+    }
 
 	/**
 	 * Create a new rule in the system
@@ -49,8 +64,8 @@ public class RuleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<RuleEnti
 	 * 
 	 * @return Entity from the created rule
 	 */
-	public RuleEntity createRule() {
-		RuleEntity ruleEntity = new RuleEntity();
+	public AbstractRuleEntity createRule() {
+		AbstractRuleEntity ruleEntity = instancer.createRule();
 		getHibernateTemplate().save(ruleEntity);
 		return ruleEntity;
 	}
@@ -62,7 +77,7 @@ public class RuleEntityDaoHibernateImpl extends GenericHibernateDAOImpl<RuleEnti
 	 * 
 	 */
 	public void deleteRule(Long ruleID) {
-		RuleEntity ruleEntity = findById(ruleID, false);
+		AbstractRuleEntity ruleEntity = findById(ruleID, false);
 		if(ruleEntity != null){
 			getHibernateTemplate().delete(ruleEntity);
 		}

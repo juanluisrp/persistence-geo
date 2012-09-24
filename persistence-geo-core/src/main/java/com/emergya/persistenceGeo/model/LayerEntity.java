@@ -31,15 +31,23 @@ package com.emergya.persistenceGeo.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
 
 /**
  * Entidad de capa
@@ -47,31 +55,15 @@ import javax.persistence.Table;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Entity
-@Table(name = "layers")
-public class LayerEntity extends AbstractEntity {
+@Table(name = "layer")
+public class LayerEntity extends AbstractLayerEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -2844502275010469666L;
-
-	private Long id;
-	
-	private String name;
-	private String order;
-	private String type;
-	private String server_resource;
-	private Boolean publicized;
-	private Boolean enabled;
-	private Boolean pertenece_a_canal;
-	private Date fechaCreacion;
-	private Date fechaActualizacion;
-	
-	private UserEntity user;
-	private AuthorityEntity auth;
-	private StyleEntity style;
-	private FolderEntity folder;
 	
 	public LayerEntity(){
 		
@@ -85,27 +77,16 @@ public class LayerEntity extends AbstractEntity {
 	public String getName() {
 		return name;
 	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	
 	@Column(name = "order_layer")
 	public String getOrder() {
 		return order;
 	}
 
-	public void setOrder(String order) {
-		this.order = order;
-	}
-
-	@Column(name = "type_layer")
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "layer_typ_id")
+	public LayerTypeEntity getType() {
+		return (LayerTypeEntity) type;
 	}
 
 	@Column(name = "server_resource")
@@ -113,17 +94,9 @@ public class LayerEntity extends AbstractEntity {
 		return server_resource;
 	}
 
-	public void setServer_resource(String server_resource) {
-		this.server_resource = server_resource;
-	}
-
-	@Column(name = "published")
+	@Column(name = "publicized")
 	public Boolean getPublicized() {
 		return publicized;
-	}
-
-	public void setPublicized(Boolean publicized) {
-		this.publicized = publicized;
 	}
 
 	@Column(name = "enabled")
@@ -131,17 +104,9 @@ public class LayerEntity extends AbstractEntity {
 		return enabled;
 	}
 
-	public void setEnabled(Boolean enabled) {
-		this.enabled = enabled;
-	}
-
 	@Column(name = "pertenece_a_canal")
 	public Boolean getPertenece_a_canal() {
 		return pertenece_a_canal;
-	}
-
-	public void setPertenece_a_canal(Boolean pertenece_a_canal) {
-		this.pertenece_a_canal = pertenece_a_canal;
 	}
 
 	@Column(name = "fechaCreacion")
@@ -149,17 +114,9 @@ public class LayerEntity extends AbstractEntity {
 		return fechaCreacion;
 	}
 
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
 	@Column(name = "fechaActualizacion")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
-	}
-
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
 	}
 
 	@Id
@@ -168,49 +125,51 @@ public class LayerEntity extends AbstractEntity {
 	public Long getId() {
 		return id;
 	}
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+	public UserEntity getUser() {
+		return (UserEntity) user;
+	}
 
+	@ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auth_id")
+	public AuthorityEntity getAuth() {
+		return (AuthorityEntity) auth;
+	}
+
+	@ManyToMany(targetEntity = StyleEntity.class,
+	cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+	fetch = FetchType.LAZY)
+	@JoinTable(name = "layer_with_style",
+	joinColumns =
+	@JoinColumn(name = "style_id", insertable = false, updatable = false),
+	inverseJoinColumns =
+	@JoinColumn(name = "layer_id"))
+	public List<StyleEntity> getStyleList() {
+		return styleList;
+	}
+
+	@OneToMany(targetEntity = FolderEntity.class,fetch = FetchType.LAZY)
+	public List<FolderEntity> getFolderList() {
+		return folderList;
+	}
+
+	@Column(name = "data", nullable=true)
+	public byte[] getData() {
+		return data;
+	}
+
+	@Override
 	public void setId(Serializable id) {
 		this.id = (Long) id;
 	}
 	
-	@ManyToOne
-    @JoinColumn(name = "user_id")
-	public UserEntity getUser() {
-		return user;
-	}
-
-	public void setUser(UserEntity user) {
-		this.user = user;
-	}
-
-	@ManyToOne
-    @JoinColumn(name = "auth_id", insertable = false, updatable = false)
-	public AuthorityEntity getAuth() {
-		return auth;
-	}
-
-	public void setAuth(AuthorityEntity auth) {
-		this.auth = auth;
-	}
-
-	@ManyToOne
-    @JoinColumn(name = "style_id")
-	public StyleEntity getStyle() {
-		return style;
-	}
-
-	public void setStyle(StyleEntity style) {
-		this.style = style;
-	}
-
-	@ManyToOne
-    @JoinColumn(name = "folder_id")
-	public FolderEntity getFolder() {
-		return folder;
-	}
-
-	public void setFolder(FolderEntity folder) {
-		this.folder = folder;
+	@OneToMany(targetEntity=LayerPropertyEntity.class, orphanRemoval = true,
+			cascade = {CascadeType.ALL},
+			fetch = FetchType.LAZY)
+	public List<LayerPropertyEntity> getProperties() {
+		return this.properties;
 	}
 
 }

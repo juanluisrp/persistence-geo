@@ -32,14 +32,16 @@ package com.emergya.persistenceGeo.model;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+
+import com.emergya.persistenceGeo.metaModel.AbstractRuleEntity;
 
 /**
  * Entidad de regla
@@ -48,22 +50,13 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "rules")
-public class RuleEntity extends AbstractEntity {
+@Table(name = "rule")
+public class RuleEntity extends AbstractRuleEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6713894139265469251L;
-	
-	private Long rule_id;
-	
-	private String symbolizer;
-	private String filter;
-	private Date fechaCreacion;
-	private Date fechaActualizacion;
-	
-	private StyleEntity style;
 	
 	public RuleEntity(){
 		
@@ -74,17 +67,9 @@ public class RuleEntity extends AbstractEntity {
 		return symbolizer;
 	}
 
-	public void setSymbolizer(String symbolizer) {
-		this.symbolizer = symbolizer;
-	}
-
 	@Column(name = "filter")
 	public String getFilter() {
 		return filter;
-	}
-
-	public void setFilter(String filter) {
-		this.filter = filter;
 	}
 
 	@Column(name = "fechaCreacion")
@@ -92,17 +77,9 @@ public class RuleEntity extends AbstractEntity {
 		return fechaCreacion;
 	}
 
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
 	@Column(name = "fechaActualizacion")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
-	}
-
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
 	}
 
 	@Id
@@ -116,14 +93,9 @@ public class RuleEntity extends AbstractEntity {
 		rule_id = (Long) id;
 	}
 
-	@ManyToOne
-    @JoinColumn(name = "style_id")
+	@OneToOne(cascade = CascadeType.ALL)
 	public StyleEntity getStyle() {
-		return style;
-	}
-
-	public void setStyle(StyleEntity style) {
-		this.style = style;
+		return (StyleEntity) style;
 	}
 
 }

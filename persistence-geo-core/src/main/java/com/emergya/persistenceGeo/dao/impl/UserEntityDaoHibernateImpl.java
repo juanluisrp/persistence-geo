@@ -32,14 +32,17 @@ package com.emergya.persistenceGeo.dao.impl;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.UserEntityDao;
-import com.emergya.persistenceGeo.model.AuthorityEntity;
-import com.emergya.persistenceGeo.model.LayerEntity;
-import com.emergya.persistenceGeo.model.PrivateLayerEntity;
-import com.emergya.persistenceGeo.model.UserEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractAuthorityEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractUserEntity;
+import com.emergya.persistenceGeo.metaModel.Instancer;
 
 /**
  * Implementacion de Usuario dao para hibernate
@@ -47,8 +50,18 @@ import com.emergya.persistenceGeo.model.UserEntity;
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Repository("userEntityDao")
-public class UserEntityDaoHibernateImpl extends GenericHibernateDAOImpl<UserEntity, Long> implements UserEntityDao{
+public class UserEntityDaoHibernateImpl extends GenericHibernateDAOImpl<AbstractUserEntity, Long> implements UserEntityDao{
+
+	@Resource
+	private Instancer instancer;
+
+	@Autowired
+    public void init(SessionFactory sessionFactory) {
+        super.init(sessionFactory);
+		this.persistentClass = (Class<AbstractUserEntity>) instancer.createUser().getClass();
+    }
 	
 	/**
 	 * Crea un nuevo usuario en el sistema
@@ -58,10 +71,11 @@ public class UserEntityDaoHibernateImpl extends GenericHibernateDAOImpl<UserEnti
 	 * 
 	 * @return entidad del usuario creado 
 	 */
-	public UserEntity createUser(String userName, String password){
-		UserEntity entity = new UserEntity(userName);
+	public AbstractUserEntity createUser(String userName, String password){
+		AbstractUserEntity entity = instancer.createUser();
+		entity.setUsername(userName);
 		entity.setPassword(password);
-		this.makePersistent(entity);
+		entity = this.makePersistent(entity);
 		return entity;
 	}
 	
@@ -73,8 +87,8 @@ public class UserEntityDaoHibernateImpl extends GenericHibernateDAOImpl<UserEnti
 	 * 
 	 * @return entidad asociada al nombre de usuario o null si no se encuentra
 	 */
-	public UserEntity getUser(String userName, String password){
-		List<UserEntity> res = findByCriteria(
+	public AbstractUserEntity getUser(String userName, String password){
+		List<AbstractUserEntity> res = findByCriteria(
 				Restrictions.eq("username", userName),
 				Restrictions.eq("password", password));
 		if(res != null && res.size()>0){
@@ -91,8 +105,8 @@ public class UserEntityDaoHibernateImpl extends GenericHibernateDAOImpl<UserEnti
 	 * 
 	 * @return entidad asociada al nombre de usuario o null si no se encuentra
 	 */
-	public UserEntity getUser(String userName){
-		List<UserEntity> res = findByCriteria(
+	public AbstractUserEntity getUser(String userName){
+		List<AbstractUserEntity> res = findByCriteria(
 				Restrictions.eq("username", userName));
 		if(res != null && res.size()>0){
 			return res.get(0);
@@ -108,11 +122,11 @@ public class UserEntityDaoHibernateImpl extends GenericHibernateDAOImpl<UserEnti
 	 * 
 	 * @return Entities list associated with the names users list or null if not found 
 	 */
-	public List<UserEntity> findByName(List<String> names) {
-		List<UserEntity> res = new LinkedList<UserEntity>();
+	public List<AbstractUserEntity> findByName(List<String> names) {
+		List<AbstractUserEntity> res = new LinkedList<AbstractUserEntity>();
 		if(names != null){
 			for(String name: names){
-				List<UserEntity> entityList = findByCriteria(Restrictions.eq("username", name));
+				List<AbstractUserEntity> entityList = findByCriteria(Restrictions.eq("username", name));
 				if(entityList != null && entityList.size()>0){
 					res.addAll(entityList);
 				}
@@ -128,44 +142,12 @@ public class UserEntityDaoHibernateImpl extends GenericHibernateDAOImpl<UserEnti
 	 * 
 	 * @return Entity associated with the user identifier or null if not found
 	 */
-	public AuthorityEntity findByUserID(Long user_id) {
-		List<UserEntity> res = findByCriteria(Restrictions.eq("user_id", user_id));
-		AuthorityEntity auth = null;
+	public AbstractAuthorityEntity findByUserID(Long user_id) {
+		List<AbstractUserEntity> res = findByCriteria(Restrictions.eq("id", user_id));
+		AbstractAuthorityEntity auth = null;
 		if(res != null && res.size()>0){
 			auth = res.get(0).getAuthority();
 		}
 		return auth;
-	}
-
-	/**
-	 * Get a layer by a user identifier
-	 * 
-	 * @param user_id
-	 * 
-	 * @return Entity associated with the user identifier or null if not found
-	 */
-	public List<LayerEntity> findLayerByUserID(Long user_id) {
-		List<UserEntity> res = findByCriteria(Restrictions.eq("user_id", user_id));
-		List<LayerEntity> layer = null;
-		if(res != null && res.size()>0){
-			layer = res.get(0).getLayerList();
-		}
-		return layer;
-	}
-	
-	/**
-	 * Get a private layer by a user identifier
-	 * 
-	 * @param user_id
-	 * 
-	 * @return Entity associated with the user identifier or null if not found
-	 */
-	public List<PrivateLayerEntity> findPrivateLayerByUserID(Long user_id) {
-		List<UserEntity> res = findByCriteria(Restrictions.eq("user_id", user_id));
-		List<PrivateLayerEntity> layer = null;
-		if(res != null && res.size()>0){
-			layer = res.get(0).getPrivateLayerList();
-		}
-		return layer;
 	}
 }

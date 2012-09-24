@@ -29,9 +29,7 @@
  */
 package com.emergya.persistenceGeo.model;
 
-import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,8 +38,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.emergya.persistenceGeo.metaModel.AbstractUserEntity;
 
 /**
  * Entidad de usuario
@@ -50,30 +49,13 @@ import javax.persistence.Table;
  *
  */
 @Entity
-@Table(name = "users")
-public class UserEntity implements Serializable {
+@Table(name = "user")
+public class UserEntity extends AbstractUserEntity {
 
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = -6272520927189358861L;
-	
-	private Long user_id;
-    private String username;
-    
-    private String password;
-    private String nombreCompleto;
-	private String apellidos;
-    private String email;
-    private String telefono;
-    private Boolean admin;
-    private Boolean valid;
-    private Date fechaCreacion;
-    private Date fechaActualizacion;
-    
-    private AuthorityEntity authority;
-    private List<LayerEntity> layerList;
-    private List<PrivateLayerEntity> privateLayerList;
 
     public UserEntity() {
 
@@ -86,12 +68,8 @@ public class UserEntity implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getUser_id() {
+    public Long getId() {
         return user_id;
-    }
-
-    public void setUser_id(Long user_id) {
-        this.user_id = user_id;
     }
 
     @Column(name = "username", nullable = false)
@@ -99,17 +77,9 @@ public class UserEntity implements Serializable {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     @Column(name = "password", nullable = false)
     public String getPassword() {
 		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
     
 	@Column(name = "nombreCompleto")
@@ -117,17 +87,9 @@ public class UserEntity implements Serializable {
 		return nombreCompleto;
 	}
 
-	public void setNombreCompleto(String nombreCompleto) {
-		this.nombreCompleto = nombreCompleto;
-	}
-
     @Column(name = "apellidos")
 	public String getApellidos() {
 		return apellidos;
-	}
-
-	public void setApellidos(String apellidos) {
-		this.apellidos = apellidos;
 	}
 
     @Column(name = "email")
@@ -135,17 +97,9 @@ public class UserEntity implements Serializable {
 		return email;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
     @Column(name = "telefono")
 	public String getTelefono() {
 		return telefono;
-	}
-
-	public void setTelefono(String telefono) {
-		this.telefono = telefono;
 	}
 
     @Column(name = "admin_user")
@@ -153,17 +107,9 @@ public class UserEntity implements Serializable {
 		return admin;
 	}
 
-	public void setAdmin(Boolean admin) {
-		this.admin = admin;
-	}
-
     @Column(name = "valid_user")
 	public Boolean getValid() {
 		return valid;
-	}
-
-	public void setValid(Boolean valid) {
-		this.valid = valid;
 	}
 
     @Column(name = "fechaCreacion")
@@ -171,44 +117,14 @@ public class UserEntity implements Serializable {
 		return fechaCreacion;
 	}
 
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
     @Column(name = "fechaActualizacion")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
 	}
-
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
-	}
 	
     @ManyToOne
-    @JoinColumn(name = "auth_id", insertable = false, updatable = false)
+    @JoinColumn(name = "user_id")
 	public AuthorityEntity getAuthority() {
-		return authority;
-	}
-
-	public void setAuthority(AuthorityEntity authority) {
-		this.authority = authority;
-	}
-
-	@OneToMany(mappedBy = "user")
-	public List<LayerEntity> getLayerList() {
-		return layerList;
-	}
-
-	public void setLayerList(List<LayerEntity> layerList) {
-		this.layerList = layerList;
-	}
-
-	@OneToMany(mappedBy = "user")
-	public List<PrivateLayerEntity> getPrivateLayerList() {
-		return privateLayerList;
-	}
-
-	public void setPrivateLayerList(List<PrivateLayerEntity> privateLayerList) {
-		this.privateLayerList = privateLayerList;
+		return (AuthorityEntity) authority;
 	}
 }

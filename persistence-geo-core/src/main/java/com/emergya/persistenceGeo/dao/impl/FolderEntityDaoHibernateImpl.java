@@ -32,11 +32,16 @@ package com.emergya.persistenceGeo.dao.impl;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.FolderEntityDao;
-import com.emergya.persistenceGeo.model.FolderEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
+import com.emergya.persistenceGeo.metaModel.Instancer;
 
 /**
  * Folder DAO Hibernate Implementation
@@ -44,8 +49,18 @@ import com.emergya.persistenceGeo.model.FolderEntity;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Repository("folderEntityDao")
-public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<FolderEntity, Long> implements FolderEntityDao {
+public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<AbstractFolderEntity, Long> implements FolderEntityDao {
+
+	@Resource
+	private Instancer instancer;
+
+	@Autowired
+    public void init(SessionFactory sessionFactory) {
+        super.init(sessionFactory);
+		this.persistentClass = (Class<AbstractFolderEntity>) instancer.createFolder().getClass();
+    }
 
 	/**
 	 * Create a new folder in the system
@@ -54,8 +69,9 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Folder
 	 * 
 	 * @return Entity from the created folder
 	 */
-	public FolderEntity createFolder(String nameFolder) {
-		FolderEntity entity = new FolderEntity(nameFolder);
+	public AbstractFolderEntity createFolder(String nameFolder) {
+		AbstractFolderEntity entity = instancer.createFolder();
+		entity.setName(nameFolder);
 		getHibernateTemplate().save(entity);
 		return entity;
 	}
@@ -67,7 +83,7 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Folder
 	 * 
 	 * @return Entities list associated with the folder name or null if not found 
 	 */
-	public List<FolderEntity> getFolders(String folderName) {
+	public List<AbstractFolderEntity> getFolders(String folderName) {
 		return findByCriteria(Restrictions.eq("name", folderName));
 	}
 
@@ -78,7 +94,7 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Folder
 	 * 
 	 */
 	public void deleteFolder(Long folderID) {
-		FolderEntity entity = findById(folderID, false);
+		AbstractFolderEntity entity = findById(folderID, false);
 		if(entity != null){
 			getHibernateTemplate().delete(entity);
 		}
@@ -91,8 +107,8 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Folder
 	 * 
 	 * @return Entities list associated with the names folders list or null if not found 
 	 */
-	public List<FolderEntity> findByName(List<String> names) {
-		List<FolderEntity> folderList = new LinkedList<FolderEntity>();
+	public List<AbstractFolderEntity> findByName(List<String> names) {
+		List<AbstractFolderEntity> folderList = new LinkedList<AbstractFolderEntity>();
 		if(names != null){
 			for(String name: names){
 				folderList.addAll(getFolders(name));

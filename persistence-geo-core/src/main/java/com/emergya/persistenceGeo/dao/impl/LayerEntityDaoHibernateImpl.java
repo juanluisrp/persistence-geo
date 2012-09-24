@@ -31,14 +31,20 @@ package com.emergya.persistenceGeo.dao.impl;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.hibernate.Criteria;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.LayerEntityDao;
-import com.emergya.persistenceGeo.model.FolderEntity;
-import com.emergya.persistenceGeo.model.LayerEntity;
-import com.emergya.persistenceGeo.model.StyleEntity;
-import com.emergya.persistenceGeo.model.UserEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractStyleEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractUserEntity;
+import com.emergya.persistenceGeo.metaModel.Instancer;
 
 /**
  * Layer DAO Hibernate Implementation
@@ -46,9 +52,19 @@ import com.emergya.persistenceGeo.model.UserEntity;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Repository("layerEntityDao")
-public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEntity, Long> implements LayerEntityDao {
+public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<AbstractLayerEntity, Long> implements LayerEntityDao {
 
+	@Resource
+	private Instancer instancer;
+
+	@Autowired
+    public void init(SessionFactory sessionFactory) {
+        super.init(sessionFactory);
+		this.persistentClass = (Class<AbstractLayerEntity>) instancer.createLayer().getClass();
+    }
+	
 	/**
 	 * Create a new layer in the system
 	 * 
@@ -56,8 +72,9 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEn
 	 * 
 	 * @return Entity from the new layer
 	 */
-	public LayerEntity createLayer(String layerName) {
-		LayerEntity entity = new LayerEntity(layerName);
+	public AbstractLayerEntity createLayer(String layerName) {
+		AbstractLayerEntity entity = instancer.createLayer();
+		entity.setName(layerName);
 		this.save(entity);
 		return entity;
 	}
@@ -69,7 +86,7 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEn
 	 * 
 	 * @return Entity identifier from the save layer
 	 */
-	public Long save(LayerEntity layerEntity) {
+	public Long save(AbstractLayerEntity layerEntity) {
 		return (Long) getHibernateTemplate().save(layerEntity);
 	}
 
@@ -80,7 +97,7 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEn
 	 * 
 	 * @return Entities list associated with the layer name or null if not found 
 	 */
-	public List<LayerEntity> getLayers(String layerName) {
+	public List<AbstractLayerEntity> getLayers(String layerName) {
 		return findByCriteria(Restrictions.eq("name", layerName));
 	}
 
@@ -91,7 +108,7 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEn
 	 * 
 	 */
 	public void delete(Long layerID) {
-		LayerEntity entity = findById(layerID, false);
+		AbstractLayerEntity entity = findById(layerID, false);
 		if(entity != null){
 			getHibernateTemplate().delete(entity);
 		}
@@ -104,33 +121,53 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<LayerEn
 	 * 
 	 * @return Entities list associated with the layer identifier or null if not found 
 	 */
-	public UserEntity findByLayer(Long layerID) {
-		LayerEntity entity = findById(layerID, false);
+	public AbstractUserEntity findByLayer(Long layerID) {
+		AbstractLayerEntity entity = findById(layerID, false);
 		return entity.getUser();
 	}
 
 	/**
-	 * Get a folder by the layer identifier
+	 * Get a folders list by the layer identifier
 	 * 
 	 * @param <code>layerID</code>
 	 * 
-	 * @return Entities associated with the layer identifier or null if not found 
+	 * @return Entities list associated with the layer identifier or null if not found 
 	 */
-	public FolderEntity findFolderByLayer(Long layerID) {
-		LayerEntity entity = findById(layerID, false);
-		return entity.getFolder();
+	public List<AbstractFolderEntity> findFolderByLayer(Long layerID) {
+		AbstractLayerEntity entity = findById(layerID, false);
+		return entity.getFolderList();
 	}
 
 	/**
-	 * Get a style by the layer identifier
+	 * Get a style list by the layer identifier
 	 * 
 	 * @param <code>layerID</code>
 	 * 
-	 * @return Entities associated with the layer identifier or null if not found 
+	 * @return Entities list associated with the layer identifier or null if not found 
 	 */
-	public StyleEntity findStyleByLayer(Long layerID) {
-		LayerEntity entity = findById(layerID, false);
-		return entity.getStyle();
+	public List<AbstractStyleEntity> findStyleByLayer(Long layerID) {
+		AbstractLayerEntity entity = findById(layerID, false);
+		return entity.getStyleList();
+	}
+
+	@Override
+	public List<AbstractLayerEntity> findByUserId(Long id) {
+		
+		Criteria criteria = getSession().createCriteria(persistentClass)
+						.createAlias("user", "user")
+						.add(Restrictions.eq("user.id", id));
+		
+		return criteria.list();
+	}
+
+	@Override
+	public List<AbstractLayerEntity> findByAuthorityId(Long id) {
+		
+		Criteria criteria = getSession().createCriteria(persistentClass)
+						.createAlias("auth", "auth")
+						.add(Restrictions.eq("auth.id", id));
+		
+		return criteria.list();
 	}
 
 }

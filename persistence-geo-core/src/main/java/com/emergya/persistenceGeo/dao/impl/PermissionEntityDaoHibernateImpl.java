@@ -31,11 +31,16 @@ package com.emergya.persistenceGeo.dao.impl;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.PermissionEntityDao;
-import com.emergya.persistenceGeo.model.PermissionEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractPermissionEntity;
+import com.emergya.persistenceGeo.metaModel.Instancer;
 
 /**
  * Permission DAO Hibernate Implementation
@@ -43,9 +48,19 @@ import com.emergya.persistenceGeo.model.PermissionEntity;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("unchecked")
 @Repository("permissionEntityDao")
-public class PermissionEntityDaoHibernateImpl extends GenericHibernateDAOImpl<PermissionEntity, Long> implements PermissionEntityDao {
+public class PermissionEntityDaoHibernateImpl extends GenericHibernateDAOImpl<AbstractPermissionEntity, Long> implements PermissionEntityDao {
 
+	@Resource
+	private Instancer instancer;
+
+	@Autowired
+    public void init(SessionFactory sessionFactory) {
+        super.init(sessionFactory);
+		this.persistentClass = (Class<AbstractPermissionEntity>) instancer.createPermission().getClass();
+    }
+	
 	/**
 	 * Create a new permission in the system
 	 * 
@@ -53,8 +68,9 @@ public class PermissionEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Pe
 	 * 
 	 * @return Entity from the created permission
 	 */
-	public PermissionEntity createPermission(String permission) {
-		PermissionEntity permissionEntity = new PermissionEntity(permission);
+	public AbstractPermissionEntity createPermission(String permission) {
+		AbstractPermissionEntity permissionEntity = instancer.createPermission();
+		permissionEntity.setName(permission);
 		getHibernateTemplate().save(permissionEntity);
 		return permissionEntity;
 	}
@@ -66,7 +82,7 @@ public class PermissionEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Pe
 	 * 
 	 * @return Entities list associated with the permission name or null if not found 
 	 */
-	public List<PermissionEntity> getPermissions(String permissionName) {
+	public List<AbstractPermissionEntity> getPermissions(String permissionName) {
 		return findByCriteria(Restrictions.eq("name", permissionName));
 	}
 
@@ -77,7 +93,7 @@ public class PermissionEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Pe
 	 * 
 	 */
 	public void deletePermission(Long permissionID) {
-		PermissionEntity permissionEntity = findById(permissionID, false);
+		AbstractPermissionEntity permissionEntity = findById(permissionID, false);
 		if(permissionEntity != null){
 			getHibernateTemplate().delete(permissionEntity);
 		}

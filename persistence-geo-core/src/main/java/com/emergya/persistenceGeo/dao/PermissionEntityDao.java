@@ -31,7 +31,7 @@ package com.emergya.persistenceGeo.dao;
 
 import java.util.List;
 
-import com.emergya.persistenceGeo.model.PermissionEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractPermissionEntity;
 
 /**
  * DAO that represents the permission
@@ -39,7 +39,7 @@ import com.emergya.persistenceGeo.model.PermissionEntity;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface PermissionEntityDao extends GenericDAO<PermissionEntity, Long> {
+public interface PermissionEntityDao extends GenericDAO<AbstractPermissionEntity, Long> {
 
 	/**
 	 * Create a new permission in the system
@@ -48,7 +48,7 @@ public interface PermissionEntityDao extends GenericDAO<PermissionEntity, Long> 
 	 * 
 	 * @return Entity from the created permission
 	 */
-	public PermissionEntity createPermission(String permission);
+	public AbstractPermissionEntity createPermission(String permission);
 	
 	/**
 	 * Get a permissions list by the permission name 
@@ -57,7 +57,7 @@ public interface PermissionEntityDao extends GenericDAO<PermissionEntity, Long> 
 	 * 
 	 * @return Entities list associated with the permission name or null if not found 
 	 */
-	public List<PermissionEntity> getPermissions(String permissionName);
+	public List<AbstractPermissionEntity> getPermissions(String permissionName);
 	
 	/**
 	 * Delete a permission by the permission identifier 

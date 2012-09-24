@@ -45,39 +45,29 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.emergya.persistenceGeo.metaModel.AbstractZoneEntity;
+
 /**
  * Entidad de ámbito territorial
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
- * 
+ *
  */
+@SuppressWarnings("unchecked")
 @Entity
-@Table(name = "zones")
-public class ZoneEntity extends AbstractEntity {
+@Table(name = "zone")
+public class ZoneEntity extends AbstractZoneEntity {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -7702334870312919540L;
-
-	private Long id;
-
-	private String code;
-	private String name;
-	private String type;
-	private String extension;
-	private Date fechaCreacion;
-	private Date fechaActualizacion;
-
-	private ZoneEntity zone;
-	private List<FolderEntity> folderList;
-	private List<AuthorityEntity> authList;
-
-	public ZoneEntity() {
-
+	
+	public ZoneEntity(){
+		
 	}
 
-	public ZoneEntity(String zoneName) {
+	public ZoneEntity(String zoneName){
 		name = zoneName;
 	}
 
@@ -86,17 +76,9 @@ public class ZoneEntity extends AbstractEntity {
 		return code;
 	}
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-
 	@Column(name = "name_zone")
 	public String getName() {
 		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	@Column(name = "type_zone")
@@ -104,75 +86,57 @@ public class ZoneEntity extends AbstractEntity {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	@Column(name = "extension")
 	public String getExtension() {
 		return extension;
-	}
-
-	public void setExtension(String extension) {
-		this.extension = extension;
 	}
 
 	@Column(name = "fechaCreacion")
 	public Date getFechaCreacion() {
 		return fechaCreacion;
 	}
-
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
-	}
-
+	
 	@Column(name = "fechaActualizacion")
 	public Date getFechaActualizacion() {
 		return fechaActualizacion;
 	}
-
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
-	}
-
+ 
 	@Id
-	@Column(name = "zone_id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
 		return id;
 	}
-
+	
 	public void setId(Serializable id) {
 		this.id = (Long) id;
 	}
 
-	@Column(name = "zone_parent")
-	public ZoneEntity getZone() {
-		return zone;
+	@OneToMany(targetEntity = ZoneEntity.class,
+	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(name = "zone_in_zone",
+	joinColumns =
+	@JoinColumn(name = "zone_id"),
+	inverseJoinColumns =
+	@JoinColumn(name = "subzone_id"))
+	public List<ZoneEntity> getZoneList() {
+		return zoneList;
 	}
-
-	public void setZone(ZoneEntity zone) {
-		this.zone = zone;
-	}
-
-	@ManyToMany(targetEntity = FolderEntity.class, cascade = {
-			CascadeType.PERSIST, CascadeType.MERGE })
-	@JoinTable(name = "folder_in_zone", joinColumns = @JoinColumn(name = "folder_id"), inverseJoinColumns = @JoinColumn(name = "zone_id"))
+	
+	@ManyToMany(targetEntity = FolderEntity.class,
+	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@JoinTable(name = "folder_in_zone",
+	joinColumns =
+	@JoinColumn(name = "folder_id"),
+	inverseJoinColumns =
+	@JoinColumn(name = "zone_id"))
 	public List<FolderEntity> getFolderList() {
 		return folderList;
-	}
-
-	public void setFolderList(List<FolderEntity> folderList) {
-		this.folderList = folderList;
 	}
 
 	@OneToMany(mappedBy = "zone")
 	public List<AuthorityEntity> getAuthList() {
 		return authList;
-	}
-
-	public void setAuthList(List<AuthorityEntity> authList) {
-		this.authList = authList;
 	}
 
 }
