@@ -1,17 +1,17 @@
-var saveLayerBaseUrl = "../rest/persistenceGeo/saveLayerByUser/";
+var saveLayerBaseUrl = "rest/persistenceGeo/saveLayerByUser/";
 var saveLayerUrl;
 
-var createUserUrl = "../rest/persistenceGeo/admin/createUser";
+var createUserUrl = "rest/persistenceGeo/admin/createUser";
 
-var loadLayersUrl = "../rest/persistenceGeo/loadLayers/";
+var loadLayersUrl = "rest/persistenceGeo/loadLayers/";
 
-var allGroupsUrl = "../rest/persistenceGeo/getAllGroups";
+var allGroupsUrl = "rest/persistenceGeo/getAllGroups";
 
-var allUsersUrl = "../rest/persistenceGeo/getAllUsers";
+var allUsersUrl = "rest/persistenceGeo/getAllUsers";
 
-var allLayerTypesUrl = "../rest/persistenceGeo/getLayerTypes";
+var allLayerTypesUrl = "rest/persistenceGeo/getLayerTypes";
 
-var loadLayerTypeUrl = "../rest/persistenceGeo/getLayerTypeProperties/";
+var loadLayerTypeUrl = "rest/persistenceGeo/getLayerTypeProperties/";
 
 var user;
 var store;
@@ -21,8 +21,8 @@ var app;
 
 Ext.onReady(function() {
 
-	var loadLayersUrl = "../rest/persistenceGeo/loadLayers/";
-	var allUsersUrl = "../rest/persistenceGeo/getAllUsers";
+	var loadLayersUrl = "rest/persistenceGeo/loadLayers/";
+	var allUsersUrl = "rest/persistenceGeo/getAllUsers";
 	
 	var fileCombo = {
 			xtype : 'fileuploadfield',
@@ -150,7 +150,7 @@ Ext.onReady(function() {
 	});
 	
 	var loadLayersForm = new Ext.FormPanel({
-        title: 'Load layers By user',
+        title: 'Load layers By user or group',
 		cls: 'my-form-class',
 		width: 350,
 		height: 200,
@@ -173,6 +173,31 @@ Ext.onReady(function() {
 		        ,mode:'local'
 		        ,listeners:{select:{fn:function(combo, value) {
 		        	PersistenceGeoParser.loadLayersByUser(value.id, function(layers){
+		        		console.log(layers);
+		        		app.mapPanel.map.addLayers(layers);
+		        	});
+		            }}
+		        }
+			},
+			{
+		         fieldLabel:'Select group'
+				,xtype:'combo'
+				,name: 'userGroup'
+		        ,displayField:'nombre'
+		        ,valueField:'id'
+		        ,store: new Ext.data.JsonStore({
+		             url: allGroupsUrl,
+		             remoteSort: false,
+		             autoLoad:true,
+		             idProperty: 'id',
+		             root: 'data',
+		             totalProperty: 'results',
+		             fields: ['id','nombre']
+		         })
+		        ,triggerAction:'all'
+		        ,mode:'local'
+		        ,listeners:{select:{fn:function(combo, value) {
+		        	PersistenceGeoParser.loadLayersByGroup(value.id, function(layers){
 		        		console.log(layers);
 		        		app.mapPanel.map.addLayers(layers);
 		        	});

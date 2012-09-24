@@ -31,6 +31,7 @@ package com.emergya.persistenceGeo.web;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -115,6 +116,48 @@ public class RestLayersAdminController implements Serializable{
 						layer.setData(null);
 						layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
 					}
+				}
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		
+		result.put(RESULTS, layers.size());
+		result.put(ROOT, layers);
+
+		return result;
+	}
+
+	/**
+	 * This method loads layers.json related with a user
+	 * 
+	 * @param username
+	 * 
+	 * @return JSON file with layers
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/persistenceGeo/loadLayersByGroup/{groupId}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadLayersByGroup(@PathVariable String groupId){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<LayerDto> layers = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			if(groupId != null){
+				layers = layerAdminService.getLayersByAuthority(Long.decode(groupId));
+			}else{
+				layers = ListUtils.EMPTY_LIST;
+			}
+			for(LayerDto layer: layers){
+				if(layer.getId() != null && layer.getData() != null){
+					loadedLayers.put(layer.getId(), layer.getData());
+					layer.setData(null);
+					layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
 				}
 			}
 		}catch (Exception e){
@@ -306,41 +349,6 @@ public class RestLayersAdminController implements Serializable{
 	 * @param username
 	 * @param uploadfile
 	 */
-	@RequestMapping(value = "/persistenceGeo/saveLayerByUser/{username}/{name}/{type}", method = RequestMethod.GET)
-	public @ResponseBody 
-	Boolean saveLayerByUser(@PathVariable String username,
-			@PathVariable("name") String name,
-			@PathVariable("type") String type){
-		try{
-			/*
-			//TODO: Secure with logged user
-			String username = ((UserDetails) SecurityContextHolder.getContext()
-					.getAuthentication().getPrincipal()).getUsername(); 
-			 */
-			// Create the layerDto
-			LayerDto layer = new LayerDto();
-			// Assign the user
-			layer.setUser(username);
-			// Add request parameter
-			layer.setName(name);
-			layer.setType(type);
-			
-			// Save the layer
-			layerAdminService.create(layer);
-			
-			return true;
-		}catch (Exception e){
-			e.printStackTrace();
-			return false;
-		}
-	}
-
-	/**
-	 * This method saves a layer related with a user
-	 * 
-	 * @param username
-	 * @param uploadfile
-	 */
 	@RequestMapping(value = "/persistenceGeo/saveLayerByUser/{username}", method = RequestMethod.POST)
 	public @ResponseBody 
 	LayerDto saveLayerByUser(@PathVariable String username,
@@ -363,37 +371,107 @@ public class RestLayersAdminController implements Serializable{
 			LayerDto layer = new LayerDto();
 			// Assign the user
 			layer.setUser(username);
-			// Add request parameter
-			layer.setName(name);
-			layer.setType(type);
-			layer.setServer_resource(server_resource);
-			layer.setEnabled(enabled != null ? enabled.toLowerCase().equals("true"): false);
-			layer.setOrder(order_layer);
-			layer.setPertenece_a_canal(is_channel != null ? is_channel.toLowerCase().equals("true"): false);
-			layer.setPublicized(publicized != null ? publicized.toLowerCase().equals("true"): false);
-			layer.setServer_resource(server_resource);
 			
-			//Layer properties
-			if(properties != null){
-				layer.setProperties(getMapFromString(properties));
-			}
-
-			//Layer data
-			if(uploadfile != null){
-				byte[] data = IOUtils.toByteArray(uploadfile.getInputStream());
-				File temp = com.emergya.persistenceGeo.utils.FileUtils.createFileTemp(layer.getName(), layer.getType());
-				org.apache.commons.io.FileUtils.writeByteArrayToFile(temp, data);
-				layer.setData(temp);
-			}
-			
-			// Save the layer
-			layer = (LayerDto) layerAdminService.create(layer);
+			//Copy layerData
+			copyDataToLayer(name, type, properties, enabled, order_layer,
+					is_channel, publicized, server_resource, uploadfile, layer);
 			
 			return layer;
 		}catch (Exception e){
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	/**
+	 * This method saves a layer related with a user
+	 * 
+	 * @param username
+	 * @param uploadfile
+	 */
+	@RequestMapping(value = "/persistenceGeo/saveLayerByGroup/{idGroup}", method = RequestMethod.POST)
+	public @ResponseBody 
+	LayerDto saveLayerByGroup(@PathVariable String idGroup,
+			@RequestParam("name") String name,
+			@RequestParam("type") String type,
+			@RequestParam(value="properties", required=false) String properties,
+			@RequestParam(value="enabled", required=false) String enabled,
+			@RequestParam(value="order_layer", required=false) String order_layer,
+			@RequestParam(value="is_channel", required=false) String is_channel,
+			@RequestParam(value="publicized", required=false) String publicized,
+			@RequestParam(value="server_resource", required=false) String server_resource,
+			@RequestParam(value="uploadfile", required=false) MultipartFile uploadfile){
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			// Create the layerDto
+			LayerDto layer = new LayerDto();
+			// Assign the user group
+			AuthorityDto group = userAdminService.obtenerGrupoUsuarios(Long.decode(idGroup));
+			layer.setAuth(group.getNombre());
+			
+			//Copy layerData
+			copyDataToLayer(name, type, properties, enabled, order_layer,
+					is_channel, publicized, server_resource, uploadfile, layer);
+			
+			return layer;
+		}catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * Copy layer data 
+	 * 
+	 * @param name
+	 * @param type
+	 * @param properties
+	 * @param enabled
+	 * @param order_layer
+	 * @param is_channel
+	 * @param publicized
+	 * @param server_resource
+	 * @param uploadfile
+	 * @param layer
+	 * @throws IOException
+	 */
+	private void copyDataToLayer(String name, String type, String properties,
+			String enabled, String order_layer, String is_channel,
+			String publicized, String server_resource,
+			MultipartFile uploadfile, LayerDto layer) throws IOException {
+		// Add request parameter
+		layer.setName(name);
+		layer.setType(type);
+		layer.setServer_resource(server_resource);
+		layer.setEnabled(enabled != null ? enabled.toLowerCase().equals("true")
+				: false);
+		layer.setOrder(order_layer);
+		layer.setPertenece_a_canal(is_channel != null ? is_channel
+				.toLowerCase().equals("true") : false);
+		layer.setPublicized(publicized != null ? publicized.toLowerCase()
+				.equals("true") : false);
+		layer.setServer_resource(server_resource);
+
+		// Layer properties
+		if (properties != null) {
+			layer.setProperties(getMapFromString(properties));
+		}
+
+		// Layer data
+		if (uploadfile != null) {
+			byte[] data = IOUtils.toByteArray(uploadfile.getInputStream());
+			File temp = com.emergya.persistenceGeo.utils.FileUtils
+					.createFileTemp(layer.getName(), layer.getType());
+			org.apache.commons.io.FileUtils.writeByteArrayToFile(temp, data);
+			layer.setData(temp);
+		}
+
+		// Save the layer
+		layer = (LayerDto) layerAdminService.create(layer);
 	}
 	
 	private static final String PROPERTIES_SEPARATOR = ",,,";
