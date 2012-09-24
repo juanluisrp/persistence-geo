@@ -126,10 +126,24 @@ public class FolderEntity extends AbstractFolderEntity {
 		return zoneList;
 	}
 
-	@ManyToOne
-    @JoinColumn(name = "id", insertable = false, updatable = false)
-	public LayerEntity getLayer() {
-		return (LayerEntity) layer;
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch  = FetchType.LAZY)
+    @JoinColumn(name = "auth_id")
+	public AuthorityEntity getAuthority() {
+		return (AuthorityEntity) authority;
+	}
+
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch  = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+	public UserEntity getUser() {
+		return (UserEntity) user;
+	}
+
+	@ManyToOne(cascade = CascadeType.REFRESH, fetch  = FetchType.LAZY)
+	@JoinTable(name = "folder_in_folder",
+	joinColumns =
+	@JoinColumn(name = "subfolder_id"))
+	public FolderEntity getParent() {
+		return (FolderEntity) parent;
 	}
 
 	@Override

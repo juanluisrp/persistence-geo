@@ -1,204 +1,168 @@
 /*
- * AbstractFolderEntity.java
+ * FolderDto.java
  * 
- * Copyright (C) 2011
+ * Copyright (C) 2012
  * 
  * This file is part of Proyecto persistenceGeo
  * 
  * This software is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General public abstract License as published by the Free
+ * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option) any
  * later version.
  * 
  * This software is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU General public abstract License for more
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
  * 
- * You should have received a copy of the GNU General public abstract License along with
+ * You should have received a copy of the GNU General Public License along with
  * this library; if not, write to the Free Software Foundation, Inc., 51
  * Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  * 
  * As a special exception, if you link this library with other files to produce
  * an executable, this library does not by itself cause the resulting executable
- * to be covered by the GNU General public abstract License. This exception does not
+ * to be covered by the GNU General Public License. This exception does not
  * however invalidate any other reasons why the executable file might be covered
- * by the GNU General public abstract License.
+ * by the GNU General Public License.
  * 
- * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
+ * Authors:: Alejandro Díaz Torres (mailto:adiaz@emergya.com)
  */
-package com.emergya.persistenceGeo.metaModel;
+package com.emergya.persistenceGeo.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
 /**
- * Entidad de carpeta
+ * Folder DTO
  * 
- * @author <a href="mailto:marcos@emergya.com">marcos</a>
+ * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
-@SuppressWarnings("rawtypes")
-public abstract class AbstractFolderEntity extends AbstractEntity {
-	
+public class FolderDto implements Serializable{
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -5833974857352652727L;
-
-	protected Long id;
+	private static final long serialVersionUID = 2055062929230056891L;
 	
+	protected Long id;
 	protected String name;
 	protected Boolean enabled;
 	protected Boolean es_canal;
 	protected Boolean es_instrumento_planificacion;
 	protected Date fechaCreacion;
 	protected Date fechaActualizacion;
-
-	protected List folderList;
-	protected List zoneList;
-	protected AbstractUserEntity user;
-	protected AbstractAuthorityEntity authority;
-	protected AbstractFolderEntity parent;
-
-	public AbstractFolderEntity(){
-		
-	}
 	
-	public AbstractFolderEntity(String folderName){
-		name = folderName;
-	}
-
+	protected List<FolderDto> folderList;
+	protected List<String> zoneList;
+	
 	/**
 	 * @return the id
 	 */
-	public abstract Long getId();
-
+	public Long getId() {
+		return id;
+	}
 	/**
 	 * @return the name
 	 */
-	public abstract String getName();
+	public String getName() {
+		return name;
+	}
 	/**
 	 * @return the enabled
 	 */
-	public abstract Boolean getEnabled();
+	public Boolean getEnabled() {
+		return enabled;
+	}
 	/**
 	 * @return the es_canal
 	 */
-	public abstract Boolean getEs_canal();
+	public Boolean getEs_canal() {
+		return es_canal;
+	}
 	/**
 	 * @return the es_instrumento_planificacion
 	 */
-	public abstract Boolean getEs_instrumento_planificacion();
+	public Boolean getEs_instrumento_planificacion() {
+		return es_instrumento_planificacion;
+	}
 	/**
 	 * @return the fechaCreacion
 	 */
-	public abstract Date getFechaCreacion();
+	public Date getFechaCreacion() {
+		return fechaCreacion;
+	}
 	/**
 	 * @return the fechaActualizacion
 	 */
-	public abstract Date getFechaActualizacion();
+	public Date getFechaActualizacion() {
+		return fechaActualizacion;
+	}
 	/**
 	 * @return the folderList
 	 */
-	public abstract List getFolderList();
+	public List<FolderDto> getFolderList() {
+		return folderList;
+	}
 	/**
 	 * @return the zoneList
 	 */
-	public abstract List getZoneList();
-	/**
-	 * @return the user
-	 */
-	public abstract AbstractUserEntity getUser();
-	/**
-	 * @return the authority
-	 */
-	public abstract AbstractAuthorityEntity getAuthority();
-	/**
-	 * @return the parent
-	 */
-	public abstract AbstractFolderEntity getParent();
+	public List<String> getZoneList() {
+		return zoneList;
+	}
 	/**
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	/**
 	 * @param enabled the enabled to set
 	 */
 	public void setEnabled(Boolean enabled) {
 		this.enabled = enabled;
 	}
-
 	/**
 	 * @param es_canal the es_canal to set
 	 */
 	public void setEs_canal(Boolean es_canal) {
 		this.es_canal = es_canal;
 	}
-
 	/**
 	 * @param es_instrumento_planificacion the es_instrumento_planificacion to set
 	 */
 	public void setEs_instrumento_planificacion(Boolean es_instrumento_planificacion) {
 		this.es_instrumento_planificacion = es_instrumento_planificacion;
 	}
-
 	/**
 	 * @param fechaCreacion the fechaCreacion to set
 	 */
 	public void setFechaCreacion(Date fechaCreacion) {
 		this.fechaCreacion = fechaCreacion;
 	}
-
 	/**
 	 * @param fechaActualizacion the fechaActualizacion to set
 	 */
 	public void setFechaActualizacion(Date fechaActualizacion) {
 		this.fechaActualizacion = fechaActualizacion;
 	}
-
 	/**
 	 * @param folderList the folderList to set
 	 */
-	public void setFolderList(List folderList) {
+	public void setFolderList(List<FolderDto> folderList) {
 		this.folderList = folderList;
 	}
-
 	/**
 	 * @param zoneList the zoneList to set
 	 */
-	public void setZoneList(List zoneList) {
+	public void setZoneList(List<String> zoneList) {
 		this.zoneList = zoneList;
-	}
-
-	/**
-	 * @param user the user to set
-	 */
-	public void setUser(AbstractUserEntity user) {
-		this.user = user;
-	}
-
-	/**
-	 * @param authority the authority to set
-	 */
-	public void setAuthority(AbstractAuthorityEntity authority) {
-		this.authority = authority;
-	}
-
-	/**
-	 * @param parent the parent to set
-	 */
-	public void setParent(AbstractFolderEntity parent) {
-		this.parent = parent;
 	}
 }

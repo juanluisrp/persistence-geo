@@ -51,6 +51,7 @@ import com.emergya.persistenceGeo.dao.LayerTypeEntityDao;
 import com.emergya.persistenceGeo.dao.RuleEntityDao;
 import com.emergya.persistenceGeo.dao.StyleEntityDao;
 import com.emergya.persistenceGeo.dao.UserEntityDao;
+import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
 import com.emergya.persistenceGeo.dto.RuleDto;
 import com.emergya.persistenceGeo.dto.StyleDto;
@@ -558,4 +559,40 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		return result;
 	}
 
+	@Override
+	public FolderDto getRootFolder(Long idUser) {
+		return entityFolderToDto(folderDao.findRootByUser(idUser));
+	}
+
+	@Override
+	public FolderDto getRootGroupFolder(Long idGroup) {
+		return entityFolderToDto(folderDao.findRootByGroup(idGroup));
+	}
+
+	private FolderDto entityFolderToDto(AbstractFolderEntity entity) {
+		FolderDto dto = null;
+		if(entity != null){
+			dto = new FolderDto();
+			dto.setEnabled(entity.getEnabled());
+			dto.setEs_canal(entity.getEs_canal());
+			dto.setFechaActualizacion(entity.getFechaActualizacion());
+			dto.setFechaCreacion(entity.getFechaCreacion());
+			dto.setId(entity.getId());
+			dto.setName(entity.getName());
+			
+			//Children
+			List<AbstractFolderEntity> children = entity.getFolderList();
+			if(children != null){
+				List<FolderDto> subFolders = new LinkedList<FolderDto>();
+				for(AbstractFolderEntity child: children){
+					//Recursive case
+					subFolders.add(entityFolderToDto(child));
+				}
+				dto.setFolderList(subFolders);
+			}//else: base case
+			
+			//TODO: dto.setZoneList(zoneList);
+		}
+		return dto;
+	}
 }

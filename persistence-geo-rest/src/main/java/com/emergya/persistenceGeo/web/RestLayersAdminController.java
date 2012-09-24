@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.emergya.persistenceGeo.dto.AuthorityDto;
+import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
 import com.emergya.persistenceGeo.dto.SimplePropertyDto;
 import com.emergya.persistenceGeo.dto.UserDto;
@@ -550,11 +551,12 @@ public class RestLayersAdminController implements Serializable{
 	 */
 	@RequestMapping(value = "/persistenceGeo/saveFolder", method = RequestMethod.POST)
 	public @ResponseBody 
-	void saveFolder(@RequestParam("name") String name,
+	FolderDto saveFolder(@RequestParam("name") String name,
 			@RequestParam("type") String type,
-			@RequestParam("enabled") Boolean enabled,
-			@RequestParam("isChannel") Boolean isChannel,
-			@RequestParam("isPlain") Boolean isPlain){
+			@RequestParam("enabled") String enabled,
+			@RequestParam("isChannel") String isChannel,
+			@RequestParam("isPlain") String isPlain,
+			@RequestParam(value = "parentFolder", required = false) String parentFolder){
 		try{
 			/*
 			//TODO: Secure with logged user
@@ -564,6 +566,7 @@ public class RestLayersAdminController implements Serializable{
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+		return null;
 	}
 
 }
