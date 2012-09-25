@@ -13,11 +13,26 @@ var allLayerTypesUrl = "rest/persistenceGeo/getLayerTypes";
 
 var loadLayerTypeUrl = "rest/persistenceGeo/getLayerTypeProperties/";
 
+var loadFoldersBaseUrl = "rest/persistenceGeo/loadFolders/";
+
+var loadFoldersGroupBaseUrl = "rest/persistenceGeo/loadFoldersByGroup/";
+
 var user;
 var store;
 var toRemove = new Array();
 var paramsToSend = {};
 var app;
+var userOrGroupToSaveFolder;
+var typeToSaveFolder;
+var saveFolderForm;
+
+function getFoldersUrl(){
+	if(typeToSaveFolder == PersistenceGeoParser.SAVE_FOLDER_TYPES.GROUP){
+		return loadFoldersGroupBaseUrl + userOrGroupToSaveFolder;
+	}else{
+		return loadFoldersBaseUrl + userOrGroupToSaveFolder;
+	}
+}
 
 Ext.onReady(function() {
 
@@ -35,6 +50,165 @@ Ext.onReady(function() {
 				iconCls : 'upload-icon'
 			}
 		};
+
+	saveFolderForm = new Ext.FormPanel({
+			url: createUserUrl,
+	        title: 'Save Folder Form',
+			cls: 'my-form-class',
+			width: 350,
+			height: 200,
+			items: [{
+		         fieldLabel:'Select group'
+				,xtype:'combo'
+				,name: 'userGroup'
+		        ,displayField:'nombre'
+		        ,valueField:'id'
+		        ,store: new Ext.data.JsonStore({
+		             url: allGroupsUrl,
+		             remoteSort: false,
+		             autoLoad:true,
+		             idProperty: 'id',
+		             root: 'data',
+		             totalProperty: 'results',
+		             fields: ['id','nombre']
+		         })
+		        ,triggerAction:'all'
+		        ,mode:'local'
+		        ,listeners:{select:{fn:function(combo, value) {
+		        	typeToSaveFolder = PersistenceGeoParser.SAVE_FOLDER_TYPES.GROUP;
+		        	userOrGroupToSaveFolder = value.id;
+		        	saveFolderForm.remove(saveFolderForm.items.items[6]);
+		        	saveFolderForm.add({
+				         fieldLabel:'Select parent'
+								,xtype:'combo'
+								,name: 'parentFolder'
+						        ,displayField:'name'
+						        ,valueField:'id'
+						        ,store: new Ext.data.JsonStore({
+						             url: getFoldersUrl(),
+						             remoteSort: false,
+						             autoLoad:true,
+						             idProperty: 'id',
+						             root: 'data',
+						             totalProperty: 'results',
+						             fields: ['id','name']
+						         })
+						        ,triggerAction:'all'
+						        ,mode:'local'
+							});
+		        	saveFolderForm.doLayout();
+		            }}
+		        }
+			},
+			{
+		         fieldLabel:'Select user'
+				,xtype:'combo'
+		        ,displayField:'username'
+		        ,valueField:'id'
+		        ,store: new Ext.data.JsonStore({
+		             url: allUsersUrl,
+		             remoteSort: false,
+		             autoLoad:true,
+		             idProperty: 'username',
+		             root: 'data',
+		             totalProperty: 'results',
+		             fields: ['id','username']
+		         })
+		        ,triggerAction:'all'
+		        ,mode:'local'
+		        ,listeners:{select:{fn:function(combo, value) {
+		        	typeToSaveFolder = PersistenceGeoParser.SAVE_FOLDER_TYPES.USER;
+		        	userOrGroupToSaveFolder = value.id;
+		        	saveFolderForm.remove(saveFolderForm.items.items[6]);
+		        	saveFolderForm.add({
+				         fieldLabel:'Select parent'
+								,xtype:'combo'
+								,name: 'parentFolder'
+						        ,displayField:'name'
+						        ,valueField:'id'
+						        ,store: new Ext.data.JsonStore({
+						             url: getFoldersUrl(),
+						             remoteSort: false,
+						             autoLoad:true,
+						             idProperty: 'id',
+						             root: 'data',
+						             totalProperty: 'results',
+						             fields: ['id','name']
+						         })
+						        ,triggerAction:'all'
+						        ,mode:'local'
+							});
+		        	saveFolderForm.doLayout();
+		            }}
+		        }
+			},
+			{
+				xtype: 'textfield',
+				fieldLabel: 'Name',
+				name: 'name'
+			},
+			{
+				xtype: 'textfield',
+				fieldLabel: 'Enabled',
+				name: 'enabled'
+			},
+			{
+				xtype: 'textfield',
+				fieldLabel: 'Is Channel',
+				name: 'isChannel'
+			},
+			{
+				xtype: 'textfield',
+				fieldLabel: 'Is Plain',
+				name: 'isPlain'
+			},
+			{
+		         fieldLabel:'Select parent'
+				,xtype:'combo'
+				,name: 'parentFolder'
+		        ,displayField:'name'
+		        ,valueField:'id'
+		        ,store: new Ext.data.JsonStore({
+		             url: getFoldersUrl(),
+		             remoteSort: false,
+		             autoLoad:false,
+		             idProperty: 'id',
+		             root: 'data',
+		             totalProperty: 'results',
+		             fields: ['id','name']
+		         })
+		        ,triggerAction:'all'
+		        ,mode:'local'
+			}],
+		    buttons: [{
+				text: 'Save',
+				handler: function() {
+					var params = {
+							name: saveFolderForm.items.items[2].getValue(),
+							enabled: saveFolderForm.items.items[3].getValue(),
+							isChannel: saveFolderForm.items.items[4].getValue(),
+							isPlain: saveFolderForm.items.items[5].getValue(),
+							parentFolder: saveFolderForm.items.items[6].getValue()
+					};
+					
+					PersistenceGeoParser.saveFolder(typeToSaveFolder,userOrGroupToSaveFolder, params, 
+							function(form, action) {
+								Ext.Msg.alert('Folder saved', action.response.responseText);
+							},
+							function(form, action) {
+								if(!!action
+										&& !!action.response
+										&& !!action.response.status
+										&& action.response.status == "200"
+										&& !!action.response.responseText){
+									Ext.Msg.alert('Folder saved', action.response.responseText);
+								}else{
+									Ext.Msg.alert('Warning', 'Error Unable to Load Form Data.');
+								}
+							});
+				}
+			}]
+	});
 
 	var saveUserForm = new Ext.FormPanel({
 			url: createUserUrl,
@@ -220,12 +394,7 @@ Ext.onReady(function() {
 	        	xtype: "tabpanel",
 	            anchor: "95%",
 	            activeTab: 0,
-	            items: [
-	                    saveUserForm
-	                    ,
-	                    loadLayersForm
-	                    ,saveLayerForm
-	                    ]
+	            items: [saveUserForm, loadLayersForm, saveLayerForm, saveFolderForm]
 	        	}]
 	    });
 	 

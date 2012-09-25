@@ -49,11 +49,11 @@ public class FolderDto implements Serializable{
 	protected Long id;
 	protected String name;
 	protected Boolean enabled;
-	protected Boolean es_canal;
-	protected Boolean es_instrumento_planificacion;
-	protected Date fechaCreacion;
-	protected Date fechaActualizacion;
-	
+	protected Boolean isChannel;
+	protected Boolean isPlain;
+	protected Date createDate;
+	protected Date updateDate;
+	protected Long idParent;
 	protected List<FolderDto> folderList;
 	protected List<String> zoneList;
 	
@@ -78,26 +78,26 @@ public class FolderDto implements Serializable{
 	/**
 	 * @return the es_canal
 	 */
-	public Boolean getEs_canal() {
-		return es_canal;
+	public Boolean getIsChannel() {
+		return isChannel;
 	}
 	/**
 	 * @return the es_instrumento_planificacion
 	 */
-	public Boolean getEs_instrumento_planificacion() {
-		return es_instrumento_planificacion;
+	public Boolean getIsPlain() {
+		return isPlain;
 	}
 	/**
 	 * @return the fechaCreacion
 	 */
-	public Date getFechaCreacion() {
-		return fechaCreacion;
+	public Date getCreateDate() {
+		return createDate;
 	}
 	/**
 	 * @return the fechaActualizacion
 	 */
-	public Date getFechaActualizacion() {
-		return fechaActualizacion;
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 	/**
 	 * @return the folderList
@@ -132,26 +132,26 @@ public class FolderDto implements Serializable{
 	/**
 	 * @param es_canal the es_canal to set
 	 */
-	public void setEs_canal(Boolean es_canal) {
-		this.es_canal = es_canal;
+	public void setIsChannel(Boolean es_canal) {
+		this.isChannel = es_canal;
 	}
 	/**
 	 * @param es_instrumento_planificacion the es_instrumento_planificacion to set
 	 */
-	public void setEs_instrumento_planificacion(Boolean es_instrumento_planificacion) {
-		this.es_instrumento_planificacion = es_instrumento_planificacion;
+	public void setIsPlain(Boolean es_instrumento_planificacion) {
+		this.isPlain = es_instrumento_planificacion;
 	}
 	/**
 	 * @param fechaCreacion the fechaCreacion to set
 	 */
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
+	public void setCreateDate(Date fechaCreacion) {
+		this.createDate = fechaCreacion;
 	}
 	/**
 	 * @param fechaActualizacion the fechaActualizacion to set
 	 */
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
+	public void setUpdateDate(Date fechaActualizacion) {
+		this.updateDate = fechaActualizacion;
 	}
 	/**
 	 * @param folderList the folderList to set
@@ -164,5 +164,17 @@ public class FolderDto implements Serializable{
 	 */
 	public void setZoneList(List<String> zoneList) {
 		this.zoneList = zoneList;
+	}
+	/**
+	 * @return the idParent
+	 */
+	public Long getIdParent() {
+		return idParent;
+	}
+	/**
+	 * @param idParent the idParent to set
+	 */
+	public void setIdParent(Long idParent) {
+		this.idParent = idParent;
 	}
 }

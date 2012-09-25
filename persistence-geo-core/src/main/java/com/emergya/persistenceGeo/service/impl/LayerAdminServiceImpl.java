@@ -568,17 +568,28 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	public FolderDto getRootGroupFolder(Long idGroup) {
 		return entityFolderToDto(folderDao.findRootByGroup(idGroup));
 	}
+	
+	/**
+	 * Saves a folder
+	 * 
+	 * @return saved folder
+	 */
+	public FolderDto saveFolder(FolderDto folder){
+		AbstractFolderEntity entity = dtoFolderToentity(folder);
+		return entityFolderToDto(folderDao.makePersistent(entity));
+	}
 
 	private FolderDto entityFolderToDto(AbstractFolderEntity entity) {
 		FolderDto dto = null;
 		if(entity != null){
 			dto = new FolderDto();
 			dto.setEnabled(entity.getEnabled());
-			dto.setEs_canal(entity.getIsChannel());
-			dto.setFechaActualizacion(entity.getUpdateDate());
-			dto.setFechaCreacion(entity.getCreateDate());
+			dto.setIsChannel(entity.getIsChannel());
+			dto.setUpdateDate(entity.getUpdateDate());
+			dto.setCreateDate(entity.getCreateDate());
 			dto.setId(entity.getId());
 			dto.setName(entity.getName());
+			
 			
 			//Children
 			List<AbstractFolderEntity> children = entity.getFolderList();
@@ -591,8 +602,33 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 				dto.setFolderList(subFolders);
 			}//else: base case
 			
-			//TODO: dto.setZoneList(zoneList);
+			//TODO: entity.setZoneList(zoneList);
 		}
 		return dto;
+	}
+
+	private AbstractFolderEntity dtoFolderToentity(FolderDto dto) {
+		AbstractFolderEntity entity = null;
+		if(dto != null){
+			if(dto.getId() != null){
+				entity = folderDao.findById(dto.getId(), true);
+			}else{
+				entity = instancer.createFolder();
+			}
+			entity.setEnabled(dto.getEnabled());
+			entity.setIsChannel(dto.getIsChannel());
+			entity.setUpdateDate(dto.getUpdateDate());
+			entity.setCreateDate(dto.getCreateDate());
+			entity.setName(dto.getName());
+			
+			//TODO: Children if is necesary
+			
+			if(dto.getIdParent() != null){
+				entity.setParent(folderDao.findById(dto.getIdParent(), false));
+			}
+			
+			//TODO: entity.setZoneList(zoneList);
+		}
+		return entity;
 	}
 }

@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -544,15 +545,14 @@ public class RestLayersAdminController implements Serializable{
 	}
 
 	/**
-	 * This method saves a layer related with a group
+	 * This method saves a folder related with a group
 	 * 
 	 * @param group
-	 * @param uploadfile
 	 */
-	@RequestMapping(value = "/persistenceGeo/saveFolder", method = RequestMethod.POST)
+	@RequestMapping(value = "/persistenceGeo/saveFolderByGroup/{groupId}", method = RequestMethod.POST)
 	public @ResponseBody 
-	FolderDto saveFolder(@RequestParam("name") String name,
-			@RequestParam("type") String type,
+	FolderDto saveFolderByGroup(@PathVariable String groupId,
+			@RequestParam("name") String name,
 			@RequestParam("enabled") String enabled,
 			@RequestParam("isChannel") String isChannel,
 			@RequestParam("isPlain") String isPlain,
@@ -563,10 +563,172 @@ public class RestLayersAdminController implements Serializable{
 			String username = ((UserDetails) SecurityContextHolder.getContext()
 					.getAuthentication().getPrincipal()).getUsername(); 
 			 */
+			if(StringUtils.isEmpty(parentFolder) || !StringUtils.isNumeric(parentFolder)){
+				FolderDto rootFolder = layerAdminService.getRootGroupFolder(Long.decode(groupId));
+				return saveFolderBy(name, enabled, isChannel, isPlain, 
+						rootFolder != null ? rootFolder.getId() : null);
+			}else{
+				return saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder));
+			}
 		}catch (Exception e){
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	/**
+	 * This method saves a folder related with a user
+	 * 
+	 * @param user
+	 */
+	@RequestMapping(value = "/persistenceGeo/saveFolder/{username}", method = RequestMethod.POST)
+	public @ResponseBody 
+	FolderDto saveFolder(@PathVariable String username,
+			@RequestParam("name") String name,
+			@RequestParam("enabled") String enabled,
+			@RequestParam("isChannel") String isChannel,
+			@RequestParam("isPlain") String isPlain,
+			@RequestParam(value = "parentFolder", required = false) String parentFolder){
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			if(StringUtils.isEmpty(parentFolder) || !StringUtils.isNumeric(parentFolder)){
+				UserDto user = userAdminService.obtenerUsuario(username);
+				FolderDto rootFolder = layerAdminService.getRootFolder(user.getId());
+				return saveFolderBy(name, enabled, isChannel, isPlain, 
+						rootFolder != null ? rootFolder.getId() : null);
+			}else{
+				return saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder));
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private FolderDto saveFolderBy(String name, String enabled, String isChannel,
+			String isPlain, Long parentFolder){
+		FolderDto folder = new FolderDto();
+		folder.setName(name);
+		folder.setEnabled(enabled != null ? enabled.toLowerCase().equals("true") : false);
+		folder.setIsChannel(isChannel != null ? isChannel.toLowerCase().equals("true") : false);
+		folder.setIsPlain(isPlain != null ? isPlain.toLowerCase().equals("true") : false);
+		folder.setIdParent(parentFolder);
+		//TODO: folder.setZoneList(zoneList);
+		return layerAdminService.saveFolder(folder);
+	}
+
+
+	/**
+	 * This method loads all folders related with a user
+	 * 
+	 * @param username
+	 * 
+	 * @return JSON file with folders
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFolders/{username}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFolders(@PathVariable String username){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			if(username != null){
+				folders = new LinkedList<FolderDto>();
+				UserDto user = userAdminService.obtenerUsuario(username);
+				FolderDto rootFolder = layerAdminService.getRootFolder(user.getId());
+				getFolderTree(rootFolder, folders, new Integer(0));
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		
+		result.put(RESULTS, folders != null ? folders.size(): 0);
+		result.put(ROOT, folders);
+
+		return result;
+	}
+
+
+	/**
+	 * This method loads all folders related with a user
+	 * 
+	 * @param username
+	 * 
+	 * @return JSON file with folders
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFoldersByGroup/{idGroup}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFoldersByGroup(@PathVariable String idGroup){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			if(idGroup != null){
+				folders = new LinkedList<FolderDto>();
+				FolderDto rootFolder = layerAdminService.getRootGroupFolder(Long.decode(idGroup));
+				getFolderTree(rootFolder, folders, new Integer(0));
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		
+		result.put(RESULTS, folders != null ? folders.size(): 0);
+		result.put(ROOT, folders);
+
+		return result;
+	}
+	
+	/**
+	 * Recursive tree build
+	 * 
+	 * @param folder parent at tree
+	 * @param tree building
+	 * @param level level on tree
+	 */
+	private void getFolderTree(FolderDto folder, List<FolderDto> tree, Integer level){
+		if(folder != null){
+			folder.setName(getFolderName(folder.getName(), level));
+			tree.add(folder);
+			if(folder.getFolderList() != null){
+				level++;
+				for(FolderDto subFolder: folder.getFolderList()){
+					getFolderTree(subFolder, tree, level);
+				}
+				level--;
+			}
+		}
+	}
+	
+	private static final String TREE_LEVEL = "-";
+
+	/**
+	 * Build folder name on tree
+	 * 
+	 * @param name default name on tree
+	 * @param level on tree
+	 * 
+	 * @return '-' repeated level times + name 
+	 */
+	private String getFolderName(String name, Integer level) {
+		String result = name;
+		for(int i = 0; i< level; i++){
+			result = TREE_LEVEL + result;
+		}
+		return result;
 	}
 
 }

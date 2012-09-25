@@ -94,8 +94,7 @@ PersistenceGeoParser =
 					getRestBaseUrl: function (){
 						return this.REST_COMPONENT_URL;
 					},
-					
-					
+										
 					SAVE_LAYER_BASE_URL: function (){
 						return this.getRestBaseUrl() + "/persistenceGeo/saveLayerByUser/";
 					},
@@ -106,6 +105,24 @@ PersistenceGeoParser =
 					
 					LOAD_LAYERS_BY_GROUP_BASE_URL: function() {
 						return this.getRestBaseUrl() + "/persistenceGeo/loadLayersByGroup/";
+					},
+					
+					SAVE_FOLDER_BASE_URL: function(){
+						return this.getRestBaseUrl()+ "/persistenceGeo/saveFolder/";
+					},
+					
+					SAVE_FOLDER_GROUP_BASE_URL: function(){
+						return this.getRestBaseUrl()+ "/persistenceGeo/saveFolderByGroup/";
+					},
+					
+					/**
+					 * Property: SAVE_FOLDER_TYPES
+					 * 
+					 * {Map} with save folder types
+					 */
+					SAVE_FOLDER_TYPES: {
+						USER: "USER",
+						GROUP: "GROUP"
 					},
 					
 					getIdLayerProperty: function(nameProperty){
@@ -164,7 +181,7 @@ PersistenceGeoParser =
 					 * Function: loadLayersByUser
 					 * 
 					 * Loads OpenLayers layers and call to onload callback function (layers). 
-					 * Used to load all user layers
+					 * Used to load all user layers. Call to onloadcallback with an array of ``OpenLayers.Layer`` result.
 					 */
 					loadLayersByUser: function(user, onload){
 						this.loadLayers(user, onload, this.LOAD_LAYERS_BY_USER_BASE_URL() + user);
@@ -174,7 +191,7 @@ PersistenceGeoParser =
 					 * Function: loadLayersByUser
 					 * 
 					 * Loads OpenLayers layers and call to onload callback function (layers). 
-					 * Used to load all user layers
+					 * Used to load all user layers. Call to onloadcallback with an array of ``OpenLayers.Layer`` result.
 					 */
 					loadLayersByGroup: function(group, onload){
 						this.loadLayers(group, onload, this.LOAD_LAYERS_BY_GROUP_BASE_URL() + group);
@@ -184,7 +201,7 @@ PersistenceGeoParser =
 					 * Function: loadLayers
 					 * 
 					 * Loads OpenLayers layers and call to onload callback function (layers). 
-					 * Used to load all user layers
+					 * Used to load all user layers. 
 					 */
 					loadLayers: function(userOrGroup, onload, url){
 						store = new Ext.data.JsonStore({
@@ -251,15 +268,97 @@ PersistenceGeoParser =
 						return new OpenLayers.Bounds(result[0],result[1],result[2],result[3]);
 					},
 					
+					/**
+					 * Function: saveFolderByUser
+					 * 
+					 * Save a folder by user.
+					 * 
+					 * Parameters: 
+					 * 		type - {<Text>} Type of save @see SAVE_FOLDER_TYPES
+					 * 		userOrGroup - {<Text>} User name or group id
+					 * 		params - {<Map>} with form parameters (needs: enabled, isChannel, isPlain)
+					 * 		onsuccess - {<Function>} callback to be send to the success listener to be called 
+					 * 		onfailure - {<Function>} callback to be send to the failure listener to be called
+					 */
+					saveFolder: function (type, userOrGroup, params, onsuccess, onfailure){
+						var url;
+						if(type == this.SAVE_FOLDER_TYPES.GROUP){
+							url = this.SAVE_FOLDER_GROUP_BASE_URL() + userOrGroup;
+						}else{
+							url = this.SAVE_FOLDER_BASE_URL() + userOrGroup;
+						}
+						
+						this.sendFormPostData(url, params, onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: saveFolderByUser
+					 * 
+					 * Save a folder by user.
+					 * 
+					 * Parameters: 
+					 * 		username - {<Text>} User name
+					 * 		enabled - {<Text>} 
+					 * 		isChannel - {<Text>} 
+					 * 		isPlain - {<Text>}
+					 * 		parentFolder - {<Text>}
+					 * 		onsuccess - {<Function>} callback to be send to the success listener to be called 
+					 * 		onfailure - {<Function>} callback to be send to the failure listener to be called
+					 */
+					saveFolderByUser: function (username, foldername, enabled, isChannel, isPlain, parentFolder, onsuccess, onfailure){
+						var url = this.SAVE_FOLDER_BASE_URL() + username;
+						var params = {
+								name: foldername,
+								enabled: enabled,
+								isChannel: isChannel,
+								isPlain: isPlain
+						};
+						
+						if(!!parentFolder){
+							params.parentFolder = parentFolder;
+						}
+						
+						this.sendFormPostData(url, params, onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: saveFolderByGroup
+					 * 
+					 * Save a folder by group
+					 * 
+					 * Parameters: 
+					 * 		groupId - {<Text>} Group id
+					 * 		enabled - {<Text>} 
+					 * 		isChannel - {<Text>} 
+					 * 		isPlain - {<Text>}
+					 * 		parentFolder - {<Text>}
+					 * 		onsuccess - {<Function>} callback to be send to the success listener to be called 
+					 * 		onfailure - {<Function>} callback to be send to the failure listener to be called
+					 */
+					saveFolderByGroup: function (groupId, foldername, enabled, isChannel, isPlain, parentFolder, onsuccess, onfailure){
+						var url = this.SAVE_FOLDER_GROUP_BASE_URL() + groupId;
+						var params = {
+								name: foldername,
+								enabled: enabled,
+								isChannel: isChannel,
+								isPlain: isPlain
+						};
+						
+						if(!!parentFolder){
+							params.parentFolder = parentFolder;
+						}
+						
+						this.sendFormPostData(url, params, onsuccess, onfailure);
+					},
+					
+					/**
+					 * Method: saveLayerByUser
+					 * 
+					 * Save a layer for a user and call to callbacks functions
+					 */
 					saveLayerByUser: function (userName, properties, onsuccess, onfailure){
-						var saveLayerForm = new Ext.FormPanel({
-							url: this.SAVE_LAYER_BASE_URL() + userName,
-							method: 'POST',
-					        title: 'Save layer Form',
-					        fileUpload: true,	   
-							items: [],
-						    buttons: []
-						});
+						
+						var url = this.SAVE_LAYER_BASE_URL() + userName
 						
 						var params = {};
 						
@@ -284,8 +383,27 @@ PersistenceGeoParser =
 							}
 						}
 						
-						saveLayerForm.getForm().load({
-							url: this.SAVE_LAYER_BASE_URL() + userName,
+						this.sendFormPostData(url, params, onsuccess, onfailure);
+						
+					},
+					
+					/**
+					 * Private: sendFormPostData
+					 * 
+					 * Send a form and call to callbacks functions
+					 */
+					sendFormPostData: function (url, params, onsuccess, onfailure){
+						var tempForm = new Ext.FormPanel({
+							url: url,
+							method: 'POST',
+					        title: 'Save layer Form',
+					        fileUpload: true,	   
+							items: [],
+						    buttons: []
+						});
+						
+						tempForm.getForm().load({
+							url: url,
 							headers: {Accept: 'application/json, text/javascript, */*; q=0.01'},
 							waitMsg: 'loading...',
 							params : params,
@@ -293,7 +411,6 @@ PersistenceGeoParser =
 							success: onsuccess ? onsuccess : function(){},
 							failure: onfailure ? onfailure: function(){}
 						});
-						
 					}
 					
 };

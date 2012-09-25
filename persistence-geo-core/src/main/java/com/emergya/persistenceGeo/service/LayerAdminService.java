@@ -195,4 +195,11 @@ public interface LayerAdminService extends AbstractService {
 	 * @return root folder
 	 */
 	public FolderDto getRootGroupFolder(Long idGroup);
+	
+	/**
+	 * Saves a folder
+	 * 
+	 * @return saved folder
+	 */
+	public FolderDto saveFolder(FolderDto folder);
 }
