@@ -320,9 +320,9 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			dto.setServer_resource(entity.getServer_resource());
 			dto.setPublicized(entity.getPublicized());
 			dto.setEnabled(entity.getEnabled());
-			dto.setPertenece_a_canal(entity.getPertenece_a_canal());
-			dto.setCreateDate(entity.getFechaCreacion());
-			dto.setUpdateDate(entity.getFechaActualizacion());
+			dto.setPertenece_a_canal(entity.getIsChannel());
+			dto.setCreateDate(entity.getCreateDate());
+			dto.setUpdateDate(entity.getUpdateDate());
 			
 			//Layer type
 			if(entity.getType() != null
@@ -351,7 +351,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			List<AbstractAuthorityEntity> authorities = authDao.findByLayer(entity.getId());
 			if(authorities != null && !authorities.isEmpty()){
 				// Authorities have just one element
-				dto.setAuth(authorities.get(0).getAuthority());
+				dto.setAuth(authorities.get(0).getName());
 			}
 			// Add style
 			List<String> styleDto = new LinkedList<String>();
@@ -396,7 +396,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			}else{
 				entity =  layerDao.createLayer(dto.getName());
 				dto.setId(entity.getId());
-				entity.setFechaCreacion(now);
+				entity.setCreateDate(now);
 			}
 			
 			// Properties
@@ -418,8 +418,8 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			entity.setServer_resource(dto.getServer_resource());
 			entity.setPublicized(dto.getPublicized());
 			entity.setEnabled(dto.getEnabled());
-			entity.setPertenece_a_canal(dto.getPertenece_a_canal());
-			entity.setFechaActualizacion(now);
+			entity.setIsChannel(dto.getPertenece_a_canal());
+			entity.setUpdateDate(now);
 			
 			//Layer type
 			if(dto.getType() != null){
@@ -485,8 +485,8 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			// Add own attributes
 			dto.setId(entity.getId());
 			dto.setName(entity.getName());
-			dto.setCreateDate(entity.getFechaCreacion());
-			dto.setUpdateDate(entity.getFechaActualizacion());
+			dto.setCreateDate(entity.getCreateDate());
+			dto.setUpdateDate(entity.getUpdateDate());
 			// Add relational attributes
 			// Add layers
 			List<String> layersDto = new LinkedList<String>();
@@ -518,8 +518,8 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			dto.setRule_id((Long )entity.getId());
 			dto.setSymbolizer(entity.getSymbolizer());
 			dto.setFilter(entity.getFilter());
-			dto.setCreateDate(entity.getFechaCreacion());
-			dto.setUpdateDate(entity.getFechaActualizacion());
+			dto.setCreateDate(entity.getCreateDate());
+			dto.setUpdateDate(entity.getUpdateDate());
 			// Add relational attributes
 			// Add style
 			dto.setStyle(entity.getStyle().getName());
@@ -574,9 +574,9 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		if(entity != null){
 			dto = new FolderDto();
 			dto.setEnabled(entity.getEnabled());
-			dto.setEs_canal(entity.getEs_canal());
-			dto.setFechaActualizacion(entity.getFechaActualizacion());
-			dto.setFechaCreacion(entity.getFechaCreacion());
+			dto.setEs_canal(entity.getIsChannel());
+			dto.setFechaActualizacion(entity.getUpdateDate());
+			dto.setFechaCreacion(entity.getCreateDate());
 			dto.setId(entity.getId());
 			dto.setName(entity.getName());
 			

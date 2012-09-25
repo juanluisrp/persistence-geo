@@ -73,7 +73,7 @@ public class FolderEntity extends AbstractFolderEntity {
 		name = folderName;
 	}
 	
-	@Column(name = "name_folder")
+	@Column(name = "name")
 	public String getName() {
 		return name;
 	}
@@ -83,24 +83,24 @@ public class FolderEntity extends AbstractFolderEntity {
 		return enabled;
 	}
 
-	@Column(name = "canal")
-	public Boolean getEs_canal() {
-		return es_canal;
+	@Column(name = "is_channel")
+	public Boolean getIsChannel() {
+		return isChannel;
 	}
 
-	@Column(name = "instrumento_planificacion")
-	public Boolean getEs_instrumento_planificacion() {
-		return es_instrumento_planificacion;
+	@Column(name = "is_plain")
+	public Boolean getIsPlain() {
+		return isPlain;
 	}
 
-	@Column(name = "createDate")
-	public Date getFechaCreacion() {
-		return fechaCreacion;
+	@Column(name = "create_date")
+	public Date getCreateDate() {
+		return createDate;
 	}
 
-	@Column(name = "updateDate")
-	public Date getFechaActualizacion() {
-		return fechaActualizacion;
+	@Column(name = "update_date")
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 	
 	@Id
@@ -127,13 +127,13 @@ public class FolderEntity extends AbstractFolderEntity {
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch  = FetchType.LAZY)
-    @JoinColumn(name = "auth_id")
+    @JoinColumn(name = "folder_auth_id")
 	public AuthorityEntity getAuthority() {
 		return (AuthorityEntity) authority;
 	}
 
 	@ManyToOne(cascade = CascadeType.REFRESH, fetch  = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "folder_user_id")
 	public UserEntity getUser() {
 		return (UserEntity) user;
 	}

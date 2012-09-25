@@ -69,7 +69,7 @@ public class UserEntity extends AbstractUserEntity {
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     public Long getId() {
-        return user_id;
+        return id;
     }
 
     @Column(name = "username", nullable = false)
@@ -112,18 +112,18 @@ public class UserEntity extends AbstractUserEntity {
 		return valid;
 	}
 
-    @Column(name = "fechaCreacion")
-	public Date getFechaCreacion() {
-		return fechaCreacion;
+	@Column(name = "create_date")
+	public Date getCreateDate() {
+		return createDate;
 	}
 
-    @Column(name = "fechaActualizacion")
-	public Date getFechaActualizacion() {
-		return fechaActualizacion;
+	@Column(name = "update_date")
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 	
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_authority_id")
 	public AuthorityEntity getAuthority() {
 		return (AuthorityEntity) authority;
 	}

@@ -84,7 +84,7 @@ public class LayerEntity extends AbstractLayerEntity {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "layer_typ_id")
+    @JoinColumn(name = "layer_layer_type_id")
 	public LayerTypeEntity getType() {
 		return (LayerTypeEntity) type;
 	}
@@ -104,19 +104,19 @@ public class LayerEntity extends AbstractLayerEntity {
 		return enabled;
 	}
 
-	@Column(name = "pertenece_a_canal")
-	public Boolean getPertenece_a_canal() {
-		return pertenece_a_canal;
+	@Column(name = "is_channel")
+	public Boolean getIsChannel() {
+		return isChannel;
 	}
 
-	@Column(name = "fechaCreacion")
-	public Date getFechaCreacion() {
-		return fechaCreacion;
+	@Column(name = "creat_date")
+	public Date getCreateDate() {
+		return createDate;
 	}
 
-	@Column(name = "fechaActualizacion")
-	public Date getFechaActualizacion() {
-		return fechaActualizacion;
+	@Column(name = "update_date")
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 
 	@Id
@@ -127,13 +127,13 @@ public class LayerEntity extends AbstractLayerEntity {
 	}
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "layer_user_id")
 	public UserEntity getUser() {
 		return (UserEntity) user;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auth_id")
+    @JoinColumn(name = "layer_auth_id")
 	public AuthorityEntity getAuth() {
 		return (AuthorityEntity) auth;
 	}

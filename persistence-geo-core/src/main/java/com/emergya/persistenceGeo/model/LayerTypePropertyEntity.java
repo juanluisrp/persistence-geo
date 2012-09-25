@@ -71,6 +71,4 @@ public class LayerTypePropertyEntity extends AbstractLayerTypePropertyEntity {
 		this.id = (Long) id;
 	}
 
-	
-
 }

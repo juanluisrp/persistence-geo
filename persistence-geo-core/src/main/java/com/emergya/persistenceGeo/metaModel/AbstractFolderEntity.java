@@ -50,10 +50,10 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	
 	protected String name;
 	protected Boolean enabled;
-	protected Boolean es_canal;
-	protected Boolean es_instrumento_planificacion;
-	protected Date fechaCreacion;
-	protected Date fechaActualizacion;
+	protected Boolean isChannel;
+	protected Boolean isPlain;
+	protected Date createDate;
+	protected Date updateDate;
 
 	protected List folderList;
 	protected List zoneList;
@@ -83,21 +83,21 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	 */
 	public abstract Boolean getEnabled();
 	/**
-	 * @return the es_canal
+	 * @return the isPlain
 	 */
-	public abstract Boolean getEs_canal();
+	public abstract Boolean getIsPlain();
 	/**
-	 * @return the es_instrumento_planificacion
+	 * @return the isChannel
 	 */
-	public abstract Boolean getEs_instrumento_planificacion();
+	public abstract Boolean getIsChannel();
 	/**
 	 * @return the fechaCreacion
 	 */
-	public abstract Date getFechaCreacion();
+	public abstract Date getCreateDate();
 	/**
 	 * @return the fechaActualizacion
 	 */
-	public abstract Date getFechaActualizacion();
+	public abstract Date getUpdateDate();
 	/**
 	 * @return the folderList
 	 */
@@ -140,31 +140,31 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	}
 
 	/**
-	 * @param es_canal the es_canal to set
+	 * @param isChannel the isChannel to set
 	 */
-	public void setEs_canal(Boolean es_canal) {
-		this.es_canal = es_canal;
+	public void setIsChannel(Boolean isChannel) {
+		this.isChannel = isChannel;
 	}
 
 	/**
-	 * @param es_instrumento_planificacion the es_instrumento_planificacion to set
+	 * @param isPlain the isPlain to set
 	 */
-	public void setEs_instrumento_planificacion(Boolean es_instrumento_planificacion) {
-		this.es_instrumento_planificacion = es_instrumento_planificacion;
+	public void setIsPlain(Boolean isPlain) {
+		this.isPlain = isPlain;
 	}
 
 	/**
-	 * @param fechaCreacion the fechaCreacion to set
+	 * @param fechaCreacion the createDate to set
 	 */
-	public void setFechaCreacion(Date fechaCreacion) {
-		this.fechaCreacion = fechaCreacion;
+	public void setCreateDate(Date createDate) {
+		this.createDate = createDate;
 	}
 
 	/**
 	 * @param fechaActualizacion the fechaActualizacion to set
 	 */
-	public void setFechaActualizacion(Date fechaActualizacion) {
-		this.fechaActualizacion = fechaActualizacion;
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
 
 	/**
