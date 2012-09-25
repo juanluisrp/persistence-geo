@@ -38,7 +38,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractRuleEntity;
@@ -93,7 +94,8 @@ public class RuleEntity extends AbstractRuleEntity {
 		this.id = (Long) id;
 	}
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "rule_style_id")
 	public StyleEntity getStyle() {
 		return (StyleEntity) style;
 	}

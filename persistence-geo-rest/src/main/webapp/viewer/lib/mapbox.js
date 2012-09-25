@@ -1,4 +1,5 @@
 var saveLayerBaseUrl = "rest/persistenceGeo/saveLayerByUser/";
+var saveLayerGroupBaseUrl = "rest/persistenceGeo/saveLayerByGroup/";
 var saveLayerUrl;
 
 var createUserUrl = "rest/persistenceGeo/admin/createUser";
@@ -291,6 +292,55 @@ Ext.onReady(function() {
 		        }
 			},
 			{
+		         fieldLabel:'Select group'
+				,xtype:'combo'
+				,name: 'userGroup'
+		        ,displayField:'nombre'
+		        ,valueField:'id'
+		        ,store: new Ext.data.JsonStore({
+		             url: allGroupsUrl,
+		             remoteSort: false,
+		             autoLoad:true,
+		             idProperty: 'id',
+		             root: 'data',
+		             totalProperty: 'results',
+		             fields: ['id','nombre']
+		         })
+		        ,triggerAction:'all'
+		        ,mode:'local'
+		        ,listeners:{select:{fn:function(combo, value) {
+		        	saveLayerUrl = saveLayerGroupBaseUrl + value.id;
+		        	user = value.id;
+		        	typeToSaveFolder = PersistenceGeoParser.SAVE_FOLDER_TYPES.GROUP;
+		        	userOrGroupToSaveFolder = value.id;
+		        	toRemove.push(saveLayerForm.add({
+				         fieldLabel:'Select parent'
+								,xtype:'combo'
+								,name: 'folderId'
+						        ,displayField:'name'
+						        ,valueField:'id'
+						        ,store: new Ext.data.JsonStore({
+						             url: getFoldersUrl(),
+						             remoteSort: false,
+						             autoLoad:true,
+						             idProperty: 'id',
+						             root: 'data',
+						             totalProperty: 'results',
+						             fields: ['id','name']
+						         })
+						        ,triggerAction:'all'
+						        ,mode:'local',
+	           					 listeners:{
+	     					        change: function(field, newValue, oldValue){
+	     					        	paramsToSend["folderId"] = newValue;
+	     					        }
+	     					     }
+							}));
+		        	saveLayerForm.doLayout();
+		            }}
+		        }
+			},
+			{
 		         fieldLabel:'Select user'
 				,xtype:'combo'
 		        ,displayField:'username'
@@ -309,12 +359,36 @@ Ext.onReady(function() {
 		        ,listeners:{select:{fn:function(combo, value) {
 		        	saveLayerUrl = saveLayerBaseUrl + value.id;
 		        	user = value.id;
+		        	typeToSaveFolder = PersistenceGeoParser.SAVE_FOLDER_TYPES.USER;
+		        	userOrGroupToSaveFolder = value.id;
+		        	toRemove.push(saveLayerForm.add({
+				         fieldLabel:'Select parent'
+								,xtype:'combo'
+								,name: 'folderId'
+						        ,displayField:'name'
+						        ,valueField:'id'
+						        ,store: new Ext.data.JsonStore({
+						             url: getFoldersUrl(),
+						             remoteSort: false,
+						             autoLoad:true,
+						             idProperty: 'id',
+						             root: 'data',
+						             totalProperty: 'results',
+						             fields: ['id','name']
+						         })
+						        ,triggerAction:'all'
+						        ,mode:'local',
+	           					 listeners:{
+	     					        change: function(field, newValue, oldValue){
+	     					        	paramsToSend["folderId"] = newValue;
+	     					        }
+	     					     }
+							}));
+		        	saveLayerForm.doLayout();
 		            }}
 		        }
 			}
-			,
-			fileCombo
-			],
+			,fileCombo],
 		    buttons: [{
 				text: 'Save',
 				handler: function() {
@@ -522,7 +596,7 @@ function loadLayerType(theForm, layerType){
 function fnLoadForm(theForm, url)
 {
 
-	if(url == saveLayerUrl && !!!theForm.items.items[4].getValue()){
+	if(url == saveLayerUrl || url == saveLayerGroupBaseUrl && !!!theForm.items.items[4].getValue()){
 		fnSaveLayerForm(theForm, url);
 	}else{
 		theForm.getForm().getEl().dom.action = url;
@@ -540,22 +614,39 @@ function fnSaveLayerForm(theForm, url)
 			properties: paramsToSend
 		 };
 	
-	PersistenceGeoParser.saveLayerByUser(user, params, 
-			function(form, action) {
-				Ext.Msg.alert('Layer saved', action.response.responseText);
-			},
-			function(form, action) {
-				if(!!action
-						&& !!action.response
-						&& !!action.response.status
-						&& action.response.status == "200"
-						&& !!action.response.responseText){
+	if(url.indexOf(saveLayerGroupBaseUrl) != -1){
+		PersistenceGeoParser.saveLayerByGroup(user, params, 
+				function(form, action) {
 					Ext.Msg.alert('Layer saved', action.response.responseText);
-				}else{
-					Ext.Msg.alert('Warning', 'Error Unable to Load Form Data.');
-				}
-			});
-	
+				},
+				function(form, action) {
+					if(!!action
+							&& !!action.response
+							&& !!action.response.status
+							&& action.response.status == "200"
+							&& !!action.response.responseText){
+						Ext.Msg.alert('Layer saved', action.response.responseText);
+					}else{
+						Ext.Msg.alert('Warning', 'Error Unable to Load Form Data.');
+					}
+				});
+	}else{
+		PersistenceGeoParser.saveLayerByUser(user, params, 
+				function(form, action) {
+					Ext.Msg.alert('Layer saved', action.response.responseText);
+				},
+				function(form, action) {
+					if(!!action
+							&& !!action.response
+							&& !!action.response.status
+							&& action.response.status == "200"
+							&& !!action.response.responseText){
+						Ext.Msg.alert('Layer saved', action.response.responseText);
+					}else{
+						Ext.Msg.alert('Warning', 'Error Unable to Load Form Data.');
+					}
+				});
+	}
 } //end fnLoadForm
 function fnUpdateForm(theForm)
 {

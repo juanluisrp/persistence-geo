@@ -62,8 +62,8 @@ public abstract class AbstractLayerEntity extends AbstractEntity {
 	
 	protected AbstractUserEntity user;
 	protected AbstractAuthorityEntity auth;
-	protected List styleList;
-	protected List folderList;
+	protected AbstractFolderEntity folder;
+	protected AbstractStyleEntity style;
 	protected List properties;
 
 	public AbstractLayerEntity(){
@@ -125,11 +125,11 @@ public abstract class AbstractLayerEntity extends AbstractEntity {
 	/**
 	 * @return the styleList
 	 */
-	public abstract List getStyleList();
+	public abstract AbstractStyleEntity getStyle();
 	/**
 	 * @return the folderList
 	 */
-	public abstract List getFolderList();
+	public abstract AbstractFolderEntity getFolder();
 	
 	/**
 	 * @return the data
@@ -226,17 +226,17 @@ public abstract class AbstractLayerEntity extends AbstractEntity {
 	}
 
 	/**
-	 * @param styleList the styleList to set
+	 * @param style the style to set
 	 */
-	public void setStyleList(List styleList) {
-		this.styleList = styleList;
+	public void setStyle(AbstractStyleEntity style) {
+		this.style = style;
 	}
 
 	/**
-	 * @param folderList the folderList to set
+	 * @param folder the folder to set
 	 */
-	public void setFolderList(List folderList) {
-		this.folderList = folderList;
+	public void setFolder(AbstractFolderEntity folder) {
+		this.folder = folder;
 	}
 
 	/**

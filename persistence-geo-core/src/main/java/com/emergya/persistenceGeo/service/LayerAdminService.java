@@ -106,15 +106,6 @@ public interface LayerAdminService extends AbstractService {
 	public List<LayerDto> getLayersByName(List<String> namesList);
 	
 	/**
-	 * Get a styles list by layer
-	 * 
-	 * @param layer
-	 * 
-	 * @return If not found, it's created
-	 */
-	public List<StyleDto> getStylesByLayer(LayerDto layer);
-	
-	/**
 	 * Get a rules list by layer style
 	 * 
 	 * @param style

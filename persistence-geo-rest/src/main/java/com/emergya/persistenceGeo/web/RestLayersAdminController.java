@@ -362,6 +362,7 @@ public class RestLayersAdminController implements Serializable{
 			@RequestParam(value="is_channel", required=false) String is_channel,
 			@RequestParam(value="publicized", required=false) String publicized,
 			@RequestParam(value="server_resource", required=false) String server_resource,
+			@RequestParam(value="folderId", required=false) String folderId,
 			@RequestParam(value="uploadfile", required=false) MultipartFile uploadfile){
 		try{
 			/*
@@ -376,7 +377,7 @@ public class RestLayersAdminController implements Serializable{
 			
 			//Copy layerData
 			copyDataToLayer(name, type, properties, enabled, order_layer,
-					is_channel, publicized, server_resource, uploadfile, layer);
+					is_channel, publicized, server_resource, uploadfile, layer, folderId);
 			
 			return layer;
 		}catch (Exception e){
@@ -402,6 +403,7 @@ public class RestLayersAdminController implements Serializable{
 			@RequestParam(value="is_channel", required=false) String is_channel,
 			@RequestParam(value="publicized", required=false) String publicized,
 			@RequestParam(value="server_resource", required=false) String server_resource,
+			@RequestParam(value="folderId", required=false) String folderId,
 			@RequestParam(value="uploadfile", required=false) MultipartFile uploadfile){
 		try{
 			/*
@@ -413,11 +415,11 @@ public class RestLayersAdminController implements Serializable{
 			LayerDto layer = new LayerDto();
 			// Assign the user group
 			AuthorityDto group = userAdminService.obtenerGrupoUsuarios(Long.decode(idGroup));
-			layer.setAuth(group.getNombre());
+			layer.setAuthId(group.getId());
 			
 			//Copy layerData
 			copyDataToLayer(name, type, properties, enabled, order_layer,
-					is_channel, publicized, server_resource, uploadfile, layer);
+					is_channel, publicized, server_resource, uploadfile, layer, folderId);
 			
 			return layer;
 		}catch (Exception e){
@@ -444,7 +446,7 @@ public class RestLayersAdminController implements Serializable{
 	private void copyDataToLayer(String name, String type, String properties,
 			String enabled, String order_layer, String is_channel,
 			String publicized, String server_resource,
-			MultipartFile uploadfile, LayerDto layer) throws IOException {
+			MultipartFile uploadfile, LayerDto layer, String folderId) throws IOException {
 		// Add request parameter
 		layer.setName(name);
 		layer.setType(type);
@@ -457,6 +459,11 @@ public class RestLayersAdminController implements Serializable{
 		layer.setPublicized(publicized != null ? publicized.toLowerCase()
 				.equals("true") : false);
 		layer.setServer_resource(server_resource);
+		//Folder id
+		if(!StringUtils.isEmpty(folderId) 
+				&& StringUtils.isNumeric(folderId)){
+			layer.setFolderId(Long.decode(folderId));
+		}
 
 		// Layer properties
 		if (properties != null) {
@@ -532,7 +539,7 @@ public class RestLayersAdminController implements Serializable{
 			// Create the layerDto
 			LayerDto layer = new LayerDto();
 			// Assign the authority
-			layer.setAuth(auth.getNombre());
+			layer.setAuthId(auth.getId());
 			// Add the request parameters
 			layer.setName(name);
 			layer.setType(type);

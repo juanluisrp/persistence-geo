@@ -98,7 +98,7 @@ public class LayerAdminServiceImplTest{
 	}
 
 	protected static final String PR_2_LAYER_NAME = "tmpLayer2";
-	protected static final String PR_2_LAYER_DATA = "target/classes/test-classes/ficheros/Auxiliar_GML_23031.kml";
+	protected static final String PR_2_LAYER_DATA = "target/classes/test-classes/ficheros/Auxiliar_GML_23031.xml";
 	
 	@Test
 	public void testCreateLayerGML() {

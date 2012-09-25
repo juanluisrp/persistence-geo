@@ -95,6 +95,10 @@ PersistenceGeoParser =
 						return this.REST_COMPONENT_URL;
 					},
 										
+					SAVE_LAYER_GROUP_BASE_URL: function (){
+						return this.getRestBaseUrl() + "/persistenceGeo/saveLayerByGroup/";
+					},
+										
 					SAVE_LAYER_BASE_URL: function (){
 						return this.getRestBaseUrl() + "/persistenceGeo/saveLayerByUser/";
 					},
@@ -378,6 +382,44 @@ PersistenceGeoParser =
 									if(aux > 1){
 										params.properties += ",,,"
 									}
+									params[param] = paramsToSend[param];
+								}
+								aux--;
+							}
+						}
+						
+						this.sendFormPostData(url, params, onsuccess, onfailure);
+						
+					},
+					
+					/**
+					 * Method: saveLayerByGroup
+					 * 
+					 * Save a layer for a group and call to callbacks functions
+					 */
+					saveLayerByGroup: function (groupId, properties, onsuccess, onfailure){
+						
+						var url = this.SAVE_LAYER_GROUP_BASE_URL() + groupId
+						
+						var params = {};
+						
+						if(!! properties){
+							params = properties;
+						}
+						
+						if(!!properties.properties){ //if properties != null
+							var paramsToSend = properties.properties;
+							var aux = 0;
+							params.properties = "";
+							for (param in paramsToSend){aux++;}
+							for (param in paramsToSend){
+								if(!!param
+										&& !!paramsToSend[param]){
+									params.properties += param + "===" + paramsToSend[param];
+									if(aux > 1){
+										params.properties += ",,,"
+									}
+									params[param] = paramsToSend[param];
 								}
 								aux--;
 							}

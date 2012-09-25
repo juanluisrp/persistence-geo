@@ -138,31 +138,6 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	}
 
 	/**
-	 * Get a styles list by layer
-	 * 
-	 * @param layer
-	 * 
-	 * @return If not found, it's created
-	 */
-	public List<StyleDto> getStylesByLayer(LayerDto layer) {
-		List<StyleDto> stylesDto = new LinkedList<StyleDto>();
-		StyleDto dto = null;
-		List<String> stylesString = layer.getStyleList();
-		List<AbstractStyleEntity> stylesEntity = null;
-		for(String s: stylesString){
-			stylesEntity = styleDao.getStyles(s);
-			for(AbstractStyleEntity se: stylesEntity){
-				dto = styleEntityToDto(se);
-				if(dto == null){
-					dto = styleEntityToDto(styleDao.createStyle(s));
-				}
-				stylesDto.add(dto);
-			}
-		}
-		return stylesDto;
-	}
-
-	/**
 	 * Get a rules list by layer style
 	 * 
 	 * @param style
@@ -225,23 +200,9 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	 */
 	public void addStyleToLayer(Long layerID, Long styleID) {
 		AbstractLayerEntity layerEntity = layerDao.findById(layerID, false);
-		List<AbstractStyleEntity> styles = layerEntity.getStyleList();
-		if(styles == null){
-			styles = new LinkedList<AbstractStyleEntity>();
-		}
-		boolean enc = false;
-		for(AbstractStyleEntity se: styles){
-			if(se.getId().equals(styleID)){
-				enc = true;
-				break;
-			}
-		}
-		if(!enc){
-			styles.add(styleDao.findById(styleID, false));
-			layerEntity.setStyleList(styles);
-			layerDao.save(layerEntity);
-		}
-
+		AbstractStyleEntity style = styleDao.findById(styleID, false);
+		layerEntity.setStyle(style);
+		layerDao.save(layerEntity);
 	}
 	
 	/**
@@ -291,22 +252,9 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	 */
 	public void addFolderToLayer(Long folder_id, Long layer_id){
 		AbstractLayerEntity entity = layerDao.findById(layer_id, false);
-		List<AbstractFolderEntity> folders = entity.getFolderList();
-		if(folders == null){
-			folders = new LinkedList<AbstractFolderEntity>();
-		}
-		boolean enc = false;
-		for(AbstractFolderEntity fe: folders){
-			if(fe.getId().equals(folder_id)){
-				enc = true;
-				break;
-			}
-		}
-		if(!enc){
-			folders.add(folderDao.findById(folder_id, false));
-			entity.setFolderList(folders);
-			layerDao.save(entity);
-		}
+		AbstractFolderEntity folder = folderDao.findById(folder_id, false);
+		entity.setFolder(folder);
+		layerDao.save(entity);
 	}
 
 	protected LayerDto entityToDto(AbstractLayerEntity entity) {
@@ -351,26 +299,12 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			List<AbstractAuthorityEntity> authorities = authDao.findByLayer(entity.getId());
 			if(authorities != null && !authorities.isEmpty()){
 				// Authorities have just one element
-				dto.setAuth(authorities.get(0).getName());
+				dto.setAuthId(authorities.get(0).getId());
 			}
 			// Add style
-			List<String> styleDto = new LinkedList<String>();
-			List<AbstractStyleEntity> styles = layerDao.findStyleByLayer(entity.getId());
-			if(styles != null){
-				for(AbstractStyleEntity styleEntity: styles){
-					styleDto.add(styleEntity.getName());
-				}
-			}
-			dto.setStyleList(styleDto);
+			dto.setStyle(entityStyleToDto(entity.getStyle()));
 			// Add folder
-			List<String> folderDto = new LinkedList<String>();
-			List<AbstractFolderEntity> folders = layerDao.findFolderByLayer(entity.getId());
-			if(folders != null){
-				for(AbstractFolderEntity folderEntity: folders){
-					folderDto.add(folderEntity.getName());
-				}
-			}
-			dto.setFolderList(folderDto);
+			dto.setFolderId(entity.getFolder() != null ? entity.getFolder().getId(): null);
 			
 			// Properties
 			if(entity.getProperties() != null && entity.getProperties().size()>0){
@@ -394,8 +328,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 				//Grupos
 //				authDao.clearUser(dto.getId());
 			}else{
-				entity =  layerDao.createLayer(dto.getName());
-				dto.setId(entity.getId());
+				entity =  instancer.createLayer();
 				entity.setCreateDate(now);
 			}
 			
@@ -441,44 +374,25 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			if(usersDto != null){
 				AbstractUserEntity user = userDao.getUser(usersDto);
 				if(user != null){
-					this.addUserToLayer((Long) user.getId(), dto.getId());
+					entity.setUser(user);
 				}
 			}
 			// Add authorities
-			String authDto = dto.getAuth();
-			if(authDto != null){
-				List<AbstractAuthorityEntity> authorities = authDao.findByName(authDto);
-				if(authorities != null){
-					for(AbstractAuthorityEntity authEntity: authorities){
-						this.addAuthoritiesToLayer(authEntity.getId(), dto.getId());
-					}
-				}
+			Long authId = dto.getAuthId();
+			if(authId != null){
+				entity.setAuth(authDao.findById(authId, false));
 			}
 			// Add style
-			List<String> styleDto = dto.getStyleList();
-			if(styleDto  != null){
-				List<AbstractStyleEntity> styles = styleDao.findByName(styleDto);
-				if(styles != null){
-					for(AbstractStyleEntity styleEntity: styles){
-						this.addStyleToLayer(dto.getId(), styleEntity.getId());
-					}
-				}
-			}
+			entity.setStyle(dtoStyleToEntity(dto.getStyle()));
 			// Add folder
-			List<String> folderDto = dto.getFolderList();
-			if(folderDto != null){
-				List<AbstractFolderEntity> folders = folderDao.findByName(folderDto);
-				if(folders != null){
-					for(AbstractFolderEntity folderEntity: folders){
-						this.addFolderToLayer(folderEntity.getId(), dto.getId());
-					}
-				}
+			if(dto.getFolderId() != null){
+				entity.setFolder(folderDao.findById(dto.getFolderId(), false));
 			}
 		}
 		return entity;
 	}
 
-	private StyleDto styleEntityToDto(AbstractStyleEntity entity){
+	private StyleDto entityStyleToDto(AbstractStyleEntity entity){
 		StyleDto dto = null;
 		if(entity != null){
 			dto = new StyleDto();
@@ -575,7 +489,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	 * @return saved folder
 	 */
 	public FolderDto saveFolder(FolderDto folder){
-		AbstractFolderEntity entity = dtoFolderToentity(folder);
+		AbstractFolderEntity entity = dtoFolderToEntity(folder);
 		return entityFolderToDto(folderDao.makePersistent(entity));
 	}
 
@@ -607,7 +521,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		return dto;
 	}
 
-	private AbstractFolderEntity dtoFolderToentity(FolderDto dto) {
+	private AbstractFolderEntity dtoFolderToEntity(FolderDto dto) {
 		AbstractFolderEntity entity = null;
 		if(dto != null){
 			if(dto.getId() != null){
@@ -628,6 +542,22 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			}
 			
 			//TODO: entity.setZoneList(zoneList);
+		}
+		return entity;
+	}
+
+	private AbstractStyleEntity dtoStyleToEntity(StyleDto dto) {
+		AbstractStyleEntity entity = null;
+		if(dto != null){
+			if(dto.getId() != null){
+				entity = styleDao.findById(dto.getId(), true);
+			}else{
+				entity = instancer.createStyle();
+			}
+			entity.setName(dto.getName());
+
+			//TODO: entity.setLayerList(layerList);
+			//TODO: entity.setRuleList(ruleList);
 		}
 		return entity;
 	}
