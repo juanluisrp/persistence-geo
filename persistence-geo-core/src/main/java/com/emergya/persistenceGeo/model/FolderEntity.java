@@ -110,14 +110,25 @@ public class FolderEntity extends AbstractFolderEntity {
 		return id;
 	}
 	
-	@OneToMany(targetEntity = FolderEntity.class,
+//	@OneToMany(targetEntity = FolderEntity.class,
+//	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+//	@JoinTable(name = "folder_in_folder",
+//	joinColumns =
+//	@JoinColumn(name = "folder_parent_id"),
+//	inverseJoinColumns =
+//	@JoinColumn(name = "subfolder_id"))
+//	public List<FolderEntity> getFolderList() {
+//		return folderList;
+//	}
+	
+	@OneToMany(targetEntity = FolderInFolderEntity.class,
 	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinTable(name = "folder_in_folder",
 	joinColumns =
 	@JoinColumn(name = "folder_parent_id"),
 	inverseJoinColumns =
 	@JoinColumn(name = "subfolder_id"))
-	public List<FolderEntity> getFolderList() {
+	public List<FolderInFolderEntity> getFolderList() {
 		return folderList;
 	}
 
@@ -138,6 +149,17 @@ public class FolderEntity extends AbstractFolderEntity {
 		return (UserEntity) user;
 	}
 
+//	@ManyToOne(cascade = CascadeType.REFRESH, 
+//			fetch  = FetchType.LAZY)
+//	@JoinTable(name = "folder_in_folder",
+//	joinColumns =
+//	@JoinColumn(name = "subfolder_id"),
+//	inverseJoinColumns =
+//	@JoinColumn(name = "folder_parent_id"))
+//	public FolderEntity getParent() {
+//		return (FolderEntity) parent;
+//	}
+
 	@ManyToOne(cascade = CascadeType.REFRESH, 
 			fetch  = FetchType.LAZY)
 	@JoinTable(name = "folder_in_folder",
@@ -145,8 +167,8 @@ public class FolderEntity extends AbstractFolderEntity {
 	@JoinColumn(name = "subfolder_id"),
 	inverseJoinColumns =
 	@JoinColumn(name = "folder_parent_id"))
-	public FolderEntity getParent() {
-		return (FolderEntity) parent;
+	public FolderInFolderEntity getParent() {
+		return (FolderInFolderEntity) parent;
 	}
 
 	@Override

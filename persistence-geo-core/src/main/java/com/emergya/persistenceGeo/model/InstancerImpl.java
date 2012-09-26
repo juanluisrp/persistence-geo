@@ -32,6 +32,7 @@ package com.emergya.persistenceGeo.model;
 import com.emergya.persistenceGeo.metaModel.AbstractAuthorityEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractAuthorityTypeEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractFolderInFolderEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerPropertyEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerTypeEntity;
@@ -93,6 +94,10 @@ public class InstancerImpl implements Instancer {
 
 	public AbstractLayerTypeEntity createLayerType(){
 		return new LayerTypeEntity();
+	}
+
+	public AbstractFolderInFolderEntity createFolderInFolder() {
+		return new FolderInFolderEntity();
 	}
 
 }

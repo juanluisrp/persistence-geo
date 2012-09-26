@@ -1,5 +1,5 @@
 /*
- * UserEntity.java
+ * FolderEntity.java
  * 
  * Copyright (C) 2011
  * 
@@ -25,14 +25,16 @@
  * however invalidate any other reasons why the executable file might be covered
  * by the GNU General Public License.
  * 
- * Authors:: Alejandro Díaz Torres (mailto:adiaz@emergya.com)
+ * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
 package com.emergya.persistenceGeo.model;
 
-import java.util.Date;
+import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -40,91 +42,41 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.emergya.persistenceGeo.metaModel.AbstractUserEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractFolderInFolderEntity;
 
 /**
- * Entidad de usuario
+ * Entidad de carpeta
  * 
- * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
+ * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
 @Entity
-@Table(name = "gis_user")
-public class UserEntity extends AbstractUserEntity {
-
-    /**
+@Table(name = "folder_in_folder")
+public class FolderInFolderEntity extends AbstractFolderInFolderEntity {
+	
+	/**
 	 * 
 	 */
-	private static final long serialVersionUID = -6272520927189358861L;
-
-    public UserEntity() {
-
-    }
-
-    public UserEntity(String name) {
-        username = name;
-    }
-
-    @Id
+	private static final long serialVersionUID = 6047326743794471910L;
+	
+	@Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public Long getId() {
-        return id;
-    }
-
-    @Column(name = "username", nullable = false)
-    public String getUsername() {
-        return username;
-    }
-
-    @Column(name = "password", nullable = false)
-    public String getPassword() {
-		return password;
-	}
-    
-	@Column(name = "nombreCompleto")
-	public String getNombreCompleto() {
-		return nombreCompleto;
+	public Serializable getId() {
+		return id;
 	}
 
-    @Column(name = "apellidos")
-	public String getApellidos() {
-		return apellidos;
+	@ManyToOne(cascade = CascadeType.MERGE, fetch  = FetchType.LAZY)
+    @JoinColumn(name = "folder_parent_id")
+	public FolderEntity getParent() {
+		return (FolderEntity) parent;
 	}
 
-    @Column(name = "email")
-	public String getEmail() {
-		return email;
-	}
-
-    @Column(name = "telefono")
-	public String getTelefono() {
-		return telefono;
-	}
-
-    @Column(name = "admin_user")
-	public Boolean getAdmin() {
-		return admin;
-	}
-
-    @Column(name = "valid_user")
-	public Boolean getValid() {
-		return valid;
-	}
-
-	@Column(name = "create_date")
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	@Column(name = "update_date")
-	public Date getUpdateDate() {
-		return updateDate;
+	@ManyToOne(cascade = CascadeType.MERGE, fetch  = FetchType.LAZY)
+    @JoinColumn(name = "subfolder_id")
+	public FolderEntity getChild() {
+		return (FolderEntity) child;
 	}
 	
-    @ManyToOne
-    @JoinColumn(name = "user_authority_id")
-	public AuthorityEntity getAuthority() {
-		return (AuthorityEntity) authority;
-	}
+	
 }

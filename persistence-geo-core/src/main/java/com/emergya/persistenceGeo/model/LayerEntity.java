@@ -149,7 +149,7 @@ public class LayerEntity extends AbstractLayerEntity {
 		return (FolderEntity) folder;
 	}
 
-	@Column(name = "data", nullable=true)
+	@Column(name = "data", nullable=true, columnDefinition = "BLOB")
 	public byte[] getData() {
 		return data;
 	}

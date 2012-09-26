@@ -1,7 +1,7 @@
 /*
- * Instancer.java
+ * AbstractFolderInFolderEntity.java
  * 
- * Copyright (C) 2012
+ * Copyright (C) 2011
  * 
  * This file is part of Proyecto persistenceGeo
  * 
@@ -29,70 +29,46 @@
  */
 package com.emergya.persistenceGeo.metaModel;
 
+import java.io.Serializable;
+
 /**
- * Interface for create instances of final entities
+ * Folder in folder entity
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
- * 
+ *
  */
-public interface Instancer {
+public abstract class AbstractFolderInFolderEntity extends AbstractEntity {
+	
 	/**
-	 * @return new authority entity
+	 * 
 	 */
-	public AbstractAuthorityEntity createAuthority();
+	private static final long serialVersionUID = 6047326743794471910L;
+	
+	protected Long id;
+	protected AbstractFolderEntity parent;
+	protected AbstractFolderEntity child;
 
+	public abstract Serializable getId();
+	public abstract AbstractFolderEntity getParent();
+	public abstract AbstractFolderEntity getChild();
+	
 	/**
-	 * @return new authority type entity
+	 * @param id the id to set
 	 */
-	public AbstractAuthorityTypeEntity createAuthorityTypeEntity();
-
+	public void setId(Serializable id) {
+		this.id = (Long) id;
+	}
 	/**
-	 * @return new folder entity
+	 * @param parent the parent to set
 	 */
-	public AbstractFolderEntity createFolder();
-
+	public void setParent(AbstractFolderEntity parent) {
+		this.parent = parent;
+	}
 	/**
-	 * @return new folder in folder entity
+	 * @param child the child to set
 	 */
-	public AbstractFolderInFolderEntity createFolderInFolder();
-
-	/**
-	 * @return new layer entity
-	 */
-	public AbstractLayerEntity createLayer();
-
-	/**
-	 * @return new layer type entity
-	 */
-	public AbstractLayerTypeEntity createLayerType();
-
-	/**
-	 * @return new layer property entity
-	 */
-	public AbstractLayerPropertyEntity createLayerProperty();
-
-	/**
-	 * @return new permission entity
-	 */
-	public AbstractPermissionEntity createPermission();
-
-	/**
-	 * @return new rule entity
-	 */
-	public AbstractRuleEntity createRule();
-
-	/**
-	 * @return new style entity
-	 */
-	public AbstractStyleEntity createStyle();
-
-	/**
-	 * @return new user entity
-	 */
-	public AbstractUserEntity createUser();
-
-	/**
-	 * @return new zone entity
-	 */
-	public AbstractZoneEntity createZone();
+	public void setChild(AbstractFolderEntity child) {
+		this.child = child;
+	}
+	
 }

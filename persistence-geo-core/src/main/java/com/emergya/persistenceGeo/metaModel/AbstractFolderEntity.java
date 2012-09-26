@@ -59,7 +59,7 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	protected List zoneList;
 	protected AbstractUserEntity user;
 	protected AbstractAuthorityEntity authority;
-	protected AbstractFolderEntity parent;
+	protected AbstractFolderInFolderEntity parent;
 
 	public AbstractFolderEntity(){
 		
@@ -117,7 +117,7 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	/**
 	 * @return the parent
 	 */
-	public abstract AbstractFolderEntity getParent();
+	public abstract AbstractFolderInFolderEntity getParent();
 	/**
 	 * @param id the id to set
 	 */
@@ -198,7 +198,7 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	/**
 	 * @param parent the parent to set
 	 */
-	public void setParent(AbstractFolderEntity parent) {
+	public void setParent(AbstractFolderInFolderEntity parent) {
 		this.parent = parent;
 	}
 }

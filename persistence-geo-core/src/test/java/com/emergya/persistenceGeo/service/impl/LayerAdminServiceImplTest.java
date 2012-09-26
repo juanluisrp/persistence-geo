@@ -47,6 +47,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
 import com.emergya.persistenceGeo.service.LayerAdminService;
 
@@ -112,6 +113,81 @@ public class LayerAdminServiceImplTest{
 			Assert.assertNotNull(layers);
 			Assert.assertEquals(layers.size(), 1);
 			Assert.assertEquals(layers.get(0).getId(), layer.getId());
+		}catch (Exception e){
+			LOG.error(e);
+			Assert.fail();
+		}
+	}
+	
+	@Test
+	public void testCreateFolder() {
+		try{
+			FolderDto folder = new FolderDto();
+			folder.setName("test");
+			folder.setEnabled(true);
+			folder = layerAdminService.saveFolder(folder);
+			Assert.assertNotNull(folder);
+			Assert.assertNotNull(folder.getId());
+			Assert.assertEquals(folder.getName(), "test");
+		}catch (Exception e){
+			LOG.error(e);
+			Assert.fail();
+		}
+	}
+	
+	@Test
+	public void testCreateFolderInFolder() {
+		try{
+			FolderDto folder = new FolderDto();
+			folder.setName("test");
+			folder.setEnabled(true);
+			folder = layerAdminService.saveFolder(folder);
+			Assert.assertNotNull(folder);
+			Assert.assertNotNull(folder.getId());
+			Assert.assertEquals(folder.getName(), "test");
+			FolderDto child = new FolderDto();
+			child.setName("test_child");
+			child.setEnabled(true);
+			child.setIdParent(folder.getId());
+			child = layerAdminService.saveFolder(child);
+			Assert.assertNotNull(child);
+			Assert.assertNotNull(child.getId());
+			Assert.assertEquals(child.getName(), "test_child");
+			Assert.assertEquals(folder.getId(), child.getIdParent());
+		}catch (Exception e){
+			LOG.error(e);
+			Assert.fail();
+		}
+	}
+	
+	@Test
+	public void testGetFolderChildren() {
+		try{
+			Long idUser = new Long (1);
+			FolderDto rootFolder = layerAdminService.getRootFolder(idUser);
+			Assert.assertNotNull(rootFolder);
+			Assert.assertNotNull(rootFolder.getId());
+			FolderDto folder = new FolderDto();
+			folder.setName("test");
+			folder.setEnabled(true);
+			folder.setIdParent(rootFolder.getId());
+			folder = layerAdminService.saveFolder(folder);
+			Assert.assertNotNull(folder);
+			Assert.assertNotNull(folder.getId());
+			Assert.assertEquals(folder.getName(), "test");
+			FolderDto child = new FolderDto();
+			child.setName("test_child");
+			child.setEnabled(true);
+			child.setIdParent(rootFolder.getId());
+			child = layerAdminService.saveFolder(child);
+			Assert.assertNotNull(child);
+			Assert.assertNotNull(child.getId());
+			Assert.assertEquals(child.getName(), "test_child");
+			Assert.assertEquals(rootFolder.getId(), child.getIdParent());
+			rootFolder = layerAdminService.getRootFolder(idUser);
+			Assert.assertNotNull(rootFolder);
+			Assert.assertNotNull(rootFolder.getFolderList());
+			Assert.assertEquals(rootFolder.getFolderList().size(), 2);
 		}catch (Exception e){
 			LOG.error(e);
 			Assert.fail();
