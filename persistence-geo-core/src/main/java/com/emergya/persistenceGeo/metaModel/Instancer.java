@@ -52,11 +52,6 @@ public interface Instancer {
 	public AbstractFolderEntity createFolder();
 
 	/**
-	 * @return new folder in folder entity
-	 */
-	public AbstractFolderInFolderEntity createFolderInFolder();
-
-	/**
 	 * @return new layer entity
 	 */
 	public AbstractLayerEntity createLayer();

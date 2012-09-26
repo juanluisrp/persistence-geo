@@ -54,12 +54,10 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	protected Boolean isPlain;
 	protected Date createDate;
 	protected Date updateDate;
-
-	protected List folderList;
 	protected List zoneList;
 	protected AbstractUserEntity user;
 	protected AbstractAuthorityEntity authority;
-	protected AbstractFolderInFolderEntity parent;
+	protected AbstractFolderEntity parent;
 
 	public AbstractFolderEntity(){
 		
@@ -99,10 +97,6 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	 */
 	public abstract Date getUpdateDate();
 	/**
-	 * @return the folderList
-	 */
-	public abstract List getFolderList();
-	/**
 	 * @return the zoneList
 	 */
 	public abstract List getZoneList();
@@ -117,7 +111,7 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	/**
 	 * @return the parent
 	 */
-	public abstract AbstractFolderInFolderEntity getParent();
+	public abstract AbstractFolderEntity getParent();
 	/**
 	 * @param id the id to set
 	 */
@@ -168,13 +162,6 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	}
 
 	/**
-	 * @param folderList the folderList to set
-	 */
-	public void setFolderList(List folderList) {
-		this.folderList = folderList;
-	}
-
-	/**
 	 * @param zoneList the zoneList to set
 	 */
 	public void setZoneList(List zoneList) {
@@ -198,7 +185,7 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	/**
 	 * @param parent the parent to set
 	 */
-	public void setParent(AbstractFolderInFolderEntity parent) {
+	public void setParent(AbstractFolderEntity parent) {
 		this.parent = parent;
 	}
 }

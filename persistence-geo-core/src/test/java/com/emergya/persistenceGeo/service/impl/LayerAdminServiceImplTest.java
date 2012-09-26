@@ -49,7 +49,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
+import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.service.LayerAdminService;
+import com.emergya.persistenceGeo.service.UserAdminService;
 
 
 /**
@@ -76,6 +78,9 @@ public class LayerAdminServiceImplTest{
 	
 	@Resource
 	private LayerAdminService layerAdminService;
+	
+	@Resource
+	private UserAdminService userAdminService;
 
 	protected static final String PR_1_LAYER_NAME = "tmpLayer";
 	protected static final String PR_1_LAYER_DATA = "target/classes/test-classes/ficheros/Barcelona_4326.kml";
@@ -163,10 +168,23 @@ public class LayerAdminServiceImplTest{
 	@Test
 	public void testGetFolderChildren() {
 		try{
-			Long idUser = new Long (1);
-			FolderDto rootFolder = layerAdminService.getRootFolder(idUser);
+			UserDto user = createUser();
+			Assert.assertNotNull(user);
+			Assert.assertNotNull(user.getId());
+			Long idUser = user.getId();
+			FolderDto rootFolder = new FolderDto();
+			rootFolder.setName("root test");
+			rootFolder.setEnabled(true);
+			rootFolder.setIdUser(idUser);
+			rootFolder = layerAdminService.saveFolder(rootFolder);
 			Assert.assertNotNull(rootFolder);
 			Assert.assertNotNull(rootFolder.getId());
+			Assert.assertEquals(rootFolder.getName(), "root test");
+			rootFolder = layerAdminService.getRootFolder(idUser);
+			Assert.assertNotNull(rootFolder);
+			Assert.assertNotNull(rootFolder.getId());
+			Assert.assertEquals(rootFolder.getName(), "root test");
+			Assert.assertEquals(rootFolder.getIdUser(), idUser);
 			FolderDto folder = new FolderDto();
 			folder.setName("test");
 			folder.setEnabled(true);
@@ -192,6 +210,18 @@ public class LayerAdminServiceImplTest{
 			LOG.error(e);
 			Assert.fail();
 		}
+	}
+	
+	public UserDto createUser() {
+		try {
+			UserDto usuario = userAdminService.obtenerUsuario(testProperties.getProperty(PR_1_PARAM_1), testProperties.getProperty(PR_1_PARAM_1));
+			Assert.assertEquals(testProperties.getProperty(PR_1_PARAM_1), usuario.getUsername());
+			return usuario;
+		} catch (Exception e) {
+			LOG.error("Error  \n", e);
+			Assert.fail();
+		}
+		return null;
 	}
 
 }

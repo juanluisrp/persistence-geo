@@ -60,6 +60,15 @@ public interface FolderEntityDao extends GenericDAO<AbstractFolderEntity, Long> 
 	public List<AbstractFolderEntity> getFolders(String folderName);
 	
 	/**
+	 * Get a folders list by the parentFolder 
+	 * 
+	 * @param <code>parentFolder</code>
+	 * 
+	 * @return Entities list associated with the folder parentFolder or null if not found 
+	 */
+	public List<AbstractFolderEntity> getFolders(Long parentFolder);
+	
+	/**
 	 * Delete a folder by the folder identifier 
 	 * 
 	 * @param <code>folderID</code>

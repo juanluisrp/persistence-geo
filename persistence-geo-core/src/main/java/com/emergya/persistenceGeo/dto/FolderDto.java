@@ -54,6 +54,9 @@ public class FolderDto implements Serializable{
 	protected Date createDate;
 	protected Date updateDate;
 	protected Long idParent;
+	protected Long idAuth;
+	protected Long idUser;
+	
 	protected List<FolderDto> folderList;
 	protected List<String> zoneList;
 	
@@ -176,5 +179,29 @@ public class FolderDto implements Serializable{
 	 */
 	public void setIdParent(Long idParent) {
 		this.idParent = idParent;
+	}
+	/**
+	 * @return the idAuth
+	 */
+	public Long getIdAuth() {
+		return idAuth;
+	}
+	/**
+	 * @return the idUser
+	 */
+	public Long getIdUser() {
+		return idUser;
+	}
+	/**
+	 * @param idAuth the idAuth to set
+	 */
+	public void setIdAuth(Long idAuth) {
+		this.idAuth = idAuth;
+	}
+	/**
+	 * @param idUser the idUser to set
+	 */
+	public void setIdUser(Long idUser) {
+		this.idUser = idUser;
 	}
 }

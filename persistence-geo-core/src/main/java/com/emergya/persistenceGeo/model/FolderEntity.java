@@ -41,10 +41,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
@@ -109,28 +107,6 @@ public class FolderEntity extends AbstractFolderEntity {
 	public Long getId() {
 		return id;
 	}
-	
-//	@OneToMany(targetEntity = FolderEntity.class,
-//	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-//	@JoinTable(name = "folder_in_folder",
-//	joinColumns =
-//	@JoinColumn(name = "folder_parent_id"),
-//	inverseJoinColumns =
-//	@JoinColumn(name = "subfolder_id"))
-//	public List<FolderEntity> getFolderList() {
-//		return folderList;
-//	}
-	
-	@OneToMany(targetEntity = FolderInFolderEntity.class,
-	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "folder_in_folder",
-	joinColumns =
-	@JoinColumn(name = "folder_parent_id"),
-	inverseJoinColumns =
-	@JoinColumn(name = "subfolder_id"))
-	public List<FolderInFolderEntity> getFolderList() {
-		return folderList;
-	}
 
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "zoneList")
 	public List<ZoneEntity> getZoneList() {
@@ -149,26 +125,11 @@ public class FolderEntity extends AbstractFolderEntity {
 		return (UserEntity) user;
 	}
 
-//	@ManyToOne(cascade = CascadeType.REFRESH, 
-//			fetch  = FetchType.LAZY)
-//	@JoinTable(name = "folder_in_folder",
-//	joinColumns =
-//	@JoinColumn(name = "subfolder_id"),
-//	inverseJoinColumns =
-//	@JoinColumn(name = "folder_parent_id"))
-//	public FolderEntity getParent() {
-//		return (FolderEntity) parent;
-//	}
-
-	@ManyToOne(cascade = CascadeType.REFRESH, 
+	@ManyToOne(cascade = CascadeType.MERGE, 
 			fetch  = FetchType.LAZY)
-	@JoinTable(name = "folder_in_folder",
-	joinColumns =
-	@JoinColumn(name = "subfolder_id"),
-	inverseJoinColumns =
-	@JoinColumn(name = "folder_parent_id"))
-	public FolderInFolderEntity getParent() {
-		return (FolderInFolderEntity) parent;
+    @JoinColumn(name = "folder_parent_id")
+	public FolderEntity getParent() {
+		return (FolderEntity) parent;
 	}
 
 	@Override

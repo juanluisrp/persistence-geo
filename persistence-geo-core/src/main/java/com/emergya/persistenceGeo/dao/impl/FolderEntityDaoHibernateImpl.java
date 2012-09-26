@@ -132,4 +132,11 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstra
 				.add(Restrictions.eq("authority.id", idGroup)).uniqueResult();
 	}
 
+	@Override
+	public List<AbstractFolderEntity> getFolders(Long parentFolder) {
+		return getSession().createCriteria(persistentClass)
+				.createAlias("parent", "parent")
+				.add(Restrictions.eq("parent.id", parentFolder)).list();
+	}
+
 }

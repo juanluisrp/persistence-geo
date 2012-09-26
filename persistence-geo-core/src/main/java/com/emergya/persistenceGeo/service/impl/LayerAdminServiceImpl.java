@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.emergya.persistenceGeo.dao.AbstractGenericDao;
 import com.emergya.persistenceGeo.dao.AuthorityEntityDao;
 import com.emergya.persistenceGeo.dao.FolderEntityDao;
-import com.emergya.persistenceGeo.dao.FolderInFolderEntityDao;
 import com.emergya.persistenceGeo.dao.LayerEntityDao;
 import com.emergya.persistenceGeo.dao.LayerTypeEntityDao;
 import com.emergya.persistenceGeo.dao.RuleEntityDao;
@@ -58,7 +57,6 @@ import com.emergya.persistenceGeo.dto.RuleDto;
 import com.emergya.persistenceGeo.dto.StyleDto;
 import com.emergya.persistenceGeo.metaModel.AbstractAuthorityEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
-import com.emergya.persistenceGeo.metaModel.AbstractFolderInFolderEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerPropertyEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerTypeEntity;
@@ -98,8 +96,6 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	private AuthorityEntityDao authDao;
 	@Resource
 	private FolderEntityDao folderDao;
-	@Resource
-	private FolderInFolderEntityDao folderInFolderDao;
 	
 	public LayerAdminServiceImpl(){
 		super();
@@ -510,21 +506,32 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			
 			
 			//Children
-			List<AbstractFolderInFolderEntity> children = entity.getFolderList();
+			List<AbstractFolderEntity> children = folderDao.getFolders(entity.getId());
 			if(children != null){
 				List<FolderDto> subFolders = new LinkedList<FolderDto>();
-				for(AbstractFolderInFolderEntity child: children){
+				for(AbstractFolderEntity child: children){
 					//Recursive case
-					subFolders.add(entityFolderToDto(child.getChild()));
+					subFolders.add(entityFolderToDto(child));
 				}
 				dto.setFolderList(subFolders);
 			}//else: base case
 			
 			//Parent
 			if(entity.getParent() != null
-					&& entity.getParent().getParent() != null
-					&& entity.getParent().getParent().getId() != null){
-				dto.setIdParent(entity.getParent().getParent().getId());
+					&& entity.getParent().getId() != null){
+				dto.setIdParent(entity.getParent().getId());
+			}
+
+			//Auth
+			if(entity.getAuthority() != null
+					&& entity.getAuthority().getId() != null){
+				dto.setIdAuth(entity.getAuthority().getId());
+			}
+
+			//User
+			if(entity.getUser() != null
+					&& entity.getUser().getId() != null){
+				dto.setIdUser((Long) entity.getUser().getId());
 			}
 			
 			//TODO: entity.setZoneList(zoneList);
@@ -548,28 +555,18 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			
 			//TODO: Children if is necesary
 			
-			//Parent solve
+			//Parent
 			if (dto.getIdParent() != null) {
-				AbstractFolderInFolderEntity folderInFolder = null;
-				if (dto.getId() != null) {
-					folderInFolder = folderInFolderDao.getParentByChild(dto
-							.getId());
-					if (folderInFolder != null) {
-						if (folderInFolder.getParent() == null
-								|| folderInFolder.getParent().getId()
-										.equals(dto.getId())) {
-							folderInFolder.setParent(folderDao.findById(
-									dto.getIdParent(), false));
-						}
-					}
-				}
-				if (folderInFolder == null) {
-					folderInFolder = instancer.createFolderInFolder();
-					folderInFolder.setParent(folderDao.findById(
-							dto.getIdParent(), false));
-				}
-				folderInFolder.setChild(entity);
-				entity.setParent(folderInFolder);
+				AbstractFolderEntity parent = folderDao.findById(dto.getIdParent(), false);
+				entity.setParent(parent);
+			}
+			
+			//Auth & user
+			if(dto.getIdAuth() != null){
+				entity.setAuthority(authDao.findById(dto.getIdAuth(), false));
+			}
+			if(dto.getIdUser() != null){
+				entity.setUser(userDao.findById(dto.getIdUser(), false));
 			}
 			
 			//TODO: entity.setZoneList(zoneList);
