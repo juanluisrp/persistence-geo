@@ -120,6 +120,7 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstra
 	@Override
 	public AbstractFolderEntity findRootByUser(Long idUser) {
 		return (AbstractFolderEntity) getSession().createCriteria(persistentClass)
+				.add(Restrictions.isNull("parent"))
 				.createAlias("user", "user")
 				.add(Restrictions.eq("user.id", idUser)).uniqueResult();
 	}

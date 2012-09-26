@@ -570,12 +570,13 @@ public class RestLayersAdminController implements Serializable{
 			String username = ((UserDetails) SecurityContextHolder.getContext()
 					.getAuthentication().getPrincipal()).getUsername(); 
 			 */
+			Long idGroup = Long.decode(groupId);
+			FolderDto rootFolder = layerAdminService.getRootGroupFolder(idGroup);
 			if(StringUtils.isEmpty(parentFolder) || !StringUtils.isNumeric(parentFolder)){
-				FolderDto rootFolder = layerAdminService.getRootGroupFolder(Long.decode(groupId));
 				return saveFolderBy(name, enabled, isChannel, isPlain, 
-						rootFolder != null ? rootFolder.getId() : null);
+						rootFolder != null ? rootFolder.getId() : null, null, idGroup);
 			}else{
-				return saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder));
+				return saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder), null, idGroup);
 			}
 		}catch (Exception e){
 			e.printStackTrace();
@@ -602,13 +603,13 @@ public class RestLayersAdminController implements Serializable{
 			String username = ((UserDetails) SecurityContextHolder.getContext()
 					.getAuthentication().getPrincipal()).getUsername(); 
 			 */
+			UserDto user = userAdminService.obtenerUsuario(username);
 			if(StringUtils.isEmpty(parentFolder) || !StringUtils.isNumeric(parentFolder)){
-				UserDto user = userAdminService.obtenerUsuario(username);
 				FolderDto rootFolder = layerAdminService.getRootFolder(user.getId());
 				return saveFolderBy(name, enabled, isChannel, isPlain, 
-						rootFolder != null ? rootFolder.getId() : null);
+						rootFolder != null ? rootFolder.getId() : null, user.getId(), null);
 			}else{
-				return saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder));
+				return saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder), user.getId(), null);
 			}
 		}catch (Exception e){
 			e.printStackTrace();
@@ -617,13 +618,16 @@ public class RestLayersAdminController implements Serializable{
 	}
 	
 	private FolderDto saveFolderBy(String name, String enabled, String isChannel,
-			String isPlain, Long parentFolder){
+			String isPlain, Long parentFolder, Long userId, Long groupId){
 		FolderDto folder = new FolderDto();
 		folder.setName(name);
 		folder.setEnabled(enabled != null ? enabled.toLowerCase().equals("true") : false);
 		folder.setIsChannel(isChannel != null ? isChannel.toLowerCase().equals("true") : false);
 		folder.setIsPlain(isPlain != null ? isPlain.toLowerCase().equals("true") : false);
 		folder.setIdParent(parentFolder);
+		folder.setIdAuth(groupId);
+		folder.setIdUser(userId);
+		
 		//TODO: folder.setZoneList(zoneList);
 		return layerAdminService.saveFolder(folder);
 	}
