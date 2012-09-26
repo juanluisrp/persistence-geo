@@ -44,7 +44,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
@@ -108,17 +107,6 @@ public class FolderEntity extends AbstractFolderEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
 		return id;
-	}
-	
-	@OneToMany(targetEntity = FolderEntity.class,
-	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "folder_in_folder",
-	joinColumns =
-	@JoinColumn(name = "folder_parent_id"),
-	inverseJoinColumns =
-	@JoinColumn(name = "subfolder_id"))
-	public List<FolderEntity> getFolderList() {
-		return folderList;
 	}
 
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "zoneList")

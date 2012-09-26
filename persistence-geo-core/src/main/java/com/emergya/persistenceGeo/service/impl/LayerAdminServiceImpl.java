@@ -506,7 +506,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			
 			
 			//Children
-			List<AbstractFolderEntity> children = entity.getFolderList();
+			List<AbstractFolderEntity> children = folderDao.getFolders(entity.getId());
 			if(children != null){
 				List<FolderDto> subFolders = new LinkedList<FolderDto>();
 				for(AbstractFolderEntity child: children){

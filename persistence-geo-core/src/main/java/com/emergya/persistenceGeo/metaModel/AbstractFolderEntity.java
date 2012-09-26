@@ -54,8 +54,6 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	protected Boolean isPlain;
 	protected Date createDate;
 	protected Date updateDate;
-
-	protected List folderList;
 	protected List zoneList;
 	protected AbstractUserEntity user;
 	protected AbstractAuthorityEntity authority;
@@ -98,10 +96,6 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	 * @return the fechaActualizacion
 	 */
 	public abstract Date getUpdateDate();
-	/**
-	 * @return the folderList
-	 */
-	public abstract List getFolderList();
 	/**
 	 * @return the zoneList
 	 */
@@ -165,13 +159,6 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	 */
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
-	}
-
-	/**
-	 * @param folderList the folderList to set
-	 */
-	public void setFolderList(List folderList) {
-		this.folderList = folderList;
 	}
 
 	/**
