@@ -43,11 +43,14 @@ PersistenceGeoParser =
 					 * {Integer} index for generate layer script
 					 */
 					INDEX_LAYER: 1,
-					SQL_INSERT_LAYER: "INSERT INTO layer(id, enabled, name_layer," +
-									"order_layer, pertenece_a_canal, publicized, server_resource," +
-									"auth_id, layer_typ_id, user_id)" +
-									"VALUES ({0}, {1}, '{2}', {3}, {4}, {5},'{6}', 1, {7},1); ",
-					SQL_INSERT_LAYER_PROPERTY: "INSERT INTO persistence_geo.layer_type_layer_type_property(layer_type_id, defaultproperties_id)" 
+//					SQL_INSERT_LAYER: "INSERT INTO layer(id, enabled, name_layer," +
+//									"order_layer, is_channel, publicized, server_resource," +
+//									"layer_auth_id, layer_layer_type_id, layer_user_id, layer_folder_id)" +
+//									"VALUES ({0}, {1}, '{2}', {3}, {4}, {5},'{6}', 1, {7}, 1, {8}); ",
+					SQL_INSERT_LAYER: "INSERT INTO layer(id, name_layer, server_resource, " +
+							"layer_folder_id, layer_user_id, layer_auth_id, layer_layer_type_id)" + 
+								"VALUES ({0}, '{1}', '{2}', {3}, {4}, {5}, {6});",
+					SQL_INSERT_LAYER_PROPERTY: "INSERT INTO layer_type_layer_type_property(layer_type_id, defaultproperties_id)" 
 						+ "VALUES ({0}, {1});",
 					SQL_LAYER_PROPERTIES:{
 						1: 'projection',2: 'url',3: 'testLayer',
@@ -62,6 +65,13 @@ PersistenceGeoParser =
 					SQL_INSERT_PROPERTY_REL: "INSERT INTO layer_layer_property(layer_id, properties_id) VALUES ({0}, {1});",
 					
 					LAYER_TYPES: {"WMS":1,"WFS":2,"KML":3,"GML":5,"TEXT":6,"WMST":7},
+					
+					
+					SQL_INSERT_FOLDER: "INSERT INTO folder(id, name, folder_parent_id)"  
+						+ "VALUES ({0}, '{1}', {2});",
+						
+					FOLDERS_ADDED:{},
+					INDEX_FOLDER: 1,
 					
 					insertSQL: "",
 					
@@ -81,7 +91,7 @@ PersistenceGeoParser =
 //						"KML":PersistenceGeoParser.KMLLoader,
 //						"GML":PersistenceGeoParser.GMLLoader,
 //						"TEXT":PersistenceGeoParser.TextLoader,
-//						"WMST":PersistenceGeoParser.WMSLoader
+//						,"WMST":PersistenceGeoParser.WMSTLoader
 					},
 					
 					REST_COMPONENT_URL: "rest",
@@ -138,14 +148,65 @@ PersistenceGeoParser =
 					},
 					
 					getLayerTypeFromJson: function(layerType){
-						return this.LAYER_TYPES[layerType];
+						return this.LAYER_TYPES[layerType.toUpperCase()];
+					},
+					
+					generateFolder: function (group, subGroup, parent){
+						var insert = String.format(this.SQL_INSERT_FOLDER, this.INDEX_FOLDER, group, parent);
+						if(parent == null){
+							this.FOLDERS_ADDED[group] = this.INDEX_FOLDER;
+						}else{
+							this.FOLDERS_ADDED[group + "." + subGroup] = this.INDEX_FOLDER;
+						}
+						this.insertSQL += insert + "\n";
+						return this.INDEX_FOLDER++;
+					},
+					
+					generateFolderFromJson: function (group, subGroup){
+						if(!!group && !!subGroup){
+							if(!!this.FOLDERS_ADDED[group + "." + subGroup]){
+								return this.FOLDERS_ADDED[group + "." + subGroup];
+							}else{
+								var parent = null;
+								if(!!this.FOLDERS_ADDED[group]){
+									parent = this.FOLDERS_ADDED[group];
+								}else{
+									parent = this.generateFolder(group, null, null);
+								}
+								return this.generateFolder(group, subGroup, parent);
+							}
+						}else if(!!group){
+							if(this.FOLDERS_ADDED[group] > 0){
+								return this.FOLDERS_ADDED[group];
+							}else{
+								return this.generateFolder(group, null, null);
+							}
+						}
+						return null;
 					},
 					
 					generateLayerFromJson: function(layerToLoad, group, subGroup){
+						var groupLayers = layerToLoad.groupLayers;
+						var subgroupLayers = layerToLoad.subgroupLayers;
+						if(!groupLayers){
+							groupLayers = group;
+						}
+						if(!subgroupLayers){
+							subgroupLayers = subGroup;
+						}
+						var idFolder = this.generateFolderFromJson(groupLayers, subgroupLayers);
+						
 						var name = layerToLoad['name'];
 						var url = layerToLoad['url'];
 						var layerOp1 = layerToLoad['layerOp1'];
 						var layerOp2 = layerToLoad['layerOp2'];
+						
+						if(!url 
+								&& !!layerToLoad['layerProperties']
+								&& !!layerToLoad['layerProperties'].url){
+							url = layerToLoad['layerProperties'].url;
+						}
+						
 						if (!layerOp1){
 							layerOp1 = layerToLoad['layerProperties'];
 						}
@@ -153,8 +214,10 @@ PersistenceGeoParser =
 							name = name.replace("'","\"");
 						}
 						//console.log(name);
-						var insert = String.format(this.SQL_INSERT_LAYER, this.INDEX_LAYER, "true", 
-								name, "1", "false", "true", url, 
+//						var insert = String.format(this.SQL_INSERT_LAYER, this.INDEX_LAYER, "true", 
+//								name, "1", "false", "true", url, 
+//								"" + this.getLayerTypeFromJson(layerToLoad['type']), idFolder);
+						var insert = String.format(this.SQL_INSERT_LAYER, this.INDEX_LAYER, name, url, idFolder, "1", "1", 
 								"" + this.getLayerTypeFromJson(layerToLoad['type']));
 						this.insertSQL += insert + "\n";
 						this.generateLayerPropertiesFromJson(layerOp1, layerOp2, this.INDEX_LAYER++);
@@ -243,7 +306,10 @@ PersistenceGeoParser =
 	                				layers.push(layer);
 	                			}catch (e){
 	                				//TODO: Log load layer error
+	                				console.log(e);
 	                			}
+	                		}else{
+	                			console.log("WTF!! " + records[i].data.type + " - " + this.LOADERS_CLASSES[records[i].data.type]);
 	                		}
 	                		i++;
 	                	}
@@ -475,5 +541,30 @@ PersistenceGeoParser.AbstractLoader =
 		 * 
 		 * @return OpenLayers.Layer
 		 */
-		load: null
+		load: null,
+
+		parseStringToArrayNumbers: function (string){
+			var numbers = new Array();
+			var stringArray = string.split(",");
+			for(var i = 0; i < stringArray.length; i++){
+				numbers.push(this.toNumber(stringArray[i]));
+			}
+			return numbers;
+		},
+		
+		toBoolean: function(string){
+			return (new Boolean(string) == new Boolean("true"));
+		},
+		
+		toNumber: function(string){
+			return parseFloat(string);
+		},
+		
+		getGroupSubGroupLayer: function (layerData){
+			//TODO
+			return {
+				group: layerData.folderId,
+				subGroup: layerData.folderId
+			};
+		}
 };
