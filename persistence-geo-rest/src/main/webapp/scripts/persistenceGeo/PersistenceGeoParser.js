@@ -129,6 +129,73 @@ PersistenceGeoParser =
 						return this.getRestBaseUrl()+ "/persistenceGeo/saveFolderByGroup/";
 					},
 					
+					LOAD_FOLDERS_BASE_URL: function(){
+						return this.getRestBaseUrl()+ "/persistenceGeo/loadFolders/";
+					},
+					
+					LOAD_FOLDERS_GROUP_BASE_URL: function(){
+						return this.getRestBaseUrl()+ "/persistenceGeo/loadFoldersByGroup/";
+					},
+					
+					LOADED_FOLDERS:{},
+					
+					getFolder: function (nameFolder){
+						return this.LOADED_FOLDERS[nameFolder];
+					},
+					
+					LOADED_FOLDERS_NAMES:{},
+					
+					getFolderName: function (idFolder){
+						return this.LOADED_FOLDERS_NAMES[idFolder];
+					},
+					
+					initFoldersByUser: function(user){
+						this.initFolders(user, this.LOAD_FOLDERS_BASE_URL() + user);
+					},
+					
+					initFoldersByGroup: function(idGroup){
+						this.initFolders(idGroup, this.LOAD_FOLDERS_GROUP_BASE_URL() + idGroup);
+					},
+					
+					/**
+					 * Function: loadLayers
+					 * 
+					 * Loads OpenLayers layers and call to onload callback function (layers). 
+					 * Used to load all user layers. 
+					 */
+					initFolders: function(userOrGroup, url){
+						this.LOADED_FOLDERS = {};
+						this.LOADED_FOLDERS_NAMES = {};
+						var this_ = this;
+						store = new Ext.data.JsonStore({
+				             url: url,
+				             remoteSort: false,
+				             autoLoad:true,
+				             idProperty: 'id',
+				             root: 'data',
+				             totalProperty: 'results',
+				             fields: ['id','name'],
+				             listeners: {
+				                 load: function(store, records, options) {
+										var i = 0; 
+					                	while (i<records.length){
+					                		if(!!records[i].data.id 
+					                				&& !!records[i].data.name){
+					                			var folderName = records[i].data.name;
+//					                			if(folderName.indexOf(".") > 0){
+//					                				folderName = folderName.substring(folderName.indexOf(".") + 1);
+//					                			}
+//					                			console.log(folderName);
+					                			this_.LOADED_FOLDERS[folderName] = records[i].data.id;
+					                			this_.LOADED_FOLDERS_NAMES[records[i].data.id] = folderName;
+					                		}
+					                		i++;
+					                	}
+				                 }
+				             }
+				         });
+					},
+					
 					/**
 					 * Property: SAVE_FOLDER_TYPES
 					 * 
@@ -152,10 +219,12 @@ PersistenceGeoParser =
 					},
 					
 					generateFolder: function (group, subGroup, parent){
-						var insert = String.format(this.SQL_INSERT_FOLDER, this.INDEX_FOLDER, group, parent);
+						var insert;
 						if(parent == null){
+							insert = String.format(this.SQL_INSERT_FOLDER, this.INDEX_FOLDER, group, parent);
 							this.FOLDERS_ADDED[group] = this.INDEX_FOLDER;
 						}else{
+							insert = String.format(this.SQL_INSERT_FOLDER, this.INDEX_FOLDER, subGroup, parent);
 							this.FOLDERS_ADDED[group + "." + subGroup] = this.INDEX_FOLDER;
 						}
 						this.insertSQL += insert + "\n";
@@ -251,6 +320,7 @@ PersistenceGeoParser =
 					 * Used to load all user layers. Call to onloadcallback with an array of ``OpenLayers.Layer`` result.
 					 */
 					loadLayersByUser: function(user, onload){
+						this.initFoldersByUser(user); //Caution!! you haven't getFolderName function available befor storeload
 						this.loadLayers(user, onload, this.LOAD_LAYERS_BY_USER_BASE_URL() + user);
 					},
 					
@@ -261,6 +331,7 @@ PersistenceGeoParser =
 					 * Used to load all user layers. Call to onloadcallback with an array of ``OpenLayers.Layer`` result.
 					 */
 					loadLayersByGroup: function(group, onload){
+						this.initFoldersByGroup(group);
 						this.loadLayers(group, onload, this.LOAD_LAYERS_BY_GROUP_BASE_URL() + group);
 					},
 					
@@ -282,7 +353,8 @@ PersistenceGeoParser =
 				                      'type','auth','order',
 				                      'user','folderList','styleList',
 				                      'createDate','server_resource',
-				                      'publicized','enabled','updateDate'],
+				                      'publicized','enabled','updateDate', 
+				                      'folderId', 'authId', 'userId'],
 				             listeners: {
 				                 load: function(store, records, options) {
 				                	 if(!!onload){
@@ -561,10 +633,19 @@ PersistenceGeoParser.AbstractLoader =
 		},
 		
 		getGroupSubGroupLayer: function (layerData){
-			//TODO
 			return {
 				group: layerData.folderId,
 				subGroup: layerData.folderId
 			};
+		},
+		
+		postFunctionsWrapper: function (layerData, layer){
+			PersistenceGeoParser.AbstractLoader.postFunctionsGroups(layerData, layer);
+		},
+		
+		postFunctionsGroups: function (layerData, layer){
+			var groupSub = PersistenceGeoParser.AbstractLoader.getGroupSubGroupLayer(layerData);
+			layer.groupLayers = groupSub.group;
+			layer.subgroupLayers = groupSub.subGroup;
 		}
 };

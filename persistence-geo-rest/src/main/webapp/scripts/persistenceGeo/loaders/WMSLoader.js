@@ -66,10 +66,10 @@ PersistenceGeoParser.loaders.WMSLoader =
 	     			opacity: opacity,
 	    			buffer : buffer
 				});
-		//TODO: group
-		//layer.subgroupLayers = "overlays";
-		console.log(layer);
-		console.log(layer.resolutions);
+		
+		//TODO: Wrap 
+		PersistenceGeoParser.AbstractLoader.postFunctionsWrapper(layerData, layer);
+		
 		return layer;
 	}
 };
