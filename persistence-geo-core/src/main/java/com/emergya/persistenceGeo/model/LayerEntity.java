@@ -44,6 +44,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -122,7 +123,8 @@ public class LayerEntity extends AbstractLayerEntity {
 
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "layer_seq")
+    @SequenceGenerator(name="layer_seq", sequenceName = "layer_seq", initialValue=20, allocationSize=200)
 	public Long getId() {
 		return id;
 	}

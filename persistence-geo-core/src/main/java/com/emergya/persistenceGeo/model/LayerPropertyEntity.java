@@ -36,6 +36,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractLayerPropertyEntity;
@@ -54,10 +55,14 @@ public class LayerPropertyEntity extends AbstractLayerPropertyEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = -6555360095146423311L;
+	
 
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, 
+    				generator = "layer_property_seq")
+    @SequenceGenerator(name="layer_property_seq", 
+    					sequenceName = "layer_property_seq", initialValue=1000, allocationSize=20)  
 	public Long getId() {
 		return this.id;
 	}

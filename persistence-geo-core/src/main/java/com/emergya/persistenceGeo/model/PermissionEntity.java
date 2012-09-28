@@ -39,6 +39,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractPermissionEntity;
@@ -84,7 +85,8 @@ public class PermissionEntity extends AbstractPermissionEntity {
 
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "permission_seq")
+    @SequenceGenerator(name="permission_seq", sequenceName = "permission_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}

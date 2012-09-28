@@ -43,6 +43,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
@@ -103,7 +104,8 @@ public class FolderEntity extends AbstractFolderEntity {
 	
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "folder_seq")
+    @SequenceGenerator(name="folder_seq", sequenceName = "folder_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}

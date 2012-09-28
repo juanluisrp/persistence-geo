@@ -40,6 +40,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractLayerTypeEntity;
@@ -61,7 +62,8 @@ public class LayerTypeEntity extends AbstractLayerTypeEntity {
 
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "layer_type_seq")
+    @SequenceGenerator(name="layer_type_seq", sequenceName = "layer_type_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}

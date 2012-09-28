@@ -42,6 +42,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractAuthorityTypeEntity;
@@ -87,7 +88,8 @@ public class AuthorityTypeEntity extends AbstractAuthorityTypeEntity {
 
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "authority_type_seq")
+    @SequenceGenerator(name="authority_type_seq", sequenceName = "authority_type_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}

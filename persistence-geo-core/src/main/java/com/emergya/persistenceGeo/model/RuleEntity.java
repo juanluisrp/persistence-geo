@@ -40,6 +40,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.emergya.persistenceGeo.metaModel.AbstractRuleEntity;
@@ -85,7 +86,8 @@ public class RuleEntity extends AbstractRuleEntity {
 
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "rule_seq")
+    @SequenceGenerator(name="rule_seq", sequenceName = "rule_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}
