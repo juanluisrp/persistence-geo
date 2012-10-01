@@ -14,9 +14,12 @@ var allLayerTypesUrl = "rest/persistenceGeo/getLayerTypes";
 
 var loadLayerTypeUrl = "rest/persistenceGeo/getLayerTypeProperties/";
 
+//old methods (String parse)
 var loadFoldersBaseUrl = "rest/persistenceGeo/loadFolders/";
-
 var loadFoldersGroupBaseUrl = "rest/persistenceGeo/loadFoldersByGroup/";
+//new methods (tree parse)
+loadFoldersBaseUrl = "rest/persistenceGeo/loadFolders/user/tree/";
+loadFoldersGroupBaseUrl = "rest/persistenceGeo/loadFolders/group/tree/";
 
 var user;
 var store;

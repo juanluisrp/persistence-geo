@@ -60,6 +60,7 @@ import com.emergya.persistenceGeo.dto.SimplePropertyDto;
 import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.service.LayerAdminService;
 import com.emergya.persistenceGeo.service.UserAdminService;
+import com.emergya.persistenceGeo.utils.FolderStyle;
 import com.emergya.persistenceGeo.utils.FoldersUtils;
 
 /**
@@ -73,7 +74,7 @@ public class RestLayersAdminController implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3028127910300105478L;
 	
 	@Resource
 	private UserAdminService userAdminService;
@@ -84,6 +85,11 @@ public class RestLayersAdminController implements Serializable{
 	
 	protected final String RESULTS= "results";
 	protected final String ROOT= "data";
+
+	public static final String LOAD_FOLDERS_BY_USER = "user";
+	public static final String LOAD_FOLDERS_BY_GROUP = "group";
+	public static final String LOAD_FOLDERS_STYLE_TREE = "tree";
+	public static final String LOAD_FOLDERS_STYLE_STRING = "string";
 
 	/**
 	 * This method loads layers.json related with a user
@@ -657,7 +663,7 @@ public class RestLayersAdminController implements Serializable{
 				folders = new LinkedList<FolderDto>();
 				UserDto user = userAdminService.obtenerUsuario(username);
 				FolderDto rootFolder = layerAdminService.getRootFolder(user.getId());
-				FoldersUtils.getFolderTree(rootFolder, folders, new String());
+				FoldersUtils.getFolderTree(rootFolder, folders);
 			}
 		}catch (Exception e){
 			e.printStackTrace();
@@ -692,7 +698,56 @@ public class RestLayersAdminController implements Serializable{
 			if(idGroup != null){
 				folders = new LinkedList<FolderDto>();
 				FolderDto rootFolder = layerAdminService.getRootGroupFolder(Long.decode(idGroup));
-				FoldersUtils.getFolderTree(rootFolder, folders, new String(""));
+				FoldersUtils.getFolderTree(rootFolder, folders);
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		
+		result.put(RESULTS, folders != null ? folders.size(): 0);
+		result.put(ROOT, folders);
+
+		return result;
+	}
+	
+	/**
+	 * Load folder tree by user or group styled
+	 * 
+	 * @param type user or group, default group
+	 * @param style tree or string, default string
+	 * @param userOrGroup id group or username
+	 * 
+	 * @see FoldersUtils
+	 * @see FolderStyle
+	 * 
+	 * @return List of user or group folders parsed with style
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFolders/{type}/{style}/{userOrGroup}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFolders(@PathVariable String type,
+			@PathVariable String style, 
+			@PathVariable String userOrGroup){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			FolderDto rootFolder;
+			folders = new LinkedList<FolderDto>();
+			if(LOAD_FOLDERS_BY_USER.equals(type)){
+				UserDto user = userAdminService.obtenerUsuario(userOrGroup);
+				rootFolder = layerAdminService.getRootFolder(user.getId());
+			}else{
+				rootFolder = layerAdminService.getRootGroupFolder(Long.decode(userOrGroup));
+			}
+			if(LOAD_FOLDERS_STYLE_TREE.equals(style)){
+				FoldersUtils.getFolderTree(rootFolder, folders, FolderStyle.TREE);
+			}else{
+				FoldersUtils.getFolderTree(rootFolder, folders);
 			}
 		}catch (Exception e){
 			e.printStackTrace();
