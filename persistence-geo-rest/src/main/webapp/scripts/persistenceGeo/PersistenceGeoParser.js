@@ -106,11 +106,13 @@ PersistenceGeoParser =
 					
 					LOADED_FOLDERS:{},
 					
+					LOADED_FOLDERS_NAMES:{},
+					
+					ROOT_FOLDER:null,
+					
 					getFolder: function (nameFolder){
 						return this.LOADED_FOLDERS[nameFolder];
 					},
-					
-					LOADED_FOLDERS_NAMES:{},
 					
 					getFolderName: function (idFolder){
 						return this.LOADED_FOLDERS_NAMES[idFolder];
@@ -133,6 +135,7 @@ PersistenceGeoParser =
 					initFolders: function(userOrGroup, url){
 						this.LOADED_FOLDERS = {};
 						this.LOADED_FOLDERS_NAMES = {};
+						this.ROOT_FOLDER = null;
 						var this_ = this;
 						store = new Ext.data.JsonStore({
 				             url: url,
@@ -155,6 +158,11 @@ PersistenceGeoParser =
 //					                			console.log(folderName);
 					                			this_.LOADED_FOLDERS[folderName] = records[i].data.id;
 					                			this_.LOADED_FOLDERS_NAMES[records[i].data.id] = folderName;
+					                			// Root folder haven't '-'
+					                			if(!this_.ROOT_FOLDER 
+					                					&& folderName.indexOf("-") < 0){
+					                				this_.ROOT_FOLDER = folderName;
+					                			}
 					                		}
 					                		i++;
 					                	}
@@ -242,25 +250,26 @@ PersistenceGeoParser =
 					getLayers: function(records, onload){
 						var layers = new Array();
 						var i = 0; 
+						var layerTree = new Ext.util.MixedCollection();
 	                	while (i<records.length){
 	                		if(!!records[i].data.type
 	                				&& !! this.LOADERS_CLASSES[records[i].data.type]){
 	                			try{
-	                				var layer = this.LOADERS_CLASSES[records[i].data.type].load(records[i].data);
+	                				var layer = this.LOADERS_CLASSES[records[i].data.type].load(records[i].data, layerTree);
 	                				layers.push(layer);
 	                			}catch (e){
 	                				//TODO: Log load layer error
 	                				console.log(e);
 	                			}
 	                		}else{
-	                			console.log("WTF!! " + records[i].data.type + " - " + this.LOADERS_CLASSES[records[i].data.type]);
+	                			console.log("ERROR loading " + records[i].data.type + " - " + this.LOADERS_CLASSES[records[i].data.type]);
 	                		}
 	                		i++;
 	                	}
 	                	if(!!onload){
-	                		 onload(layers);
+	                		 onload(layers, layerTree);
 	                	 }else{
-	                		 PersistenceGeoParser.defaultOnLoad(layers); 
+	                		 PersistenceGeoParser.defaultOnLoad(layers, layerTree); 
 	                	 }
 					},
 					
@@ -511,13 +520,63 @@ PersistenceGeoParser.AbstractLoader =
 			};
 		},
 		
-		postFunctionsWrapper: function (layerData, layer){
-			PersistenceGeoParser.AbstractLoader.postFunctionsGroups(layerData, layer);
+		postFunctionsWrapper: function (layerData, layer, layerTree){
+			PersistenceGeoParser.AbstractLoader.postFunctionsGroups(layerData, layer, layerTree);
 		},
 		
-		postFunctionsGroups: function (layerData, layer){
+		postFunctionsGroups: function (layerData, layer, layerTree){
 			var groupSub = PersistenceGeoParser.AbstractLoader.getGroupSubGroupLayer(layerData);
 			layer.groupLayers = groupSub.group;
 			layer.subgroupLayers = groupSub.subGroup;
+
+			//Get folder names
+			var group = PersistenceGeoParser.getFolderName(layer.groupLayers);
+			var subgroup = PersistenceGeoParser.getFolderName(layer.subgroupLayers);
+			
+			//Save folder ids
+			layer.groupLayersIndex = layer.groupLayers;
+			layer.subGroupLayersIndex = layer.subgroupLayers;
+			
+			//Group
+			if(! group){
+				group = subgroup;
+			}
+			//Hide root folder
+			var group_label = subgroup;
+			if(!!group_label && group_label.indexOf("-") > 0){
+				group_label = group_label.split("-")[1];
+			}
+			// Adds to layerTree
+			if (!!group_label
+					&& !layerTree.containsKey(group_label)) {
+				//console.log("Creating '"+group_label+"'");
+				layerTree.add(group_label,
+						new Ext.util.MixedCollection());
+			}
+			
+			//Subgroup
+			var subgroup_label = subgroup;
+			//Hide root folder
+			if(!!subgroup_label && subgroup_label.indexOf("-") > 0){
+				subgroup_label = subgroup_label.split("-")[subgroup_label.split("-").length-1];
+			}
+			// Adds to layerTree
+			if(!!group_label
+					&& group_label != subgroup_label 
+					&& !layerTree.item(group_label).containsKey(subgroup_label)){
+				//console.log("Creating '"+group_label + "-"+subgroup_label+"'");
+				layerTree.item(group_label).add(subgroup_label,
+					subgroup_label);
+			}
+			
+			//To save at layer
+			layer.groupLayers = subgroup;
+			if(!!subgroup && subgroup.indexOf("-") > 0){
+				layer.groupLayers = subgroup.substring(subgroup.indexOf("-")+1);
+			}
+			layer.subgroupLayers = group;
+			if(!!group && group.indexOf("-") > 0){
+				layer.subgroupLayers = subgroup_label;
+			}
 		}
 };

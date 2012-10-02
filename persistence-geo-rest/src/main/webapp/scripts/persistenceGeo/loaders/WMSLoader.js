@@ -44,7 +44,7 @@ Ext.namespace("PersistenceGeoParser.loaders.WMSLoader");
 PersistenceGeoParser.loaders.WMSLoader =
 {
 
-	load: function (layerData){
+	load: function (layerData, layerTree){
 		var visibility = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.visibility);
 		var transparent = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.transparent);
 		var isBaseLayer = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.isBaseLayer);
@@ -68,7 +68,7 @@ PersistenceGeoParser.loaders.WMSLoader =
 				});
 		
 		//TODO: Wrap 
-		PersistenceGeoParser.AbstractLoader.postFunctionsWrapper(layerData, layer);
+		PersistenceGeoParser.AbstractLoader.postFunctionsWrapper(layerData, layer, layerTree);
 		
 		return layer;
 	}

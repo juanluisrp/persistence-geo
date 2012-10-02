@@ -42,7 +42,7 @@ Ext.namespace("PersistenceGeoParser.loaders.WFSLoader");
  */ 
 PersistenceGeoParser.loaders.WFSLoader =
 	{
-		load: function (layerData){
+		load: function (layerData, layerTree){
 			var renderer = OpenLayers.Util
 				.getParameters(window.location.href).renderer;
 			var layer = new OpenLayers.Layer.Vector(
@@ -65,7 +65,7 @@ PersistenceGeoParser.loaders.WFSLoader =
 					});
 			
 			//TODO: Wrap 
-			PersistenceGeoParser.AbstractLoader.postFunctionsWrapper(layerData, layer);
+			PersistenceGeoParser.AbstractLoader.postFunctionsWrapper(layerData, layer, layerTree);
 			
 			return layer;
 		}
