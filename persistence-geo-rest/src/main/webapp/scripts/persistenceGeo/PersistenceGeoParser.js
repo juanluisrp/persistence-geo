@@ -271,7 +271,7 @@ PersistenceGeoParser =
 	                		i++;
 	                	}
 	                	if(!!onload){
-	                		 onload(layers, layerTree);
+	                		 onload(layers, layerTree, this.ROOT_FOLDER);
 	                	 }else{
 	                		 PersistenceGeoParser.defaultOnLoad(layers, layerTree); 
 	                	 }
@@ -510,7 +510,7 @@ PersistenceGeoParser.AbstractLoader =
 		},
 		
 		toBoolean: function(string){
-			return (new Boolean(string) == new Boolean("true"));
+			return (string === "true");
 		},
 		
 		toNumber: function(string){
