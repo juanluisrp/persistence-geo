@@ -104,6 +104,10 @@ PersistenceGeoParser =
 						return this.getRestBaseUrl()+ "/persistenceGeo/loadFoldersByGroup/";
 					},
 					
+					DELETE_LAYER_BASE_URL: function(){
+						return this.getRestBaseUrl()+ "/persistenceGeo/deleteLayerByLayerId/";
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_NAMES:{},
@@ -449,6 +453,19 @@ PersistenceGeoParser =
 					},
 					
 					/**
+					 * Method: deleteLayerByLayerId
+					 * 
+					 * Delete a layer for a layer identifier and call to callbacks functions
+					 */
+					deleteLayerByLayerId: function(layerId, onsuccess, onfailure){
+						
+						var url = this.DELETE_LAYER_BASE_URL() + layerId;
+						var params = {};
+						
+						this.sendFormPostData(url, params, onsuccess, onfailure);
+					},
+					
+					/**
 					 * Private: sendFormPostData
 					 * 
 					 * Send a form and call to callbacks functions
@@ -522,6 +539,7 @@ PersistenceGeoParser.AbstractLoader =
 		
 		postFunctionsWrapper: function (layerData, layer, layerTree){
 			PersistenceGeoParser.AbstractLoader.postFunctionsGroups(layerData, layer, layerTree);
+			PersistenceGeoParser.AbstractLoader.postFunctionsPermission(layerData, layer);
 		},
 		
 		postFunctionsGroups: function (layerData, layer, layerTree){
@@ -578,5 +596,13 @@ PersistenceGeoParser.AbstractLoader =
 			if(!!group && group.indexOf("-") > 0){
 				layer.subgroupLayers = subgroup_label;
 			}
+		},
+		
+		postFunctionsPermission: function(layerData, layer){
+			// Save layer ids
+			layer.layerID = layerData.id;
+			layer.userID = layerData.userId;
+			layer.folderID = layerData.folderId;
 		}
+		
 };
