@@ -103,9 +103,12 @@ PersistenceGeoParser =
 					LOAD_FOLDERS_GROUP_BASE_URL: function(){
 						return this.getRestBaseUrl()+ "/persistenceGeo/loadFoldersByGroup/";
 					},
-					
+
 					DELETE_LAYER_BASE_URL: function(){
 						return this.getRestBaseUrl()+ "/persistenceGeo/deleteLayerByLayerId/";
+					},
+					LOAD_USERS_BY_GROUP_BAE_URL: function(){
+						return this.getRestBaseUrl()+ "/persistenceGeo/getUsersByGroup/";
 					},
 					
 					LOADED_FOLDERS:{},
@@ -271,7 +274,7 @@ PersistenceGeoParser =
 	                		i++;
 	                	}
 	                	if(!!onload){
-	                		 onload(layers, layerTree);
+	                		 onload(layers, layerTree, this.ROOT_FOLDER);
 	                	 }else{
 	                		 PersistenceGeoParser.defaultOnLoad(layers, layerTree); 
 	                	 }
@@ -523,7 +526,7 @@ PersistenceGeoParser.AbstractLoader =
 		},
 		
 		toBoolean: function(string){
-			return (new Boolean(string) == new Boolean("true"));
+			return (string === "true");
 		},
 		
 		toNumber: function(string){
