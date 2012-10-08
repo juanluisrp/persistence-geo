@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -82,6 +83,7 @@ public class RestLayersAdminController implements Serializable{
 	private LayerAdminService layerAdminService;
 	
 	private Map<Long, File> loadedLayers = new HashMap<Long, File>();
+	private Map<Long, MultipartFile> loadFiles = new HashMap<Long, MultipartFile>();
 	
 	protected final String RESULTS= "results";
 	protected final String ROOT= "data";
@@ -356,6 +358,31 @@ public class RestLayersAdminController implements Serializable{
 		}
 		return layers;
 	}
+	
+	private static final Random RANDOM = new Random();
+	
+	/**
+	 * This method saves a layer related with a user
+	 * 
+	 * @param uploadfile
+	 */
+	@RequestMapping(value = "/persistenceGeo/uploadFile", method = RequestMethod.POST, produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody 
+	Map<String, Object> uploadFile(@RequestParam(value="uploadfile", required=false) MultipartFile uploadfile){
+		Map<String, Object> result = new HashMap<String, Object>();
+		if(uploadfile != null){
+			result.put(SUCCESS, true);
+			Long id = RANDOM.nextLong();
+			result.put(RESULTS, 1);
+			result.put(ROOT, id);
+			loadFiles.put(id, uploadfile);
+		}else{
+			result.put(SUCCESS, false);
+			result.put(RESULTS, 0);
+			result.put(ROOT, "");
+		}
+		return result;
+	}
 
 	/**
 	 * This method saves a layer related with a user
@@ -375,7 +402,7 @@ public class RestLayersAdminController implements Serializable{
 			@RequestParam(value="publicized", required=false) String publicized,
 			@RequestParam(value="server_resource", required=false) String server_resource,
 			@RequestParam(value="folderId", required=false) String folderId,
-			@RequestParam(value="uploadfile", required=false) MultipartFile uploadfile){
+			@RequestParam(value="idFile", required=false) String idFile){
 		try{
 			/*
 			//TODO: Secure with logged user
@@ -389,7 +416,7 @@ public class RestLayersAdminController implements Serializable{
 			
 			//Copy layerData
 			layer = copyDataToLayer(name, type, properties, enabled, order_layer,
-					is_channel, publicized, server_resource, uploadfile, layer, folderId);
+					is_channel, publicized, server_resource, idFile, layer, folderId);
 			
 			return layer;
 		}catch (Exception e){
@@ -416,7 +443,7 @@ public class RestLayersAdminController implements Serializable{
 			@RequestParam(value="publicized", required=false) String publicized,
 			@RequestParam(value="server_resource", required=false) String server_resource,
 			@RequestParam(value="folderId", required=false) String folderId,
-			@RequestParam(value="uploadfile", required=false) MultipartFile uploadfile){
+			@RequestParam(value="idFile", required=false) String idFile){
 		try{
 			/*
 			//TODO: Secure with logged user
@@ -431,7 +458,7 @@ public class RestLayersAdminController implements Serializable{
 			
 			//Copy layerData
 			layer = copyDataToLayer(name, type, properties, enabled, order_layer,
-					is_channel, publicized, server_resource, uploadfile, layer, folderId);
+					is_channel, publicized, server_resource, idFile, layer, folderId);
 			
 			return layer;
 		}catch (Exception e){
@@ -458,7 +485,7 @@ public class RestLayersAdminController implements Serializable{
 	private LayerDto copyDataToLayer(String name, String type, String properties,
 			String enabled, String order_layer, String is_channel,
 			String publicized, String server_resource,
-			MultipartFile uploadfile, LayerDto layer, String folderId) throws IOException {
+			String idFile, LayerDto layer, String folderId) throws IOException {
 		// Add request parameter
 		layer.setName(name);
 		layer.setType(type);
@@ -481,10 +508,12 @@ public class RestLayersAdminController implements Serializable{
 		if (properties != null) {
 			layer.setProperties(getMapFromString(properties));
 		}
+		
+		MultipartFile uploadfile = loadFiles.get(Double.parseDouble(idFile));
 
 		// Layer data
 		if (uploadfile != null) {
-			byte[] data = IOUtils.toByteArray(uploadfile.getInputStream());
+			byte[] data = IOUtils.toByteArray((uploadfile).getInputStream());
 			File temp = com.emergya.persistenceGeo.utils.FileUtils
 					.createFileTemp(layer.getName(), layer.getType());
 			org.apache.commons.io.FileUtils.writeByteArrayToFile(temp, data);
