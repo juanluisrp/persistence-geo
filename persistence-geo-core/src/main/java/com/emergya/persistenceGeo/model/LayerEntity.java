@@ -155,7 +155,7 @@ public class LayerEntity extends AbstractLayerEntity {
 	}
 
 	@Column(name = "data", nullable=true)
-	@Type(type="org.hibernate.type.PrimitiveByteArrayBlobType") //Needed for oracle/postgresql compatibility
+//	@Type(type="org.hibernate.type.PrimitiveByteArrayBlobType") //Needed for oracle/postgresql compatibility
 	@Lob //Needed for oracle/postgresql compatibility
 	public byte[] getData() {
 		return data;
