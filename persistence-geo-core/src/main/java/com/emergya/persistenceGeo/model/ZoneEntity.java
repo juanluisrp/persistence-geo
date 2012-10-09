@@ -56,7 +56,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractZoneEntity;
  */
 @SuppressWarnings("unchecked")
 @Entity
-@Table(name = "zone")
+@Table(name = "gis_zone")
 public class ZoneEntity extends AbstractZoneEntity {
 
 	/**
@@ -104,8 +104,8 @@ public class ZoneEntity extends AbstractZoneEntity {
  
 	@Id
     @Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "zone_seq")
-    @SequenceGenerator(name="zone_seq", sequenceName = "zone_seq", initialValue=100)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_zone_seq")
+    @SequenceGenerator(name="gis_zone_seq", sequenceName = "gis_zone_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}
@@ -116,7 +116,7 @@ public class ZoneEntity extends AbstractZoneEntity {
 
 	@OneToMany(targetEntity = ZoneEntity.class,
 	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "zone_in_zone",
+	@JoinTable(name = "gis_zone_in_zone",
 	joinColumns =
 	@JoinColumn(name = "zone_id"),
 	inverseJoinColumns =
@@ -127,7 +127,7 @@ public class ZoneEntity extends AbstractZoneEntity {
 	
 	@ManyToMany(targetEntity = FolderEntity.class,
 	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "folder_in_zone",
+	@JoinTable(name = "gis_folder_in_zone",
 	joinColumns =
 	@JoinColumn(name = "folder_id"),
 	inverseJoinColumns =

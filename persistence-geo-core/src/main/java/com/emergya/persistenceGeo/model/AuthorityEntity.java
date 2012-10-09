@@ -55,7 +55,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractAuthorityEntity;
  */
 @SuppressWarnings("unchecked")
 @Entity
-@Table(name = "authority")
+@Table(name = "gis_authority")
 public class AuthorityEntity extends AbstractAuthorityEntity {
 
 	/**
@@ -77,8 +77,8 @@ public class AuthorityEntity extends AbstractAuthorityEntity {
 
 	@Id
 	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "authority_seq")
-    @SequenceGenerator(name="authority_seq", sequenceName = "authority_seq", initialValue=100)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_authority_seq")
+    @SequenceGenerator(name="gis_authority_seq", sequenceName = "gis_authority_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}

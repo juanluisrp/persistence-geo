@@ -54,7 +54,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractStyleEntity;
  */
 @SuppressWarnings("unchecked")
 @Entity
-@Table(name = "style")
+@Table(name = "gis_style")
 public class StyleEntity extends AbstractStyleEntity {
 	
 	/**
@@ -87,8 +87,8 @@ public class StyleEntity extends AbstractStyleEntity {
 
 	@Id
     @Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "style_seq")
-    @SequenceGenerator(name="style_seq", sequenceName = "style_seq", initialValue=100)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_style_seq")
+    @SequenceGenerator(name="gis_style_seq", sequenceName = "gis_style_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}

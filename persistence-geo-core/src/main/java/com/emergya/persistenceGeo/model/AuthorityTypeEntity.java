@@ -55,7 +55,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractAuthorityTypeEntity;
  */
 @SuppressWarnings("unchecked")
 @Entity
-@Table(name = "authority_type")
+@Table(name = "gis_authority_type")
 public class AuthorityTypeEntity extends AbstractAuthorityTypeEntity {
 	
 	/**
@@ -88,8 +88,8 @@ public class AuthorityTypeEntity extends AbstractAuthorityTypeEntity {
 
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "authority_type_seq")
-    @SequenceGenerator(name="authority_type_seq", sequenceName = "authority_type_seq", initialValue=100)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_authority_type_seq")
+    @SequenceGenerator(name="gis_authority_type_seq", sequenceName = "gis_authority_type_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}
@@ -101,7 +101,7 @@ public class AuthorityTypeEntity extends AbstractAuthorityTypeEntity {
 
 	@ManyToMany(targetEntity = PermissionEntity.class,
 	cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-	@JoinTable(name = "permission_by_authType",
+	@JoinTable(name = "gis_permission_by_authType",
 	joinColumns =
 	@JoinColumn(name = "auth_type_id"),
 	inverseJoinColumns =

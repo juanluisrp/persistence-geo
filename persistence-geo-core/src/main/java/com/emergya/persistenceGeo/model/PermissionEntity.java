@@ -52,7 +52,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractPermissionEntity;
  */
 @SuppressWarnings("unchecked")
 @Entity
-@Table(name = "permission")
+@Table(name = "gis_permission")
 public class PermissionEntity extends AbstractPermissionEntity {
 
 	/**
@@ -85,8 +85,8 @@ public class PermissionEntity extends AbstractPermissionEntity {
 
 	@Id
     @Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "permission_seq")
-    @SequenceGenerator(name="permission_seq", sequenceName = "permission_seq", initialValue=100)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_permission_seq")
+    @SequenceGenerator(name="gis_permission_seq", sequenceName = "gis_permission_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}
