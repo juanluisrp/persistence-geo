@@ -207,7 +207,7 @@ PersistenceGeoParser =
 					 * Used to load all user layers. Call to onloadcallback with an array of ``OpenLayers.Layer`` result.
 					 */
 					loadLayersByUser: function(user, onload){
-						this.initFoldersByUser(user); //Caution!! you haven't getFolderName function available befor storeload
+						this.initFoldersByUser(user); //Caution!! you haven't getFolderName function available before storeload
 						this.loadLayers(user, onload, this.LOAD_LAYERS_BY_USER_BASE_URL() + user);
 					},
 					
