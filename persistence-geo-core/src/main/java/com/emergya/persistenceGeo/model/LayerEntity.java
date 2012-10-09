@@ -59,7 +59,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
  */
 @SuppressWarnings("unchecked")
 @Entity
-@Table(name = "layer")
+@Table(name = "gis_layer")
 public class LayerEntity extends AbstractLayerEntity {
 
 	/**
@@ -123,8 +123,8 @@ public class LayerEntity extends AbstractLayerEntity {
 
 	@Id
     @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "layer_seq")
-    @SequenceGenerator(name="layer_seq", sequenceName = "layer_seq", initialValue=20, allocationSize=200)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_layer_seq")
+    @SequenceGenerator(name="gis_layer_seq", sequenceName = "gis_layer_seq", initialValue=20, allocationSize=200)
 	public Long getId() {
 		return id;
 	}
