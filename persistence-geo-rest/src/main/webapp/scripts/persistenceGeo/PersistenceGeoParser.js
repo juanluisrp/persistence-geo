@@ -108,6 +108,10 @@ PersistenceGeoParser =
 						return this.getRestBaseUrl()+ "/persistenceGeo/getUsersByGroup/";
 					},
 					
+					LOAD_MAP_CONFIGURATION_BASE_URL: function(){
+						return this.getRestBaseUrl(); //TODO path
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_NAMES:{},
@@ -460,6 +464,19 @@ PersistenceGeoParser =
 					deleteLayerByLayerId: function(layerId, onsuccess, onfailure){
 						
 						var url = this.DELETE_LAYER_BASE_URL() + layerId;
+						var params = {};
+						
+						this.sendFormPostData(url, params, onsuccess, onfailure);
+					},
+					
+					/**
+					 * Method: loadMapConfiguration
+					 * 
+					 * Load initial configuration from data base.
+					 */
+					loadMapConfiguration: function(idMapConf, onsuccess, onfailure){
+						
+						var url = this.LOAD_MAP_CONFIGURATION_BASE_URL() + idMapConf;
 						var params = {};
 						
 						this.sendFormPostData(url, params, onsuccess, onfailure);
