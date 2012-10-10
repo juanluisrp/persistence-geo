@@ -85,6 +85,7 @@ public class CreateLayers2Test{
 			Assert.assertEquals(layers.size(), 1);
 			Assert.assertEquals(layers.get(0).getId(), layer.getId());
 		}catch (Exception e){
+			e.printStackTrace();
 			LOG.error(e);
 			Assert.fail();
 		}
