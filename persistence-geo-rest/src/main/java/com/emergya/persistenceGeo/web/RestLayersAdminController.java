@@ -58,9 +58,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.emergya.persistenceGeo.dto.AuthorityDto;
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
+import com.emergya.persistenceGeo.dto.MapConfigurationDto;
 import com.emergya.persistenceGeo.dto.SimplePropertyDto;
 import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.service.LayerAdminService;
+import com.emergya.persistenceGeo.service.MapConfigurationAdminService;
 import com.emergya.persistenceGeo.service.UserAdminService;
 import com.emergya.persistenceGeo.utils.FolderStyle;
 import com.emergya.persistenceGeo.utils.FoldersUtils;
@@ -82,6 +84,8 @@ public class RestLayersAdminController implements Serializable{
 	private UserAdminService userAdminService;
 	@Resource
 	private LayerAdminService layerAdminService;
+	@Resource
+	private MapConfigurationAdminService mapConfigurationAdminService;
 	
 	private Map<Long, File> loadedLayers = new HashMap<Long, File>();
 	private Map<Long, File> loadFiles = new HashMap<Long, File>();
@@ -94,6 +98,70 @@ public class RestLayersAdminController implements Serializable{
 	public static final String LOAD_FOLDERS_BY_GROUP = "group";
 	public static final String LOAD_FOLDERS_STYLE_TREE = "tree";
 	public static final String LOAD_FOLDERS_STYLE_STRING = "string";
+
+	/**
+	 * This method loads mapConfiguration
+	 * 
+	 * @return JSON file with map configuration
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadMapConfiguration", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadMapConfiguration(){
+		Map<String, Object> result = new HashMap<String, Object>();
+		MapConfigurationDto mapConfiguration = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			mapConfiguration = mapConfigurationAdminService.loadConfiguration();
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, mapConfiguration != null ? 1: 0);
+		result.put(ROOT, mapConfiguration);
+
+		return result;
+	}
+
+	/**
+	 * This method update mapConfiguration
+	 * 
+	 * @return JSON file with map configuration updated
+	 */
+	@RequestMapping(value = "/persistenceGeo/updateMapConfiguration", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> updateMapConfiguration(@RequestParam("bbox") String bbox,
+			@RequestParam("iProj") String iProj, 
+			@RequestParam("res") String res){
+		Map<String, Object> result = new HashMap<String, Object>();
+		MapConfigurationDto mapConfiguration = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			mapConfiguration = mapConfigurationAdminService.loadConfiguration();
+			mapConfigurationAdminService.updateMapConfiguration(mapConfiguration.getId(), bbox, iProj, res);
+			mapConfiguration = mapConfigurationAdminService.loadConfiguration();
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, mapConfiguration != null ? 1: 0);
+		result.put(ROOT, mapConfiguration);
+
+		return result;
+	}
 
 	/**
 	 * This method loads layers.json related with a user
