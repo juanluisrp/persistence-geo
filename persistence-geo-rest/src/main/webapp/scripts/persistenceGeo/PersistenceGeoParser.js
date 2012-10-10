@@ -107,6 +107,9 @@ PersistenceGeoParser =
 					LOAD_USERS_BY_GROUP_BAE_URL: function(){
 						return this.getRestBaseUrl()+ "/persistenceGeo/getUsersByGroup/";
 					},
+					LOGIN_URL: function(){
+						return this.getRestBaseUrl()+ "/persistenceGeo/admin/createUser/";
+					},
 					
 					LOADED_FOLDERS:{},
 					
@@ -128,6 +131,25 @@ PersistenceGeoParser =
 					
 					initFoldersByGroup: function(idGroup){
 						this.initFolders(idGroup, this.LOAD_FOLDERS_GROUP_BASE_URL() + idGroup);
+					},
+					
+					/**
+					 * Function: login
+					 * 
+					 * Make a login with PersistenceGeo creating user and group if not exists 
+					 */
+					login: function(userName, userGroup, userZone, onsuccess, onfailure){
+						
+						var url = this.LOGIN_URL();
+						var params = {
+								username: userName,
+								userGroup: userGroup
+						};
+						if(!!userZone){
+							params.userZone = userZone;
+						}
+						
+						this.sendFormPostData(url, params, onsuccess, onfailure);
 					},
 					
 					/**

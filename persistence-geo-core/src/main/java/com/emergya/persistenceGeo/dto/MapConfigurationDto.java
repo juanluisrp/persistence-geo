@@ -29,10 +29,7 @@
  */
 package com.emergya.persistenceGeo.dto;
 
-import java.io.File;
 import java.io.Serializable;
-import java.util.Date;
-import java.util.Map;
 
 /**
  * Layer Data Transfer Object 

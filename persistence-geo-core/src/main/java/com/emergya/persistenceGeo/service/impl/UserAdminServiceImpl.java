@@ -339,7 +339,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 			Date now = new Date();
 			
 			if(dto.getId() != null && dto.getId() > 0){
-				entity = (AbstractUserEntity) userDao.findById(dto.getId(), true);
+				entity = (AbstractUserEntity) userDao.findById(dto.getId(), false);
 				//Grupos
 				authorityDao.clearUser(dto.getId());
 			}else{
@@ -362,9 +362,12 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 				List<AbstractAuthorityEntity> authorities = authorityDao.findByName(grupo);
 				for (AbstractAuthorityEntity authority: authorities){
 					this.addUsuarioAGrupo(authority.getId(), dto.getUsername());
+					entity.setAuthority(authority);
 				}
 			}
 		}
+		
+		userDao.makePersistent(entity);
 		
 		return entity;
 	}
