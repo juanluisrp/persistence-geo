@@ -59,7 +59,7 @@ public class AuthorityEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abs
 	
 	protected final String PEOPLE = "people";
 	protected final String LAYER = "layerList";
-	protected final String USER_ID = "user_id";
+	protected final String USER_ID = "id";
 	protected final String LAYER_ID = "id";
 	protected final String PEOPLE_USER_ID = PEOPLE + "." + USER_ID;
 	protected final String LAYER_LAYER_ID = LAYER + "." + LAYER_ID;

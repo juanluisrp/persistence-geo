@@ -457,6 +457,79 @@ Ext.onReady(function() {
 			}]
 	});
 	
+	var loginForm = new Ext.FormPanel({
+        title: 'LoginForm',
+		cls: 'my-form-class',
+		width: 350,
+		height: 200,
+		items: [
+			{
+				xtype: 'textfield',
+				fieldLabel: 'User name',
+				name: 'username'
+			},
+			{
+		         fieldLabel:'User group'
+				,xtype:'combo'
+				,name: 'userGroup'
+		        ,displayField:'nombre'
+		        ,valueField:'id'
+		        ,store: new Ext.data.JsonStore({
+		             url: allGroupsUrl,
+		             remoteSort: false,
+		             autoLoad:true,
+		             idProperty: 'nombre',
+		             root: 'data',
+		             totalProperty: 'results',
+		             fields: ['id','nombre']
+		         })
+		        ,triggerAction:'all'
+		        ,mode:'local'
+			},
+			{
+		         fieldLabel:'User zone'
+				,xtype:'combo'
+				,name: 'userZone'
+		        ,displayField:'nombre'
+		        ,valueField:'id'
+		        ,store: new Ext.data.JsonStore({
+		             url: 'rest/persistenceGeo/getAllZones',
+		             remoteSort: false,
+		             autoLoad:true,
+		             idProperty: 'name',
+		             root: 'data',
+		             totalProperty: 'results',
+		             fields: ['id','name']
+		         })
+		        ,triggerAction:'all'
+		        ,mode:'local'
+			}
+			],
+		    buttons: [{
+				text: 'Save',
+				handler: function() {
+					var username = loginForm.items.items[0].getValue();
+					var userGroup = loginForm.items.items[1].lastSelectionText;
+					var userZone = loginForm.items.items[2].getValue();
+					PersistenceGeoParser.login(username, userGroup, userZone, 
+					function(form, action) {
+						Ext.Msg.alert('Login success', action.response.responseText);
+					},
+					function(form, action) {
+						if(!!action
+								&& !!action.response
+								&& !!action.response.status
+								&& action.response.status == "200"
+								&& !!action.response.responseText){
+							Ext.Msg.alert('Login success', action.response.responseText);
+						}else{
+							Ext.Msg.alert('Warning', 'Login error');
+						}
+					});
+				}
+			}]
+	});
+	
 	 var window = new Ext.Window({
 	        title: 'Example Forms',
 	        width: 600,
@@ -471,7 +544,7 @@ Ext.onReady(function() {
 	        	xtype: "tabpanel",
 	            anchor: "95%",
 	            activeTab: 0,
-	            items: [saveUserForm, loadLayersForm, saveLayerForm, saveFolderForm]
+	            items: [saveUserForm, loadLayersForm, saveLayerForm, saveFolderForm, loginForm]
 	        	}]
 	    });
 	 

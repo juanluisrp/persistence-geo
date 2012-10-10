@@ -37,6 +37,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,8 +46,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.emergya.persistenceGeo.dto.AuthorityDto;
+import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.UserDto;
+import com.emergya.persistenceGeo.dto.ZoneDto;
+import com.emergya.persistenceGeo.service.LayerAdminService;
 import com.emergya.persistenceGeo.service.UserAdminService;
+import com.emergya.persistenceGeo.service.ZoneAdminService;
 
 /**
  * Simple REST controller for user admin
@@ -63,6 +68,12 @@ public class RestUserAdminController implements Serializable{
 	
 	@Resource
 	private UserAdminService userAdminService;
+	
+	@Resource
+	private LayerAdminService layerAdminService;
+	
+	@Resource
+	private ZoneAdminService zoneAdminService;
 
 	@RequestMapping(value = "/persistenceGeo/admin/createUser", method = RequestMethod.POST)
 	public @ResponseBody
@@ -71,15 +82,50 @@ public class RestUserAdminController implements Serializable{
 			@RequestParam("userGroup") String userGroup,
 			@RequestParam(value="userZone", required=false) String userZone) {
 		
-		UserDto user = new UserDto();
-		user.setUsername(username);
-		user.setPassword(username);
-		user.setAuthority(userGroup);
-		if(userZone != null){
-			//TODO:
+		UserDto user = userAdminService.obtenerUsuario(username, username);
+		if(user == null){
+			user = new UserDto();
+			user.setUsername(username);
+			user.setPassword(username);
 		}
 		
-		return (UserDto) userAdminService.create(user);
+		boolean changed = false;
+
+		if(!userGroup.equals(user.getAuthority())){
+			user.setAuthority(userGroup);	
+			changed = true;
+		}
+		
+		if(userZone != null 
+				&& user.getAuthority() != null
+				&& user.getAuthority().split("_").length == 2
+				&& user.getAuthority().split("_")[0].equals(userGroup)
+				&& user.getAuthority().split("_")[1].equals(userZone)){
+			user.setAuthority(userGroup + "_" + userZone);
+		}else if(userZone != null){
+			checkAndCreateAuth(userGroup, userZone);
+			user.setAuthority(userGroup + "_" + userZone);
+			changed = true;
+		}else{
+			checkAndCreateAuth(userGroup, null);
+		}
+		
+		if(user.getId() == null){
+			user = (UserDto) userAdminService.create(user);
+		}else if(changed){
+			user = (UserDto) userAdminService.update(user);
+		}
+		
+		FolderDto folder = layerAdminService.getRootFolder(user.getId());
+		if(folder == null){
+			//Create default user folder
+			folder = new FolderDto();
+			folder.setIdUser(user.getId());
+			folder.setName("");
+			layerAdminService.saveFolder(folder);
+		}
+		
+		return user;
 	}
 
 	@RequestMapping(value = "/persistenceGeo/admin/modifyUser", method = RequestMethod.POST)
@@ -90,9 +136,19 @@ public class RestUserAdminController implements Serializable{
 			@RequestParam("userAuth") String userAuth,
 			@RequestParam(value="userZone", required=false) String userZone) {
 
-		//TODO: Core call 
+		UserDto user = userAdminService.obtenerUsuario(username, username);
+		if(user != null){
+			user.setAuthority(userGroup);
+			
+			if(userZone != null){
+				checkAndCreateAuth(userGroup, userZone);
+				user.setAuthority(userGroup + "_" + userZone);
+			}
+			
+			user = (UserDto) userAdminService.update(user);
+		}
 		
-		return null;
+		return user;
 	}
 
 	@RequestMapping(value = "/persistenceGeo/admin/createGroup", method = RequestMethod.POST)
@@ -100,10 +156,34 @@ public class RestUserAdminController implements Serializable{
 		AuthorityDto createGroup(
 			@RequestParam("userGroup") String userGroup,
 			@RequestParam(value="userZone", required=false) String userZone) {
-
-		//TODO: Core call 
-		
-		return null;
+		return checkAndCreateAuth(userGroup, userZone);
+	}
+	
+	private AuthorityDto checkAndCreateAuth(String name, String zone){
+		AuthorityDto dto = null;
+		List<AuthorityDto> groups = (List<AuthorityDto>) userAdminService.obtenerGruposUsuarios();
+		for(AuthorityDto group: groups){
+			if(!StringUtils.isEmpty(name) 
+					&& name.equals(group.getNombre())
+					&& ((!StringUtils.isEmpty(zone)
+							&& zone.equals(group.getZone())) 
+							|| 
+						(StringUtils.isEmpty(zone) && StringUtils.isEmpty(group.getZone()))
+					)){
+				dto = group;
+				break;
+			}
+		}
+		if(dto == null){
+			dto = new AuthorityDto();
+			dto.setNombre(name);
+			dto.setZone(zone);
+			if(zone != null){
+				dto.setNombre(name + "_" + zone);
+			}
+			dto.setId(userAdminService.crearGrupoUsuarios(dto));
+		}
+		return dto;
 	}
 	
 	protected final String RESULTS= "results";
@@ -146,11 +226,23 @@ public class RestUserAdminController implements Serializable{
 	public @ResponseBody
 	Map<String, Object> getAllGroups() {
 		Map<String, Object> result = new HashMap<String, Object>();
-		//TODO: get user by authority group of user logged
 		List<AuthorityDto> groups = (List<AuthorityDto>) userAdminService.obtenerGruposUsuarios();
 		
 		result.put(RESULTS, groups != null ? groups.size() : 0);
 		result.put(ROOT, groups != null ? groups : ListUtils.EMPTY_LIST);
+		
+		return result;
+	}
+	
+	@RequestMapping(value = "/persistenceGeo/getAllZones", method = RequestMethod.GET)
+	public @ResponseBody
+	Map<String, Object> getAllZones() {
+		Map<String, Object> result = new HashMap<String, Object>();
+		@SuppressWarnings("unchecked")
+		List<ZoneDto> zones = (List<ZoneDto>) zoneAdminService.getAll();
+		
+		result.put(RESULTS, zones != null ? zones.size() : 0);
+		result.put(ROOT, zones != null ? zones : ListUtils.EMPTY_LIST);
 		
 		return result;
 	}
