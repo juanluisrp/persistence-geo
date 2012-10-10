@@ -39,6 +39,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -77,6 +78,7 @@ public class LayerTypeEntity extends AbstractLayerTypeEntity {
 	@ManyToMany(targetEntity = LayerTypePropertyEntity.class, 
 			fetch = FetchType.EAGER,
 			cascade = {CascadeType.ALL})
+	@JoinTable(name = "gis_property_in_layer_type")
 	public List<LayerTypePropertyEntity> getDefaultProperties() {
 		return defaultProperties;
 	}

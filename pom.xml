@@ -91,6 +91,14 @@
 		<junit.version>4.8.1</junit.version>
 		<javax.servlet-servlet-api.version>2.5</javax.servlet-servlet-api.version>
 		<javax.servlet-jstl.version>1.2</javax.servlet-jstl.version>
+		<!-- OJDBC14 
+                <ojdbc.groupId>oracle</ojdbc.groupId>
+                <ojdbc.artifactId>ojdbc14</ojdbc.artifactId>
+                <ojdbc.version>1.4</ojdbc.version> -->
+		<!-- OJDBC6 -->
+                <ojdbc.groupId>com.oracle</ojdbc.groupId>
+                <ojdbc.artifactId>ojdbc6</ojdbc.artifactId>
+                <ojdbc.version>11.2.0.3.0</ojdbc.version>
 	</properties>
 
 	<dependencies>

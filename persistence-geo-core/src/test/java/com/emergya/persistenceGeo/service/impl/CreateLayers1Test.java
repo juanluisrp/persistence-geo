@@ -80,12 +80,13 @@ public class CreateLayers1Test{
 			layer.setType(LayerAdminService.TYPE_KML);
 			layer.setData(new File(PR_1_LAYER_DATA));
 			//TODO: Solve at oracle
-//			layer = (LayerDto) layerAdminService.create(layer);
-//			List<LayerDto> layers = layerAdminService.getLayersByName(PR_1_LAYER_NAME);
-//			Assert.assertNotNull(layers);
-//			Assert.assertEquals(layers.size(), 1);
-//			Assert.assertEquals(layers.get(0).getId(), layer.getId());
+			layer = (LayerDto) layerAdminService.create(layer);
+			List<LayerDto> layers = layerAdminService.getLayersByName(PR_1_LAYER_NAME);
+			Assert.assertNotNull(layers);
+			Assert.assertEquals(layers.size(), 1);
+			Assert.assertEquals(layers.get(0).getId(), layer.getId());
 		}catch (Exception e){
+			e.printStackTrace();
 			LOG.error(e);
 			Assert.fail();
 		}
