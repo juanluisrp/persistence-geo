@@ -153,12 +153,12 @@
 		   <artifactId>postgresql</artifactId>
 		   <version>${postgresql.version}</version>
 		</dependency>
-		
+			
 		<!-- Oracle -->
 		<dependency>
-			<groupId>oracle</groupId>
-			<artifactId>ojdbc14</artifactId>
-			<version>1.4</version>
+		    <groupId>${ojdbc.groupId}</groupId>
+		    <artifactId>${ojdbc.artifactId}</artifactId>
+		    <version>${ojdbc.version}</version>
 		</dependency>
 
 		<!-- LOGGING DEPENDENCIES - LOG4J -->
