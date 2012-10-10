@@ -40,18 +40,28 @@ Ext.namespace("PersistenceGeoParser.loaders.GMLLoader");
  * 
  */
 PersistenceGeoParser.loaders.GMLLoader = {
+
+	/**
+     * Constant: TYPE_GML_V2
+     */
+	TYPE_GML_V2: "GML Version 2",
+	
+	/**
+     * Constant: TYPE_GML_V3
+     */
+	TYPE_GML_V3: "GML Version 3",
+
 	/*
 	 * Method: formatType
 	 * 
 	 * Type format of the layer to Load (KML)
 	 */
-	formatType : function() {
-		var internalProjection = new OpenLayers.Projection(this.map.projection);
-		var externalProjection = new OpenLayers.Projection(
-				this.externalProjection);
+	formatType : function(externalProjectionText, type) {
+		var internalProjection = new OpenLayers.Projection(map.projection);
+		var externalProjection = new OpenLayers.Projection(externalProjectionText);
 
 		var formatType;
-		if (this.type == this.TYPE_GML_V3) {
+		if (!!type && type == this.TYPE_GML_V3) {
 			formatType = new OpenLayers.Format.GML.v3({
 				internalProjection : internalProjection,
 				externalProjection : externalProjection,
