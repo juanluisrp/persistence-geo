@@ -1,5 +1,5 @@
 /*
- * AbstractLayerEntity.java
+ * AbstractMapConfigurationEntity.java
  * 
  * Copyright (C) 2011
  * 
@@ -25,23 +25,22 @@
  * however invalidate any other reasons why the executable file might be covered
  * by the GNU General public abstract License.
  * 
- * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
 package com.emergya.persistenceGeo.metaModel;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
- * Entidad de capa
- * 
- * @author <a href="mailto:marcos@emergya.com">marcos</a>
+ * AbstractMapConfigurationEntity
  *
  */
-@SuppressWarnings("rawtypes")
 public abstract class AbstractMapConfigurationEntity extends AbstractEntity {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5160316545504884744L;
+	
 	protected Long id;
 	protected String PDFServer;
 	protected String uploadServletURL;
@@ -61,9 +60,6 @@ public abstract class AbstractMapConfigurationEntity extends AbstractEntity {
 	protected String version;
 	protected String minResolution;
 	protected String bbox;
-	
-
-	
 	
 	/**
 	 * @return the pDFServer
@@ -137,7 +133,6 @@ public abstract class AbstractMapConfigurationEntity extends AbstractEntity {
 	 * @return the bbox
 	 */
 	public abstract String getBbox();
-	
 	
 	/**
 	 * @param id the id to set

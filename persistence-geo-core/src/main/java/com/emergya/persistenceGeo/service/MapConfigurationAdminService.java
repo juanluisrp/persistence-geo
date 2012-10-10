@@ -29,16 +29,10 @@
  */
 package com.emergya.persistenceGeo.service;
 
-import java.util.List;
-
-import com.emergya.persistenceGeo.dto.FolderDto;
-import com.emergya.persistenceGeo.dto.LayerDto;
 import com.emergya.persistenceGeo.dto.MapConfigurationDto;
-import com.emergya.persistenceGeo.dto.RuleDto;
-import com.emergya.persistenceGeo.dto.StyleDto;
 
 /**
- * Layers Administration Interface 
+ * MapConfigurationAdminService interface
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
