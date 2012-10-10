@@ -59,6 +59,8 @@ PersistenceGeoParser =
 					},
 					
 					REST_COMPONENT_URL: "rest",
+					REQUEST_METHOD_POST: "POST",
+					REQUEST_METHOD_GET: "GET",
 					
 					/**
 					 * Function getRestBaseUrl
@@ -109,7 +111,11 @@ PersistenceGeoParser =
 					},
 					
 					LOAD_MAP_CONFIGURATION_BASE_URL: function(){
-						return this.getRestBaseUrl(); //TODO path
+						return this.getRestBaseUrl() + "/persistenceGeo/loadMapConfiguration";
+					},
+					
+					UPDATE_MAP_CONFIGURATION_BASE_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/updateMapConfiguration";
 					},
 					
 					LOADED_FOLDERS:{},
@@ -319,7 +325,7 @@ PersistenceGeoParser =
 							url = this.SAVE_FOLDER_BASE_URL() + userOrGroup;
 						}
 						
-						this.sendFormPostData(url, params, onsuccess, onfailure);
+						this.sendFormPostData(url, params, this.REQUEST_METHOD_POST, onsuccess, onfailure);
 					},
 					
 					/**
@@ -349,7 +355,7 @@ PersistenceGeoParser =
 							params.parentFolder = parentFolder;
 						}
 						
-						this.sendFormPostData(url, params, onsuccess, onfailure);
+						this.sendFormPostData(url, params, this.REQUEST_METHOD_POST, onsuccess, onfailure);
 					},
 					
 					/**
@@ -379,7 +385,7 @@ PersistenceGeoParser =
 							params.parentFolder = parentFolder;
 						}
 						
-						this.sendFormPostData(url, params, onsuccess, onfailure);
+						this.sendFormPostData(url, params, this.REQUEST_METHOD_POST, onsuccess, onfailure);
 					},
 					
 					/**
@@ -415,7 +421,7 @@ PersistenceGeoParser =
 							}
 						}
 						
-						this.sendFormPostData(url, params, onsuccess, onfailure);
+						this.sendFormPostData(url, params, this.REQUEST_METHOD_POST, onsuccess, onfailure);
 						
 					},
 					
@@ -452,7 +458,7 @@ PersistenceGeoParser =
 							}
 						}
 						
-						this.sendFormPostData(url, params, onsuccess, onfailure);
+						this.sendFormPostData(url, params, this.REQUEST_METHOD_POST, onsuccess, onfailure);
 						
 					},
 					
@@ -466,7 +472,7 @@ PersistenceGeoParser =
 						var url = this.DELETE_LAYER_BASE_URL() + layerId;
 						var params = {};
 						
-						this.sendFormPostData(url, params, onsuccess, onfailure);
+						this.sendFormPostData(url, params, this.REQUEST_METHOD_POST, onsuccess, onfailure);
 					},
 					
 					/**
@@ -474,12 +480,28 @@ PersistenceGeoParser =
 					 * 
 					 * Load initial configuration from data base.
 					 */
-					loadMapConfiguration: function(idMapConf, onsuccess, onfailure){
+					loadMapConfiguration: function(onsuccess, onfailure){
 						
-						var url = this.LOAD_MAP_CONFIGURATION_BASE_URL() + idMapConf;
+						var url = this.LOAD_MAP_CONFIGURATION_BASE_URL();
 						var params = {};
 						
-						this.sendFormPostData(url, params, onsuccess, onfailure);
+						this.sendFormPostData(url, params, this.REQUEST_METHOD_GET, onsuccess, onfailure);
+					},
+					
+					/**
+					 * Method: loadMapConfiguration
+					 * 
+					 * Load initial configuration from data base.
+					 */
+					updateMapConfiguration: function(properties, onsuccess, onfailure){
+						
+						var url = this.UPDATE_MAP_CONFIGURATION_BASE_URL();
+						
+						if(!! properties){
+							params = properties;
+						}
+						
+						this.sendFormPostData(url, params, this.REQUEST_METHOD_GET, onsuccess, onfailure);
 					},
 					
 					/**
@@ -487,10 +509,10 @@ PersistenceGeoParser =
 					 * 
 					 * Send a form and call to callbacks functions
 					 */
-					sendFormPostData: function (url, params, onsuccess, onfailure){
+					sendFormPostData: function (url, params, method, onsuccess, onfailure){
 						var tempForm = new Ext.FormPanel({
 							url: url,
-							method: 'POST',
+							method: method,
 					        title: 'Save layer Form',
 					        fileUpload: true,	   
 							items: [],
