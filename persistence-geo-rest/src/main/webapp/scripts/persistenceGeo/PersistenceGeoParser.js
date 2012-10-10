@@ -159,7 +159,7 @@ PersistenceGeoParser =
 							params.userZone = userZone;
 						}
 						
-						this.sendFormPostData(url, params, onsuccess, onfailure);
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
 					},
 					
 					/**
