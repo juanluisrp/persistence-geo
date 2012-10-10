@@ -56,7 +56,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
  */
 @SuppressWarnings("unchecked")
 @Entity
-@Table(name = "folder")
+@Table(name = "gis_folder")
 public class FolderEntity extends AbstractFolderEntity {
 
 	/**
@@ -104,8 +104,8 @@ public class FolderEntity extends AbstractFolderEntity {
 	
 	@Id
     @Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "folder_seq")
-    @SequenceGenerator(name="folder_seq", sequenceName = "folder_seq", initialValue=100)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_folder_seq")
+    @SequenceGenerator(name="gis_folder_seq", sequenceName = "gis_folder_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}

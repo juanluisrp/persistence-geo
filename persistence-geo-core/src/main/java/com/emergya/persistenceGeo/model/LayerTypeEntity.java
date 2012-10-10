@@ -39,6 +39,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -52,7 +53,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractLayerTypeEntity;
  *
  */
 @Entity
-@Table(name = "layer_type")
+@Table(name = "gis_layer_type")
 public class LayerTypeEntity extends AbstractLayerTypeEntity {
 
 	/**
@@ -62,8 +63,8 @@ public class LayerTypeEntity extends AbstractLayerTypeEntity {
 
 	@Id
     @Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "layer_type_seq")
-    @SequenceGenerator(name="layer_type_seq", sequenceName = "layer_type_seq", initialValue=100)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_layer_type_seq")
+    @SequenceGenerator(name="gis_layer_type_seq", sequenceName = "gis_layer_type_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}
@@ -77,6 +78,7 @@ public class LayerTypeEntity extends AbstractLayerTypeEntity {
 	@ManyToMany(targetEntity = LayerTypePropertyEntity.class, 
 			fetch = FetchType.EAGER,
 			cascade = {CascadeType.ALL})
+	@JoinTable(name = "gis_property_in_layer_type")
 	public List<LayerTypePropertyEntity> getDefaultProperties() {
 		return defaultProperties;
 	}

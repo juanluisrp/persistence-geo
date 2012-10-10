@@ -48,7 +48,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractLayerTypePropertyEntity;
  *
  */
 @Entity
-@Table(name = "layer_type_property")
+@Table(name = "gis_layer_type_property")
 public class LayerTypePropertyEntity extends AbstractLayerTypePropertyEntity {
 
 	/**
@@ -58,8 +58,8 @@ public class LayerTypePropertyEntity extends AbstractLayerTypePropertyEntity {
 
 	@Id
     @Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "layer_type_property_seq")
-    @SequenceGenerator(name="layer_type_property_seq", sequenceName = "layer_type_property_seq", initialValue=100)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_layer_type_property_seq")
+    @SequenceGenerator(name="gis_layer_type_property_seq", sequenceName = "gis_layer_type_property_seq", initialValue=100)
 	public Long getId() {
 		return this.id;
 	}

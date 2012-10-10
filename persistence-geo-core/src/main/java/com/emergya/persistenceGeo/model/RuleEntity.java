@@ -52,7 +52,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractRuleEntity;
  *
  */
 @Entity
-@Table(name = "rule")
+@Table(name = "gis_rule")
 public class RuleEntity extends AbstractRuleEntity {
 
 	/**
@@ -86,8 +86,8 @@ public class RuleEntity extends AbstractRuleEntity {
 
 	@Id
     @Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "rule_seq")
-    @SequenceGenerator(name="rule_seq", sequenceName = "rule_seq", initialValue=100)
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_rule_seq")
+    @SequenceGenerator(name="gis_rule_seq", sequenceName = "gis_rule_seq", initialValue=100)
 	public Long getId() {
 		return id;
 	}

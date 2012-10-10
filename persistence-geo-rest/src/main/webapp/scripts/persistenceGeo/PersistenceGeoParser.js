@@ -53,12 +53,9 @@ PersistenceGeoParser =
 					
 					LOADERS_CLASSES: {
 						"WMS":PersistenceGeoParser.loaders.WMSLoader,
-						"WFS":PersistenceGeoParser.loaders.WFSLoader
-//						,
-//						"KML":PersistenceGeoParser.KMLLoader,
-//						"GML":PersistenceGeoParser.GMLLoader,
-//						"TEXT":PersistenceGeoParser.TextLoader,
-//						,"WMST":PersistenceGeoParser.WMSTLoader
+						"WFS":PersistenceGeoParser.loaders.WFSLoader,
+						"KML":PersistenceGeoParser.loaders.KMLLoader,
+						"GML":PersistenceGeoParser.loaders.GMLLoader
 					},
 					
 					REST_COMPONENT_URL: "rest",
@@ -207,7 +204,7 @@ PersistenceGeoParser =
 					 * Used to load all user layers. Call to onloadcallback with an array of ``OpenLayers.Layer`` result.
 					 */
 					loadLayersByUser: function(user, onload){
-						this.initFoldersByUser(user); //Caution!! you haven't getFolderName function available befor storeload
+						this.initFoldersByUser(user); //Caution!! you haven't getFolderName function available before storeload
 						this.loadLayers(user, onload, this.LOAD_LAYERS_BY_USER_BASE_URL() + user);
 					},
 					
@@ -569,6 +566,7 @@ PersistenceGeoParser.AbstractLoader =
 			}
 			// Adds to layerTree
 			if (!!group_label
+					&& !!layerTree
 					&& !layerTree.containsKey(group_label)) {
 				//console.log("Creating '"+group_label+"'");
 				layerTree.add(group_label,

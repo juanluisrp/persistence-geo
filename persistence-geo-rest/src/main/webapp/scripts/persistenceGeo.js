@@ -3,6 +3,8 @@
     var jsfiles = new Array(
         "persistenceGeo/loaders/WMSLoader.js",
         "persistenceGeo/loaders/WFSLoader.js",
+        "persistenceGeo/loaders/KMLLoader.js",
+        "persistenceGeo/loaders/GMLLoader.js",
         "persistenceGeo/PersistenceGeoParser.js"
     );
     

@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -52,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.emergya.persistenceGeo.dto.AuthorityDto;
 import com.emergya.persistenceGeo.dto.FolderDto;
@@ -82,9 +84,11 @@ public class RestLayersAdminController implements Serializable{
 	private LayerAdminService layerAdminService;
 	
 	private Map<Long, File> loadedLayers = new HashMap<Long, File>();
+	private Map<Long, File> loadFiles = new HashMap<Long, File>();
 	
 	protected final String RESULTS= "results";
 	protected final String ROOT= "data";
+	protected final String SUCCESS= "success";
 
 	public static final String LOAD_FOLDERS_BY_USER = "user";
 	public static final String LOAD_FOLDERS_BY_GROUP = "group";
@@ -127,8 +131,10 @@ public class RestLayersAdminController implements Serializable{
 					}
 				}
 			}
+			result.put(SUCCESS, true);
 		}catch (Exception e){
 			e.printStackTrace();
+			result.put(SUCCESS, false);
 		}
 		
 		result.put(RESULTS, layers.size());
@@ -169,8 +175,10 @@ public class RestLayersAdminController implements Serializable{
 					layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
 				}
 			}
+			result.put(SUCCESS, true);
 		}catch (Exception e){
 			e.printStackTrace();
+			result.put(SUCCESS, false);
 		}
 		
 		result.put(RESULTS, layers.size());
@@ -201,7 +209,7 @@ public class RestLayersAdminController implements Serializable{
 				list.add(new SimplePropertyDto(property));
 			}
 		}
-		
+		result.put(SUCCESS, true);
 		result.put(RESULTS, list.size());
 		result.put(ROOT, list);
 
@@ -229,7 +237,7 @@ public class RestLayersAdminController implements Serializable{
 				list.add(new SimplePropertyDto(property));
 			}
 		}
-		
+		result.put(SUCCESS, true);
 		result.put(RESULTS, list.size());
 		result.put(ROOT, list);
 
@@ -351,6 +359,40 @@ public class RestLayersAdminController implements Serializable{
 		}
 		return layers;
 	}
+	
+	private static final Random RANDOM = new Random();
+	
+	/**
+	 * This method saves a layer related with a user
+	 * 
+	 * @param uploadfile
+	 */
+	@RequestMapping(value = "/persistenceGeo/uploadFile", method = RequestMethod.POST)
+	public ModelAndView uploadFile(
+			@RequestParam(value="uploadfile") MultipartFile uploadfile){
+		ModelAndView model = new ModelAndView();
+		String result = null;
+		if(uploadfile != null){
+			Long id = RANDOM.nextLong();
+			result = "{\"results\": 1, \"data\": \""+ id +"\", \"success\": true}";
+			byte[] data;
+			try {
+				data = IOUtils.toByteArray(uploadfile.getInputStream());
+				File temp = com.emergya.persistenceGeo.utils.FileUtils
+						.createFileTemp("tmp", "xml");
+				org.apache.commons.io.FileUtils.writeByteArrayToFile(temp, data);
+				loadFiles.put(id, temp);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else{
+			result = "{\"results\": 0, \"data\": \"\", \"success\": false}";
+		}
+		model.addObject("resultado", result);
+		model.setViewName("resultToJSON");
+		return model;
+	}
 
 	/**
 	 * This method saves a layer related with a user
@@ -370,7 +412,7 @@ public class RestLayersAdminController implements Serializable{
 			@RequestParam(value="publicized", required=false) String publicized,
 			@RequestParam(value="server_resource", required=false) String server_resource,
 			@RequestParam(value="folderId", required=false) String folderId,
-			@RequestParam(value="uploadfile", required=false) MultipartFile uploadfile){
+			@RequestParam(value="idFile", required=false) String idFile){
 		try{
 			/*
 			//TODO: Secure with logged user
@@ -383,8 +425,8 @@ public class RestLayersAdminController implements Serializable{
 			layer.setUser(username);
 			
 			//Copy layerData
-			copyDataToLayer(name, type, properties, enabled, order_layer,
-					is_channel, publicized, server_resource, uploadfile, layer, folderId);
+			layer = copyDataToLayer(name, type, properties, enabled, order_layer,
+					is_channel, publicized, server_resource, idFile, layer, folderId);
 			
 			return layer;
 		}catch (Exception e){
@@ -411,7 +453,7 @@ public class RestLayersAdminController implements Serializable{
 			@RequestParam(value="publicized", required=false) String publicized,
 			@RequestParam(value="server_resource", required=false) String server_resource,
 			@RequestParam(value="folderId", required=false) String folderId,
-			@RequestParam(value="uploadfile", required=false) MultipartFile uploadfile){
+			@RequestParam(value="idFile", required=false) String idFile){
 		try{
 			/*
 			//TODO: Secure with logged user
@@ -425,8 +467,8 @@ public class RestLayersAdminController implements Serializable{
 			layer.setAuthId(group.getId());
 			
 			//Copy layerData
-			copyDataToLayer(name, type, properties, enabled, order_layer,
-					is_channel, publicized, server_resource, uploadfile, layer, folderId);
+			layer = copyDataToLayer(name, type, properties, enabled, order_layer,
+					is_channel, publicized, server_resource, idFile, layer, folderId);
 			
 			return layer;
 		}catch (Exception e){
@@ -450,10 +492,10 @@ public class RestLayersAdminController implements Serializable{
 	 * @param layer
 	 * @throws IOException
 	 */
-	private void copyDataToLayer(String name, String type, String properties,
+	private LayerDto copyDataToLayer(String name, String type, String properties,
 			String enabled, String order_layer, String is_channel,
 			String publicized, String server_resource,
-			MultipartFile uploadfile, LayerDto layer, String folderId) throws IOException {
+			String idFile, LayerDto layer, String folderId) throws IOException {
 		// Add request parameter
 		layer.setName(name);
 		layer.setType(type);
@@ -465,7 +507,6 @@ public class RestLayersAdminController implements Serializable{
 				.toLowerCase().equals("true") : false);
 		layer.setPublicized(publicized != null ? publicized.toLowerCase()
 				.equals("true") : false);
-		layer.setServer_resource(server_resource);
 		//Folder id
 		if(!StringUtils.isEmpty(folderId) 
 				&& StringUtils.isNumeric(folderId)){
@@ -476,18 +517,25 @@ public class RestLayersAdminController implements Serializable{
 		if (properties != null) {
 			layer.setProperties(getMapFromString(properties));
 		}
-
+		
+		File temp = loadFiles.get(Long.decode(idFile));
 		// Layer data
-		if (uploadfile != null) {
-			byte[] data = IOUtils.toByteArray(uploadfile.getInputStream());
-			File temp = com.emergya.persistenceGeo.utils.FileUtils
-					.createFileTemp(layer.getName(), layer.getType());
-			org.apache.commons.io.FileUtils.writeByteArrayToFile(temp, data);
+		if (temp != null) {
 			layer.setData(temp);
 		}
 
 		// Save the layer
 		layer = (LayerDto) layerAdminService.create(layer);
+		
+		if(layer.getId() != null && layer.getData() != null){
+			loadedLayers.put(layer.getId(), layer.getData());
+			layer.setData(null);
+			layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
+		}
+		
+		loadFiles.remove(idFile);
+		
+		return layer;
 	}
 	
 	private static final String PROPERTIES_SEPARATOR = ",,,";
@@ -665,8 +713,10 @@ public class RestLayersAdminController implements Serializable{
 				FolderDto rootFolder = layerAdminService.getRootFolder(user.getId());
 				FoldersUtils.getFolderTree(rootFolder, folders);
 			}
+			result.put(SUCCESS, true);
 		}catch (Exception e){
 			e.printStackTrace();
+			result.put(SUCCESS, false);
 		}
 		
 		result.put(RESULTS, folders != null ? folders.size(): 0);
@@ -700,8 +750,10 @@ public class RestLayersAdminController implements Serializable{
 				FolderDto rootFolder = layerAdminService.getRootGroupFolder(Long.decode(idGroup));
 				FoldersUtils.getFolderTree(rootFolder, folders);
 			}
+			result.put(SUCCESS, true);
 		}catch (Exception e){
 			e.printStackTrace();
+			result.put(SUCCESS, false);
 		}
 		
 		result.put(RESULTS, folders != null ? folders.size(): 0);
@@ -749,8 +801,10 @@ public class RestLayersAdminController implements Serializable{
 			}else{
 				FoldersUtils.getFolderTree(rootFolder, folders);
 			}
+			result.put(SUCCESS, true);
 		}catch (Exception e){
 			e.printStackTrace();
+			result.put(SUCCESS, false);
 		}
 		
 		result.put(RESULTS, folders != null ? folders.size(): 0);
@@ -761,7 +815,8 @@ public class RestLayersAdminController implements Serializable{
 	
 	@RequestMapping(value = "/persistenceGeo/deleteLayerByLayerId/{layerId}", method = RequestMethod.POST)
 	public @ResponseBody
-	void DeleteLayerByLayerId(@PathVariable String layerId){
+	Map<String, Object> DeleteLayerByLayerId(@PathVariable String layerId){
+		Map<String, Object> result = new HashMap<String, Object>();
 		try{
 			/*
 			//TODO: Secure with logged user
@@ -770,9 +825,14 @@ public class RestLayersAdminController implements Serializable{
 			 */
 			Long idLayer = Long.decode(layerId);
 			layerAdminService.deleteLayerById(idLayer);
+			result.put(SUCCESS, true);
+			result.put(ROOT, new HashMap<String, Object>());
 		}catch (Exception e) {
 			e.printStackTrace();
+			result.put(SUCCESS, false);
+			result.put(ROOT, "No se ha podido borrar la capa");
 		}
+		return result;
 	}
 
 }
