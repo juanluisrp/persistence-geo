@@ -29,14 +29,11 @@
  */
 package com.emergya.persistenceGeo.dao.impl;
 
-import java.io.InputStream;
-import java.sql.Blob;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.hibernate.Criteria;
-import org.hibernate.Hibernate;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,10 +141,6 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstrac
 						.add(Restrictions.eq("auth.id", id));
 		
 		return criteria.list();
-	}
-	
-	public Blob createBlob(InputStream data, long length){
-		return Hibernate.createBlob(data, length, getSession());
 	}
 
 }

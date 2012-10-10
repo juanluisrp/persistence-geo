@@ -29,8 +29,6 @@
  */
 package com.emergya.persistenceGeo.dao;
 
-import java.io.InputStream;
-import java.sql.Blob;
 import java.util.List;
 
 import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
@@ -105,7 +103,5 @@ public interface LayerEntityDao extends GenericDAO<AbstractLayerEntity, Long> {
 	 * @return Entities list associated with the identifier or null if not found 
 	 */
 	public List<AbstractLayerEntity> findByAuthorityId(Long id);
-	
-	public Blob createBlob(InputStream data, long length);
 	
 }

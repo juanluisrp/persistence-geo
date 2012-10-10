@@ -30,7 +30,6 @@
 package com.emergya.persistenceGeo.service.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -40,8 +39,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -284,9 +281,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			if(entity.getData() != null){
 				try {
 					File file = com.emergya.persistenceGeo.utils.FileUtils.createFileTemp(entity.getName(), entity.getType() != null ? entity.getType().getName() : "xml");
-					byte [] data = IOUtils.toByteArray(entity.getData().getBinaryStream());
-					FileUtils.writeByteArrayToFile(file, data);
-					//FileUtils.writeByteArrayToFile(file, entity.getData());
+					FileUtils.writeByteArrayToFile(file, entity.getData());
 					dto.setData(file);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
@@ -367,8 +362,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			//Layer data
 			if(dto.getData() != null){
 				try {
-					entity.setData(layerDao.createBlob(new FileInputStream(dto.getData()), dto.getData().length()));
-					//entity.setData(FileUtils.readFileToByteArray(dto.getData()));
+					entity.setData(FileUtils.readFileToByteArray(dto.getData()));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
