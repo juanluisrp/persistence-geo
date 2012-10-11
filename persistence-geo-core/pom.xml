@@ -71,21 +71,6 @@
 	</scm>
 
 
-	<distributionManagement>
-		<!-- use the following if you're not using a snapshot version. -->
-		<repository>
-			<id>nexus.releases</id>
-			<name>Nexus Releases</name>
-			<url>http://nexus.emergya.es/nexus/content/repositories/maagya-repo/</url>
-		</repository>
-		<!-- use the following if you ARE using a snapshot version. -->
-		<snapshotRepository>
-			<id>nexus.snapshots</id>
-			<name>Nexus Snapshot</name>
-			<url>http://nexus.emergya.es/nexus/content/repositories/maagya-snapshots/</url>
-	</snapshotRepository>
-	</distributionManagement>
-    
     <repositories>
 		<repository>
 			<id>jboss-repo</id>
