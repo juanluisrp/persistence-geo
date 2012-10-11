@@ -43,18 +43,28 @@ Ext.namespace("PersistenceGeoParser.loaders.WFSLoader");
 PersistenceGeoParser.loaders.WFSLoader =
 	{
 		load: function (layerData, layerTree){
+
+			var _strategies = [
+					new OpenLayers.Strategy.BBOX(),
+					new OpenLayers.Strategy.Refresh({
+						interval : 5000
+					}) ];
+
+			var maxFeatures = PersistenceGeoParser.AbstractLoader.toNumber(layerData['properties']['maxFeatures']);
+			var visibility = PersistenceGeoParser.AbstractLoader.toBoolean(layerData['visibility']);
+			
 			var renderer = OpenLayers.Util
 				.getParameters(window.location.href).renderer;
 			var layer = new OpenLayers.Layer.Vector(
 					layerData['name'],
 					{
 						'groupLayers' : layerData['groupLayers'],
-						'visibility' : layerData['visibility'],
-//TODO						'strategies' : _strategies,
+						'visibility' : visibility,
+						'strategies' : _strategies,
 						'protocol' : new OpenLayers.Protocol.WFS(
 								{
 									url : OpenLayers.ProxyHost + layerData['properties']['url'], 
-						            maxFeatures: layerData['properties']['maxFeatures'],
+						            maxFeatures: maxFeatures,
 						            featureType: layerData['properties']['featureType'],
 						            featureNS: layerData['properties']['featureNS'],
 						            featurePrefix: layerData['properties']['featurePrefix'],
@@ -66,6 +76,11 @@ PersistenceGeoParser.loaders.WFSLoader =
 			
 			//TODO: Wrap 
 			PersistenceGeoParser.AbstractLoader.postFunctionsWrapper(layerData, layer, layerTree);
+			
+			if(true){ //TODO from group
+				layer.groupLayers = "editables";
+				layer.subgroupLayers = "editables";
+			}
 			
 			return layer;
 		}

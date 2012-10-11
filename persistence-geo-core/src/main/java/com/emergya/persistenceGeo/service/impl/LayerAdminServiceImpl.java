@@ -39,6 +39,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,6 +109,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	 * 
 	 * @return If not found, it's created
 	 */
+	@Cacheable("persistenceGeo")
 	public List<LayerDto> getLayersByName(String layerName) {
 		List<LayerDto> layersDto = new LinkedList<LayerDto>();
 		LayerDto dto = null;
@@ -129,6 +131,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	 * 
 	 * @return If not found, it's created
 	 */
+	@Cacheable("persistenceGeo")
 	public List<LayerDto> getLayersByName(List<String> namesList) {
 		List<LayerDto> layersDto = new LinkedList<LayerDto>();
 		for(String name: namesList){
@@ -295,12 +298,8 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			if(user != null){
 				dto.setUser(user.getNombreCompleto());
 			}
-			// Add authorities
-			List<AbstractAuthorityEntity> authorities = authDao.findByLayer(entity.getId());
-			if(authorities != null && !authorities.isEmpty()){
-				// Authorities have just one element
-				dto.setAuthId(authorities.get(0).getId());
-			}
+			// Add authority
+			dto.setAuthId(entity.getAuth() != null ? entity.getAuth().getId() : null);
 			// Add style
 			dto.setStyle(entityStyleToDto(entity.getStyle()));
 			// Add folder
@@ -442,16 +441,19 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	}
 
 	@Override
+	@Cacheable("persistenceGeo")
 	public List<LayerDto> getLayersByUser(Long idUser) {
 		return (List<LayerDto>) entitiesToDtos(layerDao.findByUserId(idUser));
 	}
 
 	@Override
+	@Cacheable("persistenceGeo")
 	public List<LayerDto> getLayersByAuthority(Long id) {
 		return (List<LayerDto>) entitiesToDtos(layerDao.findByAuthorityId(id));
 	}
 
 	@Override
+	@Cacheable("persistenceGeo")
 	public List<String> getAllLayerTypes() {
 		List<String> result = new LinkedList<String>();
 		
@@ -463,6 +465,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	}
 
 	@Override
+	@Cacheable("persistenceGeo")
 	public List<String> getAllLayerTypeProperties(String layerType) {
 		List<String> result = new LinkedList<String>();
 		
@@ -474,11 +477,13 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	}
 
 	@Override
+	@Cacheable("persistenceGeo")
 	public FolderDto getRootFolder(Long idUser) {
 		return entityFolderToDto(folderDao.findRootByUser(idUser));
 	}
 
 	@Override
+	@Cacheable("persistenceGeo")
 	public FolderDto getRootGroupFolder(Long idGroup) {
 		return entityFolderToDto(folderDao.findRootByGroup(idGroup));
 	}

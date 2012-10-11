@@ -27,6 +27,7 @@ package com.emergya.persistenceGeo.service.impl;
 
 import javax.annotation.Resource;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -156,6 +157,7 @@ public class MapConfigurationAdminServiceImpl
 	}
 
 	@Override
+	@Cacheable("persistenceGeo")
 	public MapConfigurationDto loadConfiguration() {
 		return entityToDto(mapConfigurationDao.loadConfiguration());
 	}

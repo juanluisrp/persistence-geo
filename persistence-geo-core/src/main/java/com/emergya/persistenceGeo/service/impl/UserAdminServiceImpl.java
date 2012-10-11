@@ -37,6 +37,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +87,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 	 * 
 	 * @return si no existia lo crea sin grupo de usuarios
 	 */
+	@Cacheable("persistenceGeo")
 	public UserDto obtenerUsuario(String name) {
 		UserDto dto = entityToDto(userDao.getUser(name));
 		return dto;
@@ -101,6 +103,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 	 * 
 	 * @return si no existia lo crea sin grupo de usuarios
 	 */
+	@Cacheable("persistenceGeo")
 	public UserDto obtenerUsuario(String name, String password) {
 		UserDto dto = entityToDto(userDao.getUser(name, password));
 		if (dto == null) {
@@ -114,6 +117,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 	 * 
 	 * @return usuarios del sistema
 	 */
+	@Cacheable("persistenceGeo")
 	public List<UserDto> obtenerUsuarios() {
 		List<UserDto> result = new LinkedList<UserDto>();
 		for (AbstractUserEntity entity : userDao.findAll()) {
@@ -127,6 +131,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 	 * 
 	 * @return grupos de usuario del sistema
 	 */
+	@Cacheable("persistenceGeo")
 	public List<AuthorityDto> obtenerGruposUsuarios() {
 		List<AuthorityDto> result = new LinkedList<AuthorityDto>();
 		for (AbstractAuthorityEntity entity : authorityDao.findAll()) {
@@ -143,6 +148,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 	 * 
 	 * @return grupo de usuarios asociado al id o null si no lo encuentra
 	 */
+	@Cacheable("persistenceGeo")
 	public AuthorityDto obtenerGrupoUsuarios(Long id) {
 		return entityGPToDto(authorityDao.findById(id, false));
 	}
@@ -237,6 +243,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 	 * 
 	 * @return users of a group
 	 */
+	@Cacheable("persistenceGeo")
 	public List<UserDto> getUsersByGroup(Long idGroup){
 		return (List<UserDto>) entitiesToDtos(userDao.findByAuthID(idGroup));
 	}

@@ -29,8 +29,12 @@
  */
 package com.emergya.persistenceGeo.service.impl;
 
+import java.io.Serializable;
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +66,16 @@ public class ZoneAdminServiceImpl extends AbstractServiceImpl<ZoneDto, AbstractZ
 	@Override
 	protected GenericDAO<AbstractZoneEntity, Long> getDao() {
 		return zoneDao;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.emergya.persistenceGeo.service.impl.AbstractServiceImpl#getAll()
+	 */
+	@Override
+	@Cacheable("persistenceGeo")
+	public List<? extends Serializable> getAll() {
+		// TODO Auto-generated method stub
+		return super.getAll();
 	}
 
 	@Override

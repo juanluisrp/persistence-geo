@@ -664,6 +664,7 @@ PersistenceGeoParser.AbstractLoader =
 			// Save layer ids
 			layer.layerID = layerData.id;
 			layer.userID = layerData.userId;
+			layer.groupID = layerData.authId;
 			layer.folderID = layerData.folderId;
 		}
 		
