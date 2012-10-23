@@ -162,6 +162,8 @@ PersistenceGeoParser =
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
 					},
 					
+					treeFolder: new Ext.util.MixedCollection(),
+					
 					/**
 					 * Function: loadLayers
 					 * 
@@ -172,6 +174,7 @@ PersistenceGeoParser =
 						this.LOADED_FOLDERS = {};
 						this.LOADED_FOLDERS_NAMES = {};
 						this.ROOT_FOLDER = null;
+						this.treeFolder = new Ext.util.MixedCollection();
 						var this_ = this;
 						store = new Ext.data.JsonStore({
 				             url: url,
@@ -180,24 +183,39 @@ PersistenceGeoParser =
 				             idProperty: 'id',
 				             root: 'data',
 				             totalProperty: 'results',
-				             fields: ['id','name'],
+				             fields: ['id','name','idParent'],
 				             listeners: {
 				                 load: function(store, records, options) {
 										var i = 0; 
+										var lastParent = null;
+										var parents = {};
 					                	while (i<records.length){
 					                		if(!!records[i].data.id 
 					                				&& !!records[i].data.name){
 					                			var folderName = records[i].data.name;
-//					                			if(folderName.indexOf(".") > 0){
-//					                				folderName = folderName.substring(folderName.indexOf(".") + 1);
-//					                			}
-//					                			console.log(folderName);
 					                			this_.LOADED_FOLDERS[folderName] = records[i].data.id;
 					                			this_.LOADED_FOLDERS_NAMES[records[i].data.id] = folderName;
 					                			// Root folder haven't '-'
 					                			if(!this_.ROOT_FOLDER 
 					                					&& folderName.indexOf("-") < 0){
 					                				this_.ROOT_FOLDER = folderName;
+					                			}
+					                			if(!!records[i].data.idParent
+					                					&& !(folderName == this_.ROOT_FOLDER)){
+					                				//Add child
+					                				lastParent = parents[records[i].data.idParent];
+				                					lastParent.element.add(records[i].data.id, new Ext.util.MixedCollection());
+				                					var newParent = {};
+				                					newParent.id = records[i].data.id;
+				                					newParent.element = lastParent.element.item(records[i].data.id);
+					                				parents[records[i].data.id] = newParent;
+					                			}else{
+					                				//Leaf
+					                				this_.treeFolder.add(records[i].data.id, new Ext.util.MixedCollection());
+				                					var newParent = {};
+				                					newParent.id = records[i].data.id;
+				                					newParent.element = this_.treeFolder.item(records[i].data.id);
+					                				parents[records[i].data.id] = newParent;
 					                			}
 					                		}
 					                		i++;
