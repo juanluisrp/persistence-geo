@@ -586,10 +586,13 @@ public class RestLayersAdminController implements Serializable{
 			layer.setProperties(getMapFromString(properties));
 		}
 		
-		File temp = loadFiles.get(Long.decode(idFile));
-		// Layer data
-		if (temp != null) {
-			layer.setData(temp);
+		//Only if a file has been saved
+		if(idFile != null){
+			File temp = loadFiles.get(Long.decode(idFile));
+			// Layer data
+			if (temp != null) {
+				layer.setData(temp);
+			}
 		}
 
 		// Save the layer
