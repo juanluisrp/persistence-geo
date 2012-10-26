@@ -103,5 +103,14 @@ public class StyleDto implements Serializable {
 	public void setRules(Map<RuleDto, Map<String, String>> rules) {
 		this.rules = rules;
 	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	
 
 }

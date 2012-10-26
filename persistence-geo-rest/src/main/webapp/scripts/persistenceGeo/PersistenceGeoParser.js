@@ -121,6 +121,10 @@ PersistenceGeoParser =
 						return this.getRestBaseUrl() + "/persistenceGeo/updateMapConfiguration";
 					},
 					
+					UPDATE_LAYER_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/updateLayer";
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_NAMES:{},
@@ -285,7 +289,7 @@ PersistenceGeoParser =
 				             totalProperty: 'results',
 				             fields: ['id','name','properties',
 				                      'type','auth','order',
-				                      'user','folderList','styleList',
+				                      'user','folderList','styles',
 				                      'createDate','server_resource',
 				                      'publicized','enabled','updateDate', 
 				                      'folderId', 'authId', 'userId'],
@@ -619,6 +623,7 @@ PersistenceGeoParser.AbstractLoader =
 		postFunctionsWrapper: function (layerData, layer, layerTree){
 			PersistenceGeoParser.AbstractLoader.postFunctionsGroups(layerData, layer, layerTree);
 			PersistenceGeoParser.AbstractLoader.postFunctionsPermission(layerData, layer);
+			PersistenceGeoParser.AbstractLoader.postFunctionsStyle(layerData, layer);
 		},
 		
 		postFunctionsGroups: function (layerData, layer, layerTree){
@@ -684,6 +689,28 @@ PersistenceGeoParser.AbstractLoader =
 			layer.userID = layerData.userId;
 			layer.groupID = layerData.authId;
 			layer.folderID = layerData.folderId;
+		},
+		
+		postFunctionsStyle: function(layerData, layer){
+			if(!!layerData.styles
+					&& !!layerData.styles){
+				var styleMap = {};
+				for(var styleName in layerData.styles){
+					var symbolizer = {};
+					for(var ruleFilter in layerData.styles[styleName]){
+						if(ruleFilter == 'true'){
+							symbolizer[ruleFilter] = layerData.styles[styleName][ruleFilter];
+						}else{
+							//TODO: Use OGC filter
+						}
+			        }
+					styleMap[styleName] = new OpenLayers.Style(null, {
+		                rules: [new OpenLayers.Rule({symbolizer: symbolizer})]
+		            })
+				}
+				styleMap = new OpenLayers.StyleMap(styleMap);
+				layer.styleMap = styleMap;
+			}
 		}
 		
 };

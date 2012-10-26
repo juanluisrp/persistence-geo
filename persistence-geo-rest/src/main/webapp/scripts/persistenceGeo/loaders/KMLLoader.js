@@ -46,9 +46,13 @@ PersistenceGeoParser.loaders.KMLLoader = {
 	 * Type format of the layer to Load (KML)
 	 */
 	formatType : function(externalProjection) {
+		var targetProj = map.projection;
+		if(!!externalProjection){
+			targetProj = externalProjection;
+		}
 		return new OpenLayers.Format.KML({
 			internalProjection : new OpenLayers.Projection(map.projection),
-			externalProjection : new OpenLayers.Projection(externalProjection),
+			externalProjection : new OpenLayers.Projection(targetProj),
 			extractStyles : true,
 			extractAttributes : true,
 			maxDepth : 2
@@ -61,7 +65,7 @@ PersistenceGeoParser.loaders.KMLLoader = {
 			strategies : [ new OpenLayers.Strategy.Fixed() ],
 			protocol : new OpenLayers.Protocol.HTTP({
 				url : layerData.server_resource,
-				format : this.formatType(layerData.properties.externalProjection),
+				format : this.formatType(layerData.properties ? layerData.properties.externalProjection : null),
 				srsName : map.projection
 			})
 		});

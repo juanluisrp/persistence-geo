@@ -29,6 +29,7 @@ var app;
 var userOrGroupToSaveFolder;
 var typeToSaveFolder;
 var saveFolderForm;
+var map;
 
 function getFoldersUrl(){
 	if(typeToSaveFolder == PersistenceGeoParser.SAVE_FOLDER_TYPES.GROUP){
@@ -424,8 +425,9 @@ Ext.onReady(function() {
 		        ,mode:'local'
 		        ,listeners:{select:{fn:function(combo, value) {
 		        	PersistenceGeoParser.loadLayersByUser(value.id, function(layers){
-		        		console.log(layers);
-		        		app.mapPanel.map.addLayers(layers);
+		        		for(var i = 0; i < layers.length; i++){
+			        		app.mapPanel.map.addLayer(layers[i]);
+		        		}
 		        	});
 		            }}
 		        }
@@ -449,8 +451,9 @@ Ext.onReady(function() {
 		        ,mode:'local'
 		        ,listeners:{select:{fn:function(combo, value) {
 		        	PersistenceGeoParser.loadLayersByGroup(value.id, function(layers){
-		        		console.log(layers);
-		        		app.mapPanel.map.addLayers(layers);
+		        		for(var i = 0; i < layers.length; i++){
+			        		app.mapPanel.map.addLayer(layers[i]);
+		        		}
 		        	});
 		            }}
 		        }
@@ -628,6 +631,8 @@ Ext.onReady(function() {
             },]
         }
     });
+
+    map = app.mapPanel.map;
 });
 
 

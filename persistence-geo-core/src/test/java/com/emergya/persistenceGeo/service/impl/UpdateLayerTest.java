@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.annotation.Resource;
 
@@ -59,7 +60,7 @@ import com.emergya.persistenceGeo.service.LayerAdminService;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:modelContext.xml"})
-@TransactionConfiguration(defaultRollback = true, transactionManager = "transactionManager")
+@TransactionConfiguration(defaultRollback = false, transactionManager = "transactionManager")
 @Transactional
 public class UpdateLayerTest{
 
@@ -73,12 +74,12 @@ public class UpdateLayerTest{
 	@Resource
 	private LayerAdminService layerAdminService;
 
-	protected static final String PR_2_LAYER_NAME = "tmpLayer2";
-	protected static final String PR_2_LAYER_NAME_UPDATE = "tmpLayer3";
+	protected static final String PR_2_LAYER_NAME = "tmpLayer" + new Random().nextInt();
+	protected static final String PR_2_LAYER_NAME_UPDATE = "tmpLayer" + new Random().nextInt();
 	protected static final String PR_2_STYLE_NAME = "testStyle";
 	protected static final String PR_2_STYLE_PROPERTY_NAME = "testName";
 	protected static final String PR_2_STYLE_PROPERTY_VALUE = "valueTest";
-	protected static final String PR_2_LAYER_DATA = "target/classes/test-classes/ficheros/Auxiliar_GML_23031.xml";
+	protected static final String PR_2_LAYER_DATA = "target/classes/test-classes/ficheros/barcelona_city_drive_4326.kml";
 	
 	@Test
 	public void testUpdateLayer() {
@@ -87,6 +88,7 @@ public class UpdateLayerTest{
 			layer.setName(PR_2_LAYER_NAME);
 			layer.setType(LayerAdminService.TYPE_KML);
 			layer.setData(new File(PR_2_LAYER_DATA));
+			layer.setType("KML");
 			layer = (LayerDto) layerAdminService.create(layer);
 			List<LayerDto> layers = layerAdminService.getLayersByName(PR_2_LAYER_NAME);
 			Assert.assertNotNull(layers);
@@ -103,7 +105,9 @@ public class UpdateLayerTest{
 			properties.put(PR_2_STYLE_PROPERTY_NAME, PR_2_STYLE_PROPERTY_VALUE);
 			rules.put(rule, properties);
 			style.setRules(rules);
-			layerUpdate.setStyle(style);
+			Map<StyleDto, Map<RuleDto, Map<String, String>>> styles = new HashMap<StyleDto, Map<RuleDto,Map<String,String>>>();
+			styles.put(style, rules);
+			layerUpdate.setStyles(styles);
 			layerAdminService.update(layerUpdate);
 			layers = layerAdminService.getLayersByName(PR_2_LAYER_NAME);
 			Assert.assertNotNull(layers);
@@ -113,15 +117,19 @@ public class UpdateLayerTest{
 			Assert.assertEquals(layers.size(), 1);
 			Assert.assertEquals(layers.get(0).getId(), layer.getId());
 			Assert.assertEquals(layers.get(0).getName(), PR_2_LAYER_NAME_UPDATE);
-			Assert.assertNotNull(layers.get(0).getStyle());
-			Assert.assertNotNull(layers.get(0).getStyle().getRules());
-			Assert.assertEquals(layers.get(0).getStyle().getRules().size(), 1);
-			rules = layers.get(0).getStyle().getRules();
-			for(RuleDto ruleDto: rules.keySet()){
+			Assert.assertNotNull(layers.get(0).getStyles());
+			Assert.assertEquals(layers.get(0).getStyles().size(), 1);
+			for (StyleDto styleDto: layers.get(0).getStyles().keySet()){
 				//Only one
-				Assert.assertEquals(ruleDto.getStyle(), PR_2_STYLE_NAME);
-				Assert.assertTrue(rules.get(ruleDto).containsKey(PR_2_STYLE_PROPERTY_NAME));
-				Assert.assertEquals(rules.get(ruleDto).get(PR_2_STYLE_PROPERTY_NAME), PR_2_STYLE_PROPERTY_VALUE);
+				Assert.assertNotNull(styleDto.getRules());
+				Assert.assertEquals(styleDto.getRules().size(), 1);
+				rules = styleDto.getRules();
+				for(RuleDto ruleDto: rules.keySet()){
+					//Only one
+					Assert.assertEquals(ruleDto.getStyle(), PR_2_STYLE_NAME);
+					Assert.assertTrue(rules.get(ruleDto).containsKey(PR_2_STYLE_PROPERTY_NAME));
+					Assert.assertEquals(rules.get(ruleDto).get(PR_2_STYLE_PROPERTY_NAME), PR_2_STYLE_PROPERTY_VALUE);
+				}
 			}
 		}catch (Exception e){
 			e.printStackTrace();

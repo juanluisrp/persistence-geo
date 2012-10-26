@@ -141,11 +141,11 @@ public class LayerEntity extends AbstractLayerEntity {
 		return (AuthorityEntity) auth;
 	}
 	
-	@ManyToOne(fetch = FetchType.LAZY,
-			cascade = {CascadeType.ALL})
-	@JoinColumn(name="layer_style_id")
-	public StyleEntity getStyle() {
-		return (StyleEntity) style;
+	@OneToMany(targetEntity=StyleEntity.class,
+			cascade = {CascadeType.ALL},
+			fetch = FetchType.LAZY)
+	public List<StyleEntity> getStyleList() {
+		return this.styleList;
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY, 

@@ -41,11 +41,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emergya.persistenceGeo.dao.MapConfigurationEntityDao;
 import com.emergya.persistenceGeo.dto.MapConfigurationDto;
-import com.emergya.persistenceGeo.metaModel.AbstractMapConfigurationEntity;
-import com.emergya.persistenceGeo.metaModel.Instancer;
-import com.emergya.persistenceGeo.model.MapConfigurationEntity;
 import com.emergya.persistenceGeo.service.MapConfigurationAdminService;
 
 

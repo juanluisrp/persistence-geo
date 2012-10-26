@@ -57,6 +57,7 @@ import com.emergya.persistenceGeo.dto.LayerDto;
 import com.emergya.persistenceGeo.dto.RuleDto;
 import com.emergya.persistenceGeo.dto.StyleDto;
 import com.emergya.persistenceGeo.metaModel.AbstractAuthorityEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerPropertyEntity;
@@ -178,7 +179,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	public void addStyleToLayer(Long layerID, Long styleID) {
 		AbstractLayerEntity layerEntity = layerDao.findById(layerID, false);
 		AbstractStyleEntity style = styleDao.findById(styleID, false);
-		layerEntity.setStyle(style);
+		layerEntity.setStyleList(addToList(layerEntity.getStyleList(), style));
 		layerDao.save(layerEntity);
 	}
 	
@@ -275,7 +276,14 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			// Add authority
 			dto.setAuthId(entity.getAuth() != null ? entity.getAuth().getId() : null);
 			// Add style
-			dto.setStyle(entityStyleToDto(entity.getStyle()));
+			Map<StyleDto, Map<RuleDto, Map<String, String>>> styles = new HashMap<StyleDto, Map<RuleDto, Map<String, String>>>();
+			if(entity.getStyleList() != null){
+				for (Object style: entity.getStyleList()){
+					StyleDto styleDto = entityStyleToDto((AbstractStyleEntity) style);
+					styles.put(styleDto, styleDto.getRules());
+				}
+			}
+			dto.setStyles(styles);
 			// Add folder
 			dto.setFolderId(entity.getFolder() != null ? entity.getFolder().getId(): null);
 			
@@ -356,7 +364,13 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 				entity.setAuth(authDao.findById(authId, false));
 			}
 			// Add style
-			entity.setStyle(dtoStyleToEntity(dto.getStyle(), entity));
+			List<AbstractEntity> styleList = new LinkedList<AbstractEntity>();
+			if(dto.getStyles() != null){
+				for (StyleDto styleDto: dto.getStyles().keySet()){
+					styleList =  addToList(styleList, dtoStyleToEntity(styleDto, entity));
+				}
+			}
+			entity.setStyleList(styleList);
 			// Add folder
 			if(dto.getFolderId() != null){
 				entity.setFolder(folderDao.findById(dto.getFolderId(), false));
@@ -577,26 +591,39 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			entity.setRuleList(rules);
 
 			//Layer list
-			boolean alreadyAdded = false;
-			List<AbstractLayerEntity> layerList;
-			if(entity.getLayerList() != null 
-					&& !entity.getLayerList().isEmpty()){
-				layerList = entity.getLayerList();
-				for(AbstractLayerEntity layer: layerList){
-					if(layer.getId().equals(layerEntity.getId())){
-						alreadyAdded = true;
-						break;
-					}
-				}
-			}else{
-				layerList = new LinkedList<AbstractLayerEntity>();
-			}
-			if(!alreadyAdded){
-				layerList.add(layerEntity);
-			}
-			entity.setLayerList(layerList);
+			entity.setLayerList(addToList(entity.getLayerList(), layerEntity));
 		}
 		return entity;
+	}
+	
+	/**
+	 * Adds a entity to a list or initialize it
+	 * 
+	 * @param entities
+	 * @param toAdd
+	 * 
+	 * @return List with toAdd added
+	 */
+	private List<AbstractEntity> addToList(List<AbstractEntity> entities, AbstractEntity toAdd){
+		//Layer list
+		boolean alreadyAdded = false;
+		List<AbstractEntity> result;
+		if(entities != null 
+				&& !entities.isEmpty()){
+			result = entities;
+			for(AbstractEntity entity: entities){
+				if(entity.getId().equals(toAdd.getId())){
+					alreadyAdded = true;
+					break;
+				}
+			}
+		}else{
+			result = new LinkedList<AbstractEntity>();
+		}
+		if(!alreadyAdded){
+			result.add(toAdd);
+		}
+		return result;
 	}
 
 	private AbstractRuleEntity ruleDtoToEntity(RuleDto ruleDto,

@@ -102,10 +102,6 @@ public class RuleDto implements Serializable {
 		this.style = style;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@Override
 	public boolean equals(Object obj) {
 		RuleDto dto = (RuleDto) obj;
 		if(dto.getRule_id() != null){
@@ -114,6 +110,10 @@ public class RuleDto implements Serializable {
 			return super.equals(obj);
 		}
 	}
-	
 
+	public String toString() {
+		return filter;
+	}
+	
+	
 }
