@@ -38,6 +38,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractLayerTypeEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractMapConfigurationEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractPermissionEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractRuleEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractRulePropertyEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractStyleEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractUserEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractZoneEntity;
@@ -99,5 +100,9 @@ public class InstancerImpl implements Instancer {
 	
 	public AbstractMapConfigurationEntity createMapConfiguration(){
 		return new MapConfigurationEntity();
+	}
+	
+	public AbstractRulePropertyEntity createRulePropertyEntity(){
+		return new RulePropertyEntity();
 	}
 }

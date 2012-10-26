@@ -46,6 +46,8 @@ public interface AbstractService {
 	
 	public Long getResults();
 	
+	public Serializable getById(Long id);
+	
 	public Serializable create(Serializable dto);
 	
 	public Serializable update(Serializable dto);

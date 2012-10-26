@@ -63,6 +63,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractLayerPropertyEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerTypeEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerTypePropertyEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractRuleEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractRulePropertyEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractStyleEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractUserEntity;
 import com.emergya.persistenceGeo.metaModel.Instancer;
@@ -138,33 +139,6 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			layersDto.addAll(this.getLayersByName(name));
 		}
 		return layersDto;
-	}
-
-	/**
-	 * Get a rules list by layer style
-	 * 
-	 * @param style
-	 * 
-	 * @return If not found, it's created
-	 */
-	public List<RuleDto> getRulesByStyle(StyleDto style) {
-		List<RuleDto> rulesDto = new LinkedList<RuleDto>();
-		RuleDto dto = null;
-		List<Long> rulesString = style.getRuleList();
-		List<AbstractRuleEntity> rulesEntity = null;
-		for(Long s: rulesString){
-			rulesEntity = ruleDao.findAll();
-			for(AbstractRuleEntity re: rulesEntity){
-				if(s.equals(re.getId())){
-					dto = ruleEntityToDto(re);
-					if(dto == null){
-						dto = ruleEntityToDto(ruleDao.createRule());
-					}
-					rulesDto.add(dto);
-				}
-			}
-		}
-		return rulesDto;
 	}
 
 	/**
@@ -382,7 +356,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 				entity.setAuth(authDao.findById(authId, false));
 			}
 			// Add style
-			entity.setStyle(dtoStyleToEntity(dto.getStyle()));
+			entity.setStyle(dtoStyleToEntity(dto.getStyle(), entity));
 			// Add folder
 			if(dto.getFolderId() != null){
 				entity.setFolder(folderDao.findById(dto.getFolderId(), false));
@@ -401,24 +375,27 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			dto.setCreateDate(entity.getCreateDate());
 			dto.setUpdateDate(entity.getUpdateDate());
 			// Add relational attributes
-			// Add layers
-			List<String> layersDto = new LinkedList<String>();
+			// Add layer
 			List<AbstractLayerEntity> layers = entity.getLayerList();
-			if(layers != null){
-				for(AbstractLayerEntity layerEntity: layers){
-					layersDto.add(layerEntity.getName());
-				}
+			if(layers != null 
+					&& layers.size()>0){
+				dto.setLayerId(layers.get(0).getId());
 			}
-			dto.setLayerList(layersDto);
 			// Add rules
-			List<Long> rulesDto = new LinkedList<Long>();
+			Map<RuleDto, Map<String, String>> rulesDto = new HashMap<RuleDto, Map<String,String>>();
 			List<AbstractRuleEntity> rules = entity.getRuleList();
 			if(rules != null){
 				for(AbstractRuleEntity ruleEntity: rules){
-					rulesDto.add((Long) ruleEntity.getId());
+					Map<String, String> properties = new HashMap<String, String>();
+					List<AbstractRulePropertyEntity> ruleProperties = ruleEntity.getProperties();
+					for(AbstractRulePropertyEntity property: ruleProperties){
+						properties.put(property.getName(), property.getValue());
+					}
+					ruleEntity.setStyle(entity);
+					rulesDto.put(ruleEntityToDto(ruleEntity), properties);
 				}
 			}
-			dto.setRuleList(rulesDto);
+			dto.setRules(rulesDto);
 		}
 		return dto;
 	}
@@ -579,7 +556,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		return entity;
 	}
 
-	private AbstractStyleEntity dtoStyleToEntity(StyleDto dto) {
+	private AbstractStyleEntity dtoStyleToEntity(StyleDto dto, AbstractLayerEntity layerEntity) {
 		AbstractStyleEntity entity = null;
 		if(dto != null){
 			if(dto.getId() != null){
@@ -588,9 +565,67 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 				entity = instancer.createStyle();
 			}
 			entity.setName(dto.getName());
+			
+			//Rules
+			List<AbstractRuleEntity> rules = new LinkedList<AbstractRuleEntity>();
+			if(dto.getRules() != null
+					&& !dto.getRules().isEmpty()){
+				for(RuleDto ruleDto: dto.getRules().keySet()){
+					rules.add(ruleDtoToEntity(ruleDto, dto.getRules().get(ruleDto)));
+				}
+			}
+			entity.setRuleList(rules);
 
-			//TODO: entity.setLayerList(layerList);
-			//TODO: entity.setRuleList(ruleList);
+			//Layer list
+			boolean alreadyAdded = false;
+			List<AbstractLayerEntity> layerList;
+			if(entity.getLayerList() != null 
+					&& !entity.getLayerList().isEmpty()){
+				layerList = entity.getLayerList();
+				for(AbstractLayerEntity layer: layerList){
+					if(layer.getId().equals(layerEntity.getId())){
+						alreadyAdded = true;
+						break;
+					}
+				}
+			}else{
+				layerList = new LinkedList<AbstractLayerEntity>();
+			}
+			if(!alreadyAdded){
+				layerList.add(layerEntity);
+			}
+			entity.setLayerList(layerList);
+		}
+		return entity;
+	}
+
+	private AbstractRuleEntity ruleDtoToEntity(RuleDto ruleDto,
+			Map<String, String> properties) {
+		AbstractRuleEntity entity = null;
+		if(ruleDto != null){
+			Date now = new Date();
+			if(ruleDto.getRule_id() != null){
+				ruleDao.findById(ruleDto.getRule_id(), true);
+			}else{
+				entity = ruleDao.createRule();
+				entity.setCreateDate(now);
+			}
+			entity.setFilter(ruleDto.getFilter());
+			entity.setUpdateDate(now);
+			entity.setSymbolizer(ruleDto.getSymbolizer());
+			//TODO? entity.setStyle(style);
+			
+			//Rule properties
+			List<AbstractRulePropertyEntity> ruleProperties = new LinkedList<AbstractRulePropertyEntity>();
+			if(properties != null){
+				for(String name: properties.keySet()){
+					AbstractRulePropertyEntity ruleProperty = instancer.createRulePropertyEntity();
+					ruleProperty.setName(name);
+					ruleProperty.setValue(properties.get(name));
+					ruleProperties.add(ruleProperty);
+				}
+			}
+			entity.setProperties(ruleProperties);
 		}
 		return entity;
 	}

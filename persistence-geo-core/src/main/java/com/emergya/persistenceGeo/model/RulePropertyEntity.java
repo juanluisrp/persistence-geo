@@ -1,5 +1,5 @@
 /*
- * Instancer.java
+ * RulePropertyEntity.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,73 +27,57 @@
  * 
  * Authors:: Alejandro Díaz Torres (mailto:adiaz@emergya.com)
  */
-package com.emergya.persistenceGeo.metaModel;
+package com.emergya.persistenceGeo.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+import com.emergya.persistenceGeo.metaModel.AbstractRulePropertyEntity;
 
 /**
- * Interface for create instances of final entities
+ * Rule property entity mapping
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
- * 
+ *
  */
-public interface Instancer {
-	/**
-	 * @return new authority entity
-	 */
-	public AbstractAuthorityEntity createAuthority();
+@Entity
+@Table(name = "gis_rule_property")
+public class RulePropertyEntity extends AbstractRulePropertyEntity {
 
 	/**
-	 * @return new authority type entity
+	 * 
 	 */
-	public AbstractAuthorityTypeEntity createAuthorityTypeEntity();
+	private static final long serialVersionUID = -6555360095146423311L;
 
-	/**
-	 * @return new folder entity
-	 */
-	public AbstractFolderEntity createFolder();
+	@Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, 
+    				generator = "gis_rule_property_seq")
+    @SequenceGenerator(name="gis_rule_property_seq", 
+    					sequenceName = "gis_rule_property_seq", initialValue=1000, allocationSize=20)  
+	public Long getId() {
+		return this.id;
+	}
 
-	/**
-	 * @return new layer entity
-	 */
-	public AbstractLayerEntity createLayer();
+    @Column(name = "name")
+	public String getName() {
+		return this.name;
+	}
 
-	/**
-	 * @return new layer type entity
-	 */
-	public AbstractLayerTypeEntity createLayerType();
+    @Column(name = "value")
+	public String getValue() {
+		return this.value;
+	}
 
-	/**
-	 * @return new layer property entity
-	 */
-	public AbstractLayerPropertyEntity createLayerProperty();
+	public void setId(Serializable id) {
+		this.id = (Long) id;
+	}
 
-	/**
-	 * @return new permission entity
-	 */
-	public AbstractPermissionEntity createPermission();
-
-	/**
-	 * @return new rule entity
-	 */
-	public AbstractRuleEntity createRule();
-
-	/**
-	 * @return new style entity
-	 */
-	public AbstractStyleEntity createStyle();
-
-	/**
-	 * @return new user entity
-	 */
-	public AbstractUserEntity createUser();
-
-	/**
-	 * @return new zone entity
-	 */
-	public AbstractZoneEntity createZone();
-	
-	
-	public AbstractMapConfigurationEntity createMapConfiguration();
-	
-	
-	public AbstractRulePropertyEntity createRulePropertyEntity();
 }
