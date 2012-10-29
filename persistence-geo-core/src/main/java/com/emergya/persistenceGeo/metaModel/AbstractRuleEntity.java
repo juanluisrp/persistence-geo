@@ -54,8 +54,6 @@ public abstract class AbstractRuleEntity extends AbstractEntity {
 	protected Date createDate;
 	protected Date updateDate;
 	protected List properties;
-	
-	protected AbstractStyleEntity style;
 
 	public AbstractRuleEntity(){
 		
@@ -80,11 +78,6 @@ public abstract class AbstractRuleEntity extends AbstractEntity {
 	 * @return the updateDate
 	 */
 	public abstract Date getUpdateDate();
-
-	/**
-	 * @return the style
-	 */
-	public abstract AbstractStyleEntity getStyle();
 	
 	/**
 	 * @return the properties
@@ -124,13 +117,6 @@ public abstract class AbstractRuleEntity extends AbstractEntity {
 	 */
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
-	}
-
-	/**
-	 * @param style the style to set
-	 */
-	public void setStyle(AbstractStyleEntity style) {
-		this.style = style;
 	}
 
 	/**

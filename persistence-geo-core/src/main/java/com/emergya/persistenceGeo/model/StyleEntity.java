@@ -97,12 +97,9 @@ public class StyleEntity extends AbstractStyleEntity {
 		this.id = (Long) id;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
-	public List<LayerEntity> getLayerList() {
-		return layerList;
-	}
-
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+	@OneToMany(targetEntity=RuleEntity.class, orphanRemoval = true,
+			cascade = {CascadeType.ALL},
+			fetch = FetchType.LAZY)
 	public List<RuleEntity> getRuleList() {
 		return ruleList;
 	}

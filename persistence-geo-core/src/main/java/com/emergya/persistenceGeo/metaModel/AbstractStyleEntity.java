@@ -51,8 +51,6 @@ public abstract class AbstractStyleEntity extends AbstractEntity {
 	protected String name;
 	protected Date createDate;
 	protected Date updateDate;
-	
-	protected List layerList;
 	protected List ruleList;
 
 	/**
@@ -74,11 +72,6 @@ public abstract class AbstractStyleEntity extends AbstractEntity {
 	 * @return the updateDate
 	 */
 	public abstract Date getUpdateDate();
-	
-	/**
-	 * @return the layerList
-	 */
-	public abstract List getLayerList();
 	
 	/**
 	 * @return the ruleList
@@ -111,13 +104,6 @@ public abstract class AbstractStyleEntity extends AbstractEntity {
 	 */
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
-	}
-
-	/**
-	 * @param layerList the layerList to set
-	 */
-	public void setLayerList(List layerList) {
-		this.layerList = layerList;
 	}
 
 	/**

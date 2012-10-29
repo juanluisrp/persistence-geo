@@ -60,7 +60,7 @@ import com.emergya.persistenceGeo.service.LayerAdminService;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:modelContext.xml"})
-@TransactionConfiguration(defaultRollback = false, transactionManager = "transactionManager")
+@TransactionConfiguration(defaultRollback = true, transactionManager = "transactionManager")
 @Transactional
 public class UpdateLayerTest{
 

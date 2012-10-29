@@ -1,5 +1,5 @@
 /*
- * AbstractEntity.java
+ * RuleEntryDto.java
  * 
  * Copyright (C) 2012
  * 
@@ -24,44 +24,51 @@
  * to be covered by the GNU General Public License. This exception does not
  * however invalidate any other reasons why the executable file might be covered
  * by the GNU General Public License.
+ * 
+ * Authors:: Alejandro Díaz Torres (mailto:adiaz@emergya.com)
  */
-package com.emergya.persistenceGeo.metaModel;
+package com.emergya.persistenceGeo.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * Entity from which extend the rest of the entities
+ * Simple Dto object to wrap rule entry property
  * 
- * @author <a href="mailto:adiaz@emergya.es">adiaz</a>
+ * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  */
-@SuppressWarnings("serial")
-public abstract class AbstractEntity implements Serializable {
-
-	/**
-	 * @return the id
-	 */
-	public abstract Serializable getId();
-
-	/**
-	 * @param id the id to set
-	 */
-	public abstract void setId(Serializable id);
-
-	/**
-	 * If both entities have an id, it's compare;
-	 * otherwise compare entity objects
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * 
-	 * @return true if entities have equals id's or are the same object
-	 */
-	public boolean equals(Object obj) {
-		AbstractEntity another = (AbstractEntity) obj;
-		if(getId() != null){
-			return getId().equals(another.getId());
-		}else{
-			return super.equals(obj);
-		}
-	}
+public class RuleEntryDto implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4113889540127874941L;
+	
+	protected String name;
+	protected List<MapEntryDto> properties;
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+	/**
+	 * @return the properties
+	 */
+	public List<MapEntryDto> getProperties() {
+		return properties;
+	}
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+	/**
+	 * @param properties the properties to set
+	 */
+	public void setProperties(List<MapEntryDto> properties) {
+		this.properties = properties;
+	}
 }

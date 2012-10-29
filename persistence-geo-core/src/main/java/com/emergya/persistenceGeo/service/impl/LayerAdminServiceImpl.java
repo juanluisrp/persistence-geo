@@ -390,11 +390,11 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			dto.setUpdateDate(entity.getUpdateDate());
 			// Add relational attributes
 			// Add layer
-			List<AbstractLayerEntity> layers = entity.getLayerList();
-			if(layers != null 
-					&& layers.size()>0){
-				dto.setLayerId(layers.get(0).getId());
-			}
+//			List<AbstractLayerEntity> layers = entity.getLayerList();
+//			if(layers != null 
+//					&& layers.size()>0){
+//				dto.setLayerId(layers.get(0).getId());
+//			}
 			// Add rules
 			Map<RuleDto, Map<String, String>> rulesDto = new HashMap<RuleDto, Map<String,String>>();
 			List<AbstractRuleEntity> rules = entity.getRuleList();
@@ -405,8 +405,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 					for(AbstractRulePropertyEntity property: ruleProperties){
 						properties.put(property.getName(), property.getValue());
 					}
-					ruleEntity.setStyle(entity);
-					rulesDto.put(ruleEntityToDto(ruleEntity), properties);
+					rulesDto.put(ruleEntityToDto(ruleEntity, dto.getName()), properties);
 				}
 			}
 			dto.setRules(rulesDto);
@@ -414,7 +413,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		return dto;
 	}
 	
-	private RuleDto ruleEntityToDto(AbstractRuleEntity entity){
+	private RuleDto ruleEntityToDto(AbstractRuleEntity entity, String styleName){
 		RuleDto dto = null;
 		if(entity != null){
 			dto = new RuleDto();
@@ -426,7 +425,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			dto.setUpdateDate(entity.getUpdateDate());
 			// Add relational attributes
 			// Add style
-			dto.setStyle(entity.getStyle().getName());
+			dto.setStyle(styleName);
 		}
 		return dto;
 	}
@@ -591,7 +590,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 			entity.setRuleList(rules);
 
 			//Layer list
-			entity.setLayerList(addToList(entity.getLayerList(), layerEntity));
+//			entity.setLayerList(addToList(entity.getLayerList(), layerEntity));
 		}
 		return entity;
 	}
@@ -612,7 +611,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 				&& !entities.isEmpty()){
 			result = entities;
 			for(AbstractEntity entity: entities){
-				if(entity.getId().equals(toAdd.getId())){
+				if(entity.equals(toAdd)){
 					alreadyAdded = true;
 					break;
 				}

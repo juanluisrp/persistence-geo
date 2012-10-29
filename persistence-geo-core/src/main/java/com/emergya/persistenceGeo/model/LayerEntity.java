@@ -141,7 +141,7 @@ public class LayerEntity extends AbstractLayerEntity {
 		return (AuthorityEntity) auth;
 	}
 	
-	@OneToMany(targetEntity=StyleEntity.class,
+	@OneToMany(targetEntity=StyleEntity.class, 
 			cascade = {CascadeType.ALL},
 			fetch = FetchType.LAZY)
 	public List<StyleEntity> getStyleList() {

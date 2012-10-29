@@ -125,6 +125,10 @@ PersistenceGeoParser =
 						return this.getRestBaseUrl() + "/persistenceGeo/updateLayer";
 					},
 					
+					UPLOAD_STYLE_LAYER_BASE_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/uploadStyle/";
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_NAMES:{},
@@ -164,6 +168,76 @@ PersistenceGeoParser =
 						}
 						
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: uploadStyle
+					 * 
+					 * Upload styleMap of a layer using PersistenceGeo 
+					 */
+					uploadStyle: function(layerId, styleMap, onsuccess, onfailure){
+						
+						var url = this.UPLOAD_STYLE_LAYER_BASE_URL() + layerId;
+						
+						var styles = new Array();
+						
+						if(!!styleMap.styles){
+							for (var style in styleMap.styles){
+								var styleDto = {
+										name: style
+								};
+								var rules = new Array();
+							    if((!styleMap.styles[style].rules 
+							        || styleMap.styles[style].rules.length == 0)
+							        	&& !!styleMap.styles[style].defaultStyle){
+							    	var properties = new Array();
+							        //styles[style]["true"] = this.parseMapToStringMap(styleMap.styles[style].defaultStyle);
+							    	for(var property in styleMap.styles[style].defaultStyle){
+							    		properties.push({
+							    			name: property,
+							    			value: styleMap.styles[style].defaultStyle[property]
+							    		});
+							    	}
+							    	rules.push({
+							    		name: 'true',
+							    		properties: properties
+							    	})
+							    }else{
+							    	//TODO: Parse rules to style
+							    }
+							    styleDto.rules = rules;
+							    styles.push(styleDto);
+							}
+						}
+						
+						var params = {
+								data: JSON.stringify({styles:styles})
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					PROPERTY_VALUE_SEPARATOR: "===",
+					PROPERTY_SEPARATOR: ",,,",
+					
+					parseMapToStringMap: function (properties){
+						var paramsToSend = null;
+						if(!!properties){ //if properties != null
+							paramsToSend = "";
+							var aux = 0;
+							for (var param in properties){aux++;}
+							for (var param in properties){
+								if(!!param
+										&& !!properties[param]){
+									paramsToSend += param + this.PROPERTY_VALUE_SEPARATOR + properties[param];
+									if(aux > 1){
+										paramsToSend += this.PROPERTY_SEPARATOR
+									}
+								}
+								aux--;
+							}
+						}
+						return paramsToSend;
 					},
 					
 					treeFolder: new Ext.util.MixedCollection(),
