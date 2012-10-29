@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -87,8 +88,8 @@ public class RestLayersAdminController implements Serializable{
 	@Resource
 	private MapConfigurationAdminService mapConfigurationAdminService;
 	
-	private Map<Long, File> loadedLayers = new HashMap<Long, File>();
-	private Map<Long, File> loadFiles = new HashMap<Long, File>();
+	private Map<Long, File> loadedLayers = new ConcurrentHashMap<Long, File>();
+	private Map<Long, File> loadFiles = new ConcurrentHashMap<Long, File>();
 	
 	protected final String RESULTS= "results";
 	protected final String ROOT= "data";

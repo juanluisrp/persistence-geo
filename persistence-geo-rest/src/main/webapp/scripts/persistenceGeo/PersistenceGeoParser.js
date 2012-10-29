@@ -186,26 +186,7 @@ PersistenceGeoParser =
 								var styleDto = {
 										name: style
 								};
-								var rules = new Array();
-							    if((!styleMap.styles[style].rules 
-							        || styleMap.styles[style].rules.length == 0)
-							        	&& !!styleMap.styles[style].defaultStyle){
-							    	var properties = new Array();
-							        //styles[style]["true"] = this.parseMapToStringMap(styleMap.styles[style].defaultStyle);
-							    	for(var property in styleMap.styles[style].defaultStyle){
-							    		properties.push({
-							    			name: property,
-							    			value: styleMap.styles[style].defaultStyle[property]
-							    		});
-							    	}
-							    	rules.push({
-							    		name: 'true',
-							    		properties: properties
-							    	})
-							    }else{
-							    	//TODO: Parse rules to style
-							    }
-							    styleDto.rules = rules;
+							    styleDto.rules = this.getRulesFromStyle(styleMap.styles[style]);
 							    styles.push(styleDto);
 							}
 						}
@@ -217,27 +198,37 @@ PersistenceGeoParser =
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
 					},
 					
-					PROPERTY_VALUE_SEPARATOR: "===",
-					PROPERTY_SEPARATOR: ",,,",
+					getRulesFromStyle: function(style){
+						var rules = new Array();
+					    if(!style.rules 
+					        || style.rules.length > 0){
+					    	var rulesOL = style.rules;
+					    	for (var i = 0; i < rulesOL.length; i++){
+					    		var filter = rulesOL[i].filter ? rulesOL[i].filter : "true";
+						    	rules.push({
+						    		name: filter,
+						    		properties: this.getPropertiesFromMap(rulesOL[i].symbolizer)
+						    	});
+					    	}
+					    }else{
+					    	rules.push({
+					    		name: 'true',
+					    		properties: [{name: 'display', value: 'true'}]
+					    	});
+					    }
+				    	return rules;
+					},
 					
-					parseMapToStringMap: function (properties){
-						var paramsToSend = null;
-						if(!!properties){ //if properties != null
-							paramsToSend = "";
-							var aux = 0;
-							for (var param in properties){aux++;}
-							for (var param in properties){
-								if(!!param
-										&& !!properties[param]){
-									paramsToSend += param + this.PROPERTY_VALUE_SEPARATOR + properties[param];
-									if(aux > 1){
-										paramsToSend += this.PROPERTY_SEPARATOR
-									}
-								}
-								aux--;
-							}
-						}
-						return paramsToSend;
+					getPropertiesFromMap: function(styleProperties){
+						var properties = new Array();
+				        //styles[style]["true"] = this.parseMapToStringMap(styleMap.styles[style].defaultStyle);
+				    	for(var property in styleProperties){
+				    		properties.push({
+				    			name: property,
+				    			value: PersistenceGeoParser.AbstractLoader.parseValueStyle(property, styleProperties[property])
+				    		});
+				    	}
+				    	return properties;
 					},
 					
 					treeFolder: new Ext.util.MixedCollection(),
@@ -765,24 +756,57 @@ PersistenceGeoParser.AbstractLoader =
 			layer.folderID = layerData.folderId;
 		},
 		
+		parseValueStyle: function (name, original){
+			if(name.indexOf('Opacity') >  -1){
+				return PersistenceGeoParser.AbstractLoader.toNumber(original);
+			}else{
+				return original;
+			}
+		},
+		
 		postFunctionsStyle: function(layerData, layer){
 			if(!!layerData.styles
-					&& !!layerData.styles){
+					&& !!layerData.styles
+					&& !!layerData.styles['default']){
 				var styleMap = {};
 				for(var styleName in layerData.styles){
-					var symbolizer = {};
-					for(var ruleFilter in layerData.styles[styleName]){
-						if(ruleFilter == 'true'){
-							symbolizer[ruleFilter] = layerData.styles[styleName][ruleFilter];
-						}else{
-							//TODO: Use OGC filter
-						}
-			        }
-					styleMap[styleName] = new OpenLayers.Style(null, {
-		                rules: [new OpenLayers.Rule({symbolizer: symbolizer})]
-		            })
+					if(styleName == 'default'){
+						var rules = new Array();
+						for(var ruleFilter in layerData.styles[styleName]){
+							var symbolizer = {};
+							if(ruleFilter == 'true'){
+								for(var property in layerData.styles[styleName][ruleFilter]){
+									symbolizer[property] = this.parseValueStyle(property, layerData.styles[styleName][ruleFilter][property]);
+								}
+							}else{
+								//TODO: Use OGC filter
+							}
+							rules.push(new OpenLayers.Rule({symbolizer: symbolizer}));
+				        }
+						styleMap[styleName] = new OpenLayers.Style(null, {
+			                rules: rules
+			            });
+					}
 				}
 				styleMap = new OpenLayers.StyleMap(styleMap);
+				layer.events.register("loadend", 
+					{
+						layer:layer, 
+						symbolizer:symbolizer
+					}, 
+					function() {
+						//Forze style
+						for(var i = 0; i < this.layer.features.length; i++){
+							var styleDefined = OpenLayers.Util
+								.applyDefaults(
+										this.symbolizer,
+									OpenLayers.Feature.Vector.style["default"]);
+							this.layer.features[i].style = styleDefined;
+						}
+						this.layer.redraw();
+					}
+	            );
+				//window.setInterval(this.UpdateKmlLayer, 5000, layer, styleMap);
 				layer.styleMap = styleMap;
 			}
 		}

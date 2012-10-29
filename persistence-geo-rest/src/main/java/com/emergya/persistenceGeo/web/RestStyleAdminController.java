@@ -31,8 +31,6 @@ package com.emergya.persistenceGeo.web;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -103,6 +101,13 @@ public class RestStyleAdminController implements Serializable{
 			layer.setStyles(getStyles(styleMap, idLayer));
 			
 			layer = (LayerDto) layerAdminService.update(layer);
+			
+			//Must already loaded in RestLayerAdminController
+			if(layer.getId() != null && layer.getData() != null){
+				layer.setData(null);
+				layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
+			}
+			
 			result.put(SUCCESS, true);
 		}catch (Exception e){
 			e.printStackTrace();

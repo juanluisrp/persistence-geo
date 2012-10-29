@@ -305,7 +305,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		if(dto != null){
 			Date now = new Date();
 			if(dto.getId() != null && dto.getId() > 0){
-				entity = (AbstractLayerEntity) layerDao.findById(dto.getId(), true);
+				entity = (AbstractLayerEntity) layerDao.findById(dto.getId(), false);
 				//Grupos
 //				authDao.clearUser(dto.getId());
 			}else{
