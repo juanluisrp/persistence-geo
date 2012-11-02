@@ -714,12 +714,14 @@ public class RestLayersAdminController implements Serializable{
 	 */
 	@RequestMapping(value = "/persistenceGeo/saveFolder/{username}", method = RequestMethod.POST)
 	public @ResponseBody 
-	FolderDto saveFolder(@PathVariable String username,
+	Map<String, Object> saveFolder(@PathVariable String username,
 			@RequestParam("name") String name,
 			@RequestParam("enabled") String enabled,
 			@RequestParam("isChannel") String isChannel,
 			@RequestParam("isPlain") String isPlain,
 			@RequestParam(value = "parentFolder", required = false) String parentFolder){
+		Map<String, Object> result = new HashMap<String, Object>();
+		FolderDto data = null;
 		try{
 			/*
 			//TODO: Secure with logged user
@@ -729,15 +731,21 @@ public class RestLayersAdminController implements Serializable{
 			UserDto user = userAdminService.obtenerUsuario(username);
 			if(StringUtils.isEmpty(parentFolder) || !StringUtils.isNumeric(parentFolder)){
 				FolderDto rootFolder = layerAdminService.getRootFolder(user.getId());
-				return saveFolderBy(name, enabled, isChannel, isPlain, 
+				data = saveFolderBy(name, enabled, isChannel, isPlain, 
 						rootFolder != null ? rootFolder.getId() : null, user.getId(), null);
 			}else{
-				return saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder), user.getId(), null);
+				data = saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder), user.getId(), null);
 			}
+			result.put(SUCCESS, true);
+			result.put(RESULTS, 1);
+			result.put(ROOT, data);
 		}catch (Exception e){
 			e.printStackTrace();
+			result.put(SUCCESS, false);
+			result.put(RESULTS, 0);
+			result.put(ROOT, null);
 		}
-		return null;
+		return result;
 	}
 	
 	private FolderDto saveFolderBy(String name, String enabled, String isChannel,
