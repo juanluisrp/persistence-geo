@@ -62,7 +62,7 @@ public class LayerDto implements Serializable {
 	private Date updateDate;
 	
 	private String user;
-	private StyleDto style;
+	private Map<StyleDto, Map<RuleDto, Map<String, String>>> styles;
 	private Long folderId;
 	private Map<String, String> properties;
 	
@@ -133,12 +133,6 @@ public class LayerDto implements Serializable {
 	public void setUser(String user) {
 		this.user = user;
 	}
-	public StyleDto getStyle() {
-		return style;
-	}
-	public void setStyle(StyleDto style) {
-		this.style = style;
-	}
 	/**
 	 * @return the data
 	 */
@@ -188,6 +182,30 @@ public class LayerDto implements Serializable {
 	 */
 	public void setFolderId(Long folderId) {
 		this.folderId = folderId;
+	}
+	/**
+	 * @return the published
+	 */
+	public Boolean getPublished() {
+		return published;
+	}
+	/**
+	 * @param published the published to set
+	 */
+	public void setPublished(Boolean published) {
+		this.published = published;
+	}
+	/**
+	 * @return the styles
+	 */
+	public Map<StyleDto, Map<RuleDto, Map<String, String>>> getStyles() {
+		return styles;
+	}
+	/**
+	 * @param styles the styles to set
+	 */
+	public void setStyles(Map<StyleDto, Map<RuleDto, Map<String, String>>> styles) {
+		this.styles = styles;
 	}
 
 }

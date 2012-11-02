@@ -57,8 +57,12 @@ PersistenceGeoParser.loaders.GMLLoader = {
 	 * Type format of the layer to Load (KML)
 	 */
 	formatType : function(externalProjectionText, type) {
+		var targetProj = map.projection;
+		if(!!externalProjection){
+			targetProj = externalProjection;
+		}
 		var internalProjection = new OpenLayers.Projection(map.projection);
-		var externalProjection = new OpenLayers.Projection(externalProjectionText);
+		var externalProjection = new OpenLayers.Projection(targetProj);
 
 		var formatType;
 		if (!!type && type == this.TYPE_GML_V3) {
@@ -91,7 +95,7 @@ PersistenceGeoParser.loaders.GMLLoader = {
 			protocol : new OpenLayers.Protocol.HTTP({
 				url : layerData.server_resource,
 				format : this
-						.formatType(layerData.properties.externalProjection),
+						.formatType(layerData.properties ? layerData.properties.externalProjection : null),
 				srsName : map.projection
 			})
 		});

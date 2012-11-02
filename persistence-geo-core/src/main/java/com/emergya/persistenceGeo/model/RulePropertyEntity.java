@@ -1,7 +1,7 @@
 /*
- * StyleEntity.java
+ * RulePropertyEntity.java
  * 
- * Copyright (C) 2011
+ * Copyright (C) 2012
  * 
  * This file is part of Proyecto persistenceGeo
  * 
@@ -25,83 +25,59 @@
  * however invalidate any other reasons why the executable file might be covered
  * by the GNU General Public License.
  * 
- * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
+ * Authors:: Alejandro Díaz Torres (mailto:adiaz@emergya.com)
  */
 package com.emergya.persistenceGeo.model;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.emergya.persistenceGeo.metaModel.AbstractStyleEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractRulePropertyEntity;
 
 /**
- * Entidad de estilo
+ * Rule property entity mapping
  * 
- * @author <a href="mailto:marcos@emergya.com">marcos</a>
+ * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
-@SuppressWarnings("unchecked")
 @Entity
-@Table(name = "gis_style")
-public class StyleEntity extends AbstractStyleEntity {
-	
+@Table(name = "gis_rule_property")
+public class RulePropertyEntity extends AbstractRulePropertyEntity {
+
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8414310574032934037L;
-
-	public StyleEntity(){
-		
-	}
-	
-	public StyleEntity(String styleString){
-		name = styleString;
-	}
-
-	@Column(name = "name_style")
-	public String getName() {
-		return name;
-	}
-
-	@Column(name = "create_date")
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	@Column(name = "update_date")
-	public Date getUpdateDate() {
-		return updateDate;
-	}
+	private static final long serialVersionUID = -6555360095146423311L;
 
 	@Id
     @Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_style_seq")
-    @SequenceGenerator(name="gis_style_seq", sequenceName = "gis_style_seq", initialValue=100)
+    @GeneratedValue(strategy = GenerationType.AUTO, 
+    				generator = "gis_rule_property_seq")
+    @SequenceGenerator(name="gis_rule_property_seq", 
+    					sequenceName = "gis_rule_property_seq", initialValue=1000, allocationSize=20)  
 	public Long getId() {
-		return id;
+		return this.id;
+	}
+
+    @Column(name = "name")
+	public String getName() {
+		return this.name;
+	}
+
+    @Column(name = "value")
+	public String getValue() {
+		return this.value;
 	}
 
 	public void setId(Serializable id) {
 		this.id = (Long) id;
-	}
-
-	@OneToMany(targetEntity=RuleEntity.class, orphanRemoval = true,
-			cascade = {CascadeType.ALL},
-			fetch = FetchType.LAZY)
-	public List<RuleEntity> getRuleList() {
-		return ruleList;
 	}
 
 }

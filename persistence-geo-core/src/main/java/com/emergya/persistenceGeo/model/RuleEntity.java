@@ -31,15 +31,16 @@ package com.emergya.persistenceGeo.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -87,7 +88,8 @@ public class RuleEntity extends AbstractRuleEntity {
 	@Id
     @Column(name = "id")
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "gis_rule_seq")
-    @SequenceGenerator(name="gis_rule_seq", sequenceName = "gis_rule_seq", initialValue=100)
+    @SequenceGenerator(name="gis_rule_seq", sequenceName = "gis_rule_seq", 
+    				initialValue=100)
 	public Long getId() {
 		return id;
 	}
@@ -95,11 +97,13 @@ public class RuleEntity extends AbstractRuleEntity {
 	public void setId(Serializable id) {
 		this.id = (Long) id;
 	}
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "rule_style_id")
-	public StyleEntity getStyle() {
-		return (StyleEntity) style;
+	
+	@SuppressWarnings("unchecked")
+	@OneToMany(targetEntity=RulePropertyEntity.class, orphanRemoval = true,
+			cascade = {CascadeType.ALL},
+			fetch = FetchType.LAZY)
+	public List<RulePropertyEntity> getProperties() {
+		return this.properties;
 	}
 
 }

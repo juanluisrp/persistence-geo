@@ -121,6 +121,14 @@ PersistenceGeoParser =
 						return this.getRestBaseUrl() + "/persistenceGeo/updateMapConfiguration";
 					},
 					
+					UPDATE_LAYER_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/updateLayer";
+					},
+					
+					UPLOAD_STYLE_LAYER_BASE_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/uploadStyle/";
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_NAMES:{},
@@ -163,6 +171,69 @@ PersistenceGeoParser =
 					},
 					
 					/**
+					 * Function: uploadStyle
+					 * 
+					 * Upload styleMap of a layer using PersistenceGeo 
+					 */
+					uploadStyle: function(layerId, styleMap, onsuccess, onfailure){
+						
+						var url = this.UPLOAD_STYLE_LAYER_BASE_URL() + layerId;
+						
+						var styles = new Array();
+						
+						if(!!styleMap.styles){
+							for (var style in styleMap.styles){
+								var styleDto = {
+										name: style
+								};
+							    styleDto.rules = this.getRulesFromStyle(styleMap.styles[style]);
+							    styles.push(styleDto);
+							}
+						}
+						
+						var params = {
+								data: JSON.stringify({styles:styles})
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					getRulesFromStyle: function(style){
+						var rules = new Array();
+					    if(!style.rules 
+					        || style.rules.length > 0){
+					    	var rulesOL = style.rules;
+					    	for (var i = 0; i < rulesOL.length; i++){
+					    		var filter = rulesOL[i].filter ? rulesOL[i].filter : "true";
+						    	rules.push({
+						    		name: filter,
+						    		properties: this.getPropertiesFromMap(rulesOL[i].symbolizer)
+						    	});
+					    	}
+					    }else{
+					    	rules.push({
+					    		name: 'true',
+					    		properties: [{name: 'display', value: 'true'}]
+					    	});
+					    }
+				    	return rules;
+					},
+					
+					getPropertiesFromMap: function(styleProperties){
+						var properties = new Array();
+				        //styles[style]["true"] = this.parseMapToStringMap(styleMap.styles[style].defaultStyle);
+				    	for(var property in styleProperties){
+				    		properties.push({
+				    			name: property,
+				    			value: PersistenceGeoParser.AbstractLoader.parseValueStyle(property, styleProperties[property])
+				    		});
+				    	}
+				    	return properties;
+					},
+					
+					treeFolder: new Ext.util.MixedCollection(),
+					
+					/**
 					 * Function: loadLayers
 					 * 
 					 * Loads OpenLayers layers and call to onload callback function (layers). 
@@ -172,6 +243,7 @@ PersistenceGeoParser =
 						this.LOADED_FOLDERS = {};
 						this.LOADED_FOLDERS_NAMES = {};
 						this.ROOT_FOLDER = null;
+						this.treeFolder = new Ext.util.MixedCollection();
 						var this_ = this;
 						store = new Ext.data.JsonStore({
 				             url: url,
@@ -180,24 +252,39 @@ PersistenceGeoParser =
 				             idProperty: 'id',
 				             root: 'data',
 				             totalProperty: 'results',
-				             fields: ['id','name'],
+				             fields: ['id','name','idParent'],
 				             listeners: {
 				                 load: function(store, records, options) {
 										var i = 0; 
+										var lastParent = null;
+										var parents = {};
 					                	while (i<records.length){
 					                		if(!!records[i].data.id 
 					                				&& !!records[i].data.name){
 					                			var folderName = records[i].data.name;
-//					                			if(folderName.indexOf(".") > 0){
-//					                				folderName = folderName.substring(folderName.indexOf(".") + 1);
-//					                			}
-//					                			console.log(folderName);
 					                			this_.LOADED_FOLDERS[folderName] = records[i].data.id;
 					                			this_.LOADED_FOLDERS_NAMES[records[i].data.id] = folderName;
 					                			// Root folder haven't '-'
 					                			if(!this_.ROOT_FOLDER 
 					                					&& folderName.indexOf("-") < 0){
 					                				this_.ROOT_FOLDER = folderName;
+					                			}
+					                			if(!!records[i].data.idParent
+					                					&& !(folderName == this_.ROOT_FOLDER)){
+					                				//Add child
+					                				lastParent = parents[records[i].data.idParent];
+				                					lastParent.element.add(records[i].data.id, new Ext.util.MixedCollection());
+				                					var newParent = {};
+				                					newParent.id = records[i].data.id;
+				                					newParent.element = lastParent.element.item(records[i].data.id);
+					                				parents[records[i].data.id] = newParent;
+					                			}else{
+					                				//Leaf
+					                				this_.treeFolder.add(records[i].data.id, new Ext.util.MixedCollection());
+				                					var newParent = {};
+				                					newParent.id = records[i].data.id;
+				                					newParent.element = this_.treeFolder.item(records[i].data.id);
+					                				parents[records[i].data.id] = newParent;
 					                			}
 					                		}
 					                		i++;
@@ -267,7 +354,7 @@ PersistenceGeoParser =
 				             totalProperty: 'results',
 				             fields: ['id','name','properties',
 				                      'type','auth','order',
-				                      'user','folderList','styleList',
+				                      'user','folderList','styles',
 				                      'createDate','server_resource',
 				                      'publicized','enabled','updateDate', 
 				                      'folderId', 'authId', 'userId'],
@@ -601,6 +688,7 @@ PersistenceGeoParser.AbstractLoader =
 		postFunctionsWrapper: function (layerData, layer, layerTree){
 			PersistenceGeoParser.AbstractLoader.postFunctionsGroups(layerData, layer, layerTree);
 			PersistenceGeoParser.AbstractLoader.postFunctionsPermission(layerData, layer);
+			PersistenceGeoParser.AbstractLoader.postFunctionsStyle(layerData, layer);
 		},
 		
 		postFunctionsGroups: function (layerData, layer, layerTree){
@@ -666,6 +754,61 @@ PersistenceGeoParser.AbstractLoader =
 			layer.userID = layerData.userId;
 			layer.groupID = layerData.authId;
 			layer.folderID = layerData.folderId;
+		},
+		
+		parseValueStyle: function (name, original){
+			if(name.indexOf('Opacity') >  -1){
+				return PersistenceGeoParser.AbstractLoader.toNumber(original);
+			}else{
+				return original;
+			}
+		},
+		
+		postFunctionsStyle: function(layerData, layer){
+			if(!!layerData.styles
+					&& !!layerData.styles
+					&& !!layerData.styles['default']){
+				var styleMap = {};
+				for(var styleName in layerData.styles){
+					if(styleName == 'default'){
+						var rules = new Array();
+						for(var ruleFilter in layerData.styles[styleName]){
+							var symbolizer = {};
+							if(ruleFilter == 'true'){
+								for(var property in layerData.styles[styleName][ruleFilter]){
+									symbolizer[property] = this.parseValueStyle(property, layerData.styles[styleName][ruleFilter][property]);
+								}
+							}else{
+								//TODO: Use OGC filter
+							}
+							rules.push(new OpenLayers.Rule({symbolizer: symbolizer}));
+				        }
+						styleMap[styleName] = new OpenLayers.Style(null, {
+			                rules: rules
+			            });
+					}
+				}
+				styleMap = new OpenLayers.StyleMap(styleMap);
+				layer.events.register("loadend", 
+					{
+						layer:layer, 
+						symbolizer:symbolizer
+					}, 
+					function() {
+						//Forze style
+						for(var i = 0; i < this.layer.features.length; i++){
+							var styleDefined = OpenLayers.Util
+								.applyDefaults(
+										this.symbolizer,
+									OpenLayers.Feature.Vector.style["default"]);
+							this.layer.features[i].style = styleDefined;
+						}
+						this.layer.redraw();
+					}
+	            );
+				//window.setInterval(this.UpdateKmlLayer, 5000, layer, styleMap);
+				layer.styleMap = styleMap;
+			}
 		}
 		
 };

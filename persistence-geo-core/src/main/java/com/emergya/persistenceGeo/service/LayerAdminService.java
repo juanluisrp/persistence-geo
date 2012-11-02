@@ -33,8 +33,6 @@ import java.util.List;
 
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
-import com.emergya.persistenceGeo.dto.RuleDto;
-import com.emergya.persistenceGeo.dto.StyleDto;
 
 /**
  * Layers Administration Interface 
@@ -104,15 +102,6 @@ public interface LayerAdminService extends AbstractService {
 	 * @return If not found, it's created
 	 */
 	public List<LayerDto> getLayersByName(List<String> namesList);
-	
-	/**
-	 * Get a rules list by layer style
-	 * 
-	 * @param style
-	 * 
-	 * @return If not found, it's created
-	 */
-	public List<RuleDto> getRulesByStyle(StyleDto style);
 	
 	/**
 	 * Add a rule to a layer style

@@ -30,6 +30,10 @@ public abstract class AbstractServiceImpl<DTO extends Serializable, ENTITY exten
 		List<ENTITY> entities = getDao().findAll();
 		return entitiesToDtos(entities);
 	}
+	
+	public Serializable getById(Long id){
+		return entityToDto(getDao().findById(id, false));
+	}
 
 	/* (non-Javadoc)
 	 * @see com.emergya.persistenceGeo.service.AbstractService#getFromTo(java.lang.Integer, java.lang.Integer)

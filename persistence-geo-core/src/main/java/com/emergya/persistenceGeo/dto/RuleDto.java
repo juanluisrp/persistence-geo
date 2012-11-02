@@ -101,6 +101,19 @@ public class RuleDto implements Serializable {
 	public void setStyle(String style) {
 		this.style = style;
 	}
-	
 
+	public boolean equals(Object obj) {
+		RuleDto dto = (RuleDto) obj;
+		if(dto.getRule_id() != null){
+			return dto.getRule_id().equals(rule_id);
+		}else{
+			return super.equals(obj);
+		}
+	}
+
+	public String toString() {
+		return filter;
+	}
+	
+	
 }

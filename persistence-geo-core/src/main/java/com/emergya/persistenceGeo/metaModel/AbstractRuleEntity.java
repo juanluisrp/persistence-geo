@@ -31,6 +31,7 @@ package com.emergya.persistenceGeo.metaModel;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Entidad de regla
@@ -38,6 +39,7 @@ import java.util.Date;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
+@SuppressWarnings("rawtypes")
 public abstract class AbstractRuleEntity extends AbstractEntity {
 	
 	/**
@@ -51,8 +53,7 @@ public abstract class AbstractRuleEntity extends AbstractEntity {
 	protected String filter;
 	protected Date createDate;
 	protected Date updateDate;
-	
-	protected AbstractStyleEntity style;
+	protected List properties;
 
 	public AbstractRuleEntity(){
 		
@@ -77,11 +78,11 @@ public abstract class AbstractRuleEntity extends AbstractEntity {
 	 * @return the updateDate
 	 */
 	public abstract Date getUpdateDate();
-
+	
 	/**
-	 * @return the style
+	 * @return the properties
 	 */
-	public abstract AbstractStyleEntity getStyle();
+	public abstract List getProperties();
 
 	/**
 	 * @param id the id to set
@@ -119,9 +120,9 @@ public abstract class AbstractRuleEntity extends AbstractEntity {
 	}
 
 	/**
-	 * @param style the style to set
+	 * @param properties the properties to set
 	 */
-	public void setStyle(AbstractStyleEntity style) {
-		this.style = style;
+	public void setProperties(List properties) {
+		this.properties = properties;
 	}
 }

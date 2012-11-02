@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
@@ -87,8 +88,8 @@ public class RestLayersAdminController implements Serializable{
 	@Resource
 	private MapConfigurationAdminService mapConfigurationAdminService;
 	
-	private Map<Long, File> loadedLayers = new HashMap<Long, File>();
-	private Map<Long, File> loadFiles = new HashMap<Long, File>();
+	private Map<Long, File> loadedLayers = new ConcurrentHashMap<Long, File>();
+	private Map<Long, File> loadFiles = new ConcurrentHashMap<Long, File>();
 	
 	protected final String RESULTS= "results";
 	protected final String ROOT= "data";
@@ -427,6 +428,47 @@ public class RestLayersAdminController implements Serializable{
 		}
 		return layers;
 	}
+
+	/**
+	 * This method loads json file with layer types
+	 * 
+	 * @param username
+	 * 
+	 * @return JSON file with layer types
+	 */
+	@RequestMapping(value = "/persistenceGeo/updateLayer", method = RequestMethod.GET, produces = { MediaType.APPLICATION_JSON_VALUE })
+	public @ResponseBody 
+	LayerDto updateLayerByUser(
+			@RequestParam("name") String name,
+			@RequestParam("type") String type,
+			@RequestParam(value="layer_id") String layerId,
+			@RequestParam(value="properties", required=false) String properties,
+			@RequestParam(value="enabled", required=false) String enabled,
+			@RequestParam(value="order_layer", required=false) String order_layer,
+			@RequestParam(value="is_channel", required=false) String is_channel,
+			@RequestParam(value="publicized", required=false) String publicized,
+			@RequestParam(value="server_resource", required=false) String server_resource,
+			@RequestParam(value="folderId", required=false) String folderId,
+			@RequestParam(value="idFile", required=false) String idFile){
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			// Create the layerDto
+			LayerDto layer = (LayerDto) layerAdminService.getById(Long.decode(layerId));
+			
+			//Copy layerData
+			layer = copyDataToLayer(name, type, properties, enabled, order_layer,
+					is_channel, publicized, server_resource, idFile, layer, folderId);
+			
+			return layer;
+		}catch (Exception e){
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 	private static final Random RANDOM = new Random();
 	
@@ -536,7 +578,7 @@ public class RestLayersAdminController implements Serializable{
 			
 			//Copy layerData
 			layer = copyDataToLayer(name, type, properties, enabled, order_layer,
-					is_channel, publicized, server_resource, idFile, layer, folderId);
+					is_channel, publicized, server_resource, idFile, layer, folderId, true);
 			
 			return layer;
 		}catch (Exception e){
@@ -544,7 +586,78 @@ public class RestLayersAdminController implements Serializable{
 			return null;
 		}
 	}
-	
+
+
+	/**
+	 * Copy layer data 
+	 * 
+	 * @param name
+	 * @param type
+	 * @param properties
+	 * @param enabled
+	 * @param order_layer
+	 * @param is_channel
+	 * @param publicized
+	 * @param server_resource
+	 * @param uploadfile
+	 * @param layer
+	 * @param update
+	 * 
+	 * @throws IOException
+	 */
+	private LayerDto copyDataToLayer(String name, String type,
+			String properties, String enabled, String order_layer,
+			String is_channel, String publicized, String server_resource,
+			String idFile, LayerDto layer, String folderId, boolean update) {
+		// Add request parameter
+				layer.setName(name);
+				layer.setType(type);
+				layer.setServer_resource(server_resource);
+				layer.setEnabled(enabled != null ? enabled.toLowerCase().equals("true")
+						: false);
+				layer.setOrder(order_layer);
+				layer.setPertenece_a_canal(is_channel != null ? is_channel
+						.toLowerCase().equals("true") : false);
+				layer.setPublicized(publicized != null ? publicized.toLowerCase()
+						.equals("true") : false);
+				//Folder id
+				if(!StringUtils.isEmpty(folderId) 
+						&& StringUtils.isNumeric(folderId)){
+					layer.setFolderId(Long.decode(folderId));
+				}
+
+				// Layer properties
+				if (properties != null) {
+					layer.setProperties(getMapFromString(properties));
+				}
+				
+				//Only if a file has been saved
+				if(idFile != null){
+					File temp = loadFiles.get(Long.decode(idFile));
+					// Layer data
+					if (temp != null) {
+						layer.setData(temp);
+					}
+				}
+
+				// Save the layer
+				if(update){
+					layer = (LayerDto) layerAdminService.update(layer);
+				}else{
+					layer = (LayerDto) layerAdminService.create(layer);
+				}
+				
+				if(layer.getId() != null && layer.getData() != null){
+					loadedLayers.put(layer.getId(), layer.getData());
+					layer.setData(null);
+					layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
+				}
+				
+				loadFiles.remove(idFile);
+				
+				return layer;
+	}
+
 	/**
 	 * Copy layer data 
 	 * 
@@ -564,46 +677,9 @@ public class RestLayersAdminController implements Serializable{
 			String enabled, String order_layer, String is_channel,
 			String publicized, String server_resource,
 			String idFile, LayerDto layer, String folderId) throws IOException {
-		// Add request parameter
-		layer.setName(name);
-		layer.setType(type);
-		layer.setServer_resource(server_resource);
-		layer.setEnabled(enabled != null ? enabled.toLowerCase().equals("true")
-				: false);
-		layer.setOrder(order_layer);
-		layer.setPertenece_a_canal(is_channel != null ? is_channel
-				.toLowerCase().equals("true") : false);
-		layer.setPublicized(publicized != null ? publicized.toLowerCase()
-				.equals("true") : false);
-		//Folder id
-		if(!StringUtils.isEmpty(folderId) 
-				&& StringUtils.isNumeric(folderId)){
-			layer.setFolderId(Long.decode(folderId));
-		}
-
-		// Layer properties
-		if (properties != null) {
-			layer.setProperties(getMapFromString(properties));
-		}
-		
-		File temp = loadFiles.get(Long.decode(idFile));
-		// Layer data
-		if (temp != null) {
-			layer.setData(temp);
-		}
-
-		// Save the layer
-		layer = (LayerDto) layerAdminService.create(layer);
-		
-		if(layer.getId() != null && layer.getData() != null){
-			loadedLayers.put(layer.getId(), layer.getData());
-			layer.setData(null);
-			layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
-		}
-		
-		loadFiles.remove(idFile);
-		
-		return layer;
+		return copyDataToLayer(name, type, properties, enabled, 
+				order_layer, is_channel, publicized, server_resource, 
+				idFile, layer, folderId, false);
 	}
 	
 	private static final String PROPERTIES_SEPARATOR = ",,,";

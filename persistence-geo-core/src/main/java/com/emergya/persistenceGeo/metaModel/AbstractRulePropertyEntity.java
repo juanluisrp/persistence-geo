@@ -1,7 +1,7 @@
 /*
- * AbstractStyleEntity.java
+ * AbstractRulePropertyEntity.java
  * 
- * Copyright (C) 2011
+ * Copyright (C) 2012
  * 
  * This file is part of Proyecto persistenceGeo
  * 
@@ -25,38 +25,26 @@
  * however invalidate any other reasons why the executable file might be covered
  * by the GNU General public abstract License.
  * 
- * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
+ * Authors:: Alejandro Díaz Torres (mailto:adiaz@emergya.com)
  */
 package com.emergya.persistenceGeo.metaModel;
 
-import java.util.Date;
-import java.util.List;
-
 /**
- * Entidad de estilo
+ * Rule property entity
  * 
- * @author <a href="mailto:marcos@emergya.com">marcos</a>
+ * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
-@SuppressWarnings("rawtypes")
-public abstract class AbstractStyleEntity extends AbstractEntity {
+public abstract class AbstractRulePropertyEntity extends AbstractEntity {
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 8414310574032934037L;
+	private static final long serialVersionUID = -6357972719478985500L;
 	
 	protected Long id;
-	
 	protected String name;
-	protected Date createDate;
-	protected Date updateDate;
-	protected List ruleList;
-
-	/**
-	 * @return the id
-	 */
-	public abstract Long getId();
+	protected String value;
 	
 	/**
 	 * @return the name
@@ -64,53 +52,21 @@ public abstract class AbstractStyleEntity extends AbstractEntity {
 	public abstract String getName();
 	
 	/**
-	 * @return the createDate
+	 * @return the value
 	 */
-	public abstract Date getCreateDate();
+	public abstract String getValue();
 	
-	/**
-	 * @return the updateDate
-	 */
-	public abstract Date getUpdateDate();
-	
-	/**
-	 * @return the ruleList
-	 */
-	public abstract List getRuleList();
-	
-	/**
-	 * @param id the id to set
-	 */
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	/**
 	 * @param name the name to set
 	 */
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	/**
-	 * @param createDate the createDate to set
+	 * @param value the value to set
 	 */
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
-	}
-
-	/**
-	 * @param updateDate the updateDate to set
-	 */
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
-
-	/**
-	 * @param ruleList the ruleList to set
-	 */
-	public void setRuleList(List ruleList) {
-		this.ruleList = ruleList;
+	public void setValue(String value) {
+		this.value = value;
 	}
 
 }

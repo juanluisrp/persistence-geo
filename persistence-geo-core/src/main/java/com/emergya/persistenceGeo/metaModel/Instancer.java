@@ -93,4 +93,7 @@ public interface Instancer {
 	
 	
 	public AbstractMapConfigurationEntity createMapConfiguration();
+	
+	
+	public AbstractRulePropertyEntity createRulePropertyEntity();
 }

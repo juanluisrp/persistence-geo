@@ -31,7 +31,7 @@ package com.emergya.persistenceGeo.dto;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Style data transfer object
@@ -52,9 +52,8 @@ public class StyleDto implements Serializable {
 	private Date createDate;
 	private Date updateDate;
 	
-	private List<String> layerList;
-	private List<Long> ruleList;
-	private List<String> privateLayerList;
+	private Map<RuleDto, Map<String, String>> rules;
+	private Long layerId;
 	
 	public Long getId() {
 		return id;
@@ -80,23 +79,38 @@ public class StyleDto implements Serializable {
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-	public List<String> getLayerList() {
-		return layerList;
+	/**
+	 * @return the layerId
+	 */
+	public Long getLayerId() {
+		return layerId;
 	}
-	public void setLayerList(List<String> layerList) {
-		this.layerList = layerList;
+	/**
+	 * @param layerId the layerId to set
+	 */
+	public void setLayerId(Long layerId) {
+		this.layerId = layerId;
 	}
-	public List<Long> getRuleList() {
-		return ruleList;
+	/**
+	 * @return the rules
+	 */
+	public Map<RuleDto, Map<String, String>> getRules() {
+		return rules;
 	}
-	public void setRuleList(List<Long> ruleList) {
-		this.ruleList = ruleList;
+	/**
+	 * @param rules the rules to set
+	 */
+	public void setRules(Map<RuleDto, Map<String, String>> rules) {
+		this.rules = rules;
 	}
-	public List<String> getPrivateLayerList() {
-		return privateLayerList;
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return name;
 	}
-	public void setPrivateLayerList(List<String> privateLayerList) {
-		this.privateLayerList = privateLayerList;
-	}
+	
+	
 
 }
