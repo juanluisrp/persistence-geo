@@ -148,7 +148,7 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 		AbstractFolderEntity entity = null;
 		if(dto != null){
 			if(dto.getId() != null){
-				entity = folderDao.findById(dto.getId(), true);
+				entity = folderDao.findById(dto.getId(), false);
 			}else{
 				entity = instancer.createFolder();
 			}
