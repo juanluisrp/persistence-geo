@@ -1,5 +1,5 @@
 /* 
- * LayerAdminServiceImplTest.java
+ * FoldersTest.java
  * 
  * Copyright (C) 2012
  * 
@@ -47,12 +47,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.UserDto;
-import com.emergya.persistenceGeo.service.LayerAdminService;
+import com.emergya.persistenceGeo.service.FoldersAdminService;
 import com.emergya.persistenceGeo.service.UserAdminService;
 
 
 /**
- * Test para LayerAdminService
+ * Test para FoldersAdminService
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
@@ -74,7 +74,7 @@ public class FoldersTest{
 	protected static final String PR_1_PARAM_1 = "pr1.username";
 	
 	@Resource
-	private LayerAdminService layerAdminService;
+	private FoldersAdminService foldersAdminService;
 	
 	@Resource
 	private UserAdminService userAdminService;
@@ -86,7 +86,7 @@ public class FoldersTest{
 			FolderDto folder = new FolderDto();
 			folder.setName("test");
 			folder.setEnabled(true);
-			folder = layerAdminService.saveFolder(folder);
+			folder = foldersAdminService.saveFolder(folder);
 			Assert.assertNotNull(folder);
 			Assert.assertNotNull(folder.getId());
 			Assert.assertEquals(folder.getName(), "test");
@@ -102,7 +102,7 @@ public class FoldersTest{
 			FolderDto folder = new FolderDto();
 			folder.setName("test");
 			folder.setEnabled(true);
-			folder = layerAdminService.saveFolder(folder);
+			folder = foldersAdminService.saveFolder(folder);
 			Assert.assertNotNull(folder);
 			Assert.assertNotNull(folder.getId());
 			Assert.assertEquals(folder.getName(), "test");
@@ -110,7 +110,7 @@ public class FoldersTest{
 			child.setName("test_child");
 			child.setEnabled(true);
 			child.setIdParent(folder.getId());
-			child = layerAdminService.saveFolder(child);
+			child = foldersAdminService.saveFolder(child);
 			Assert.assertNotNull(child);
 			Assert.assertNotNull(child.getId());
 			Assert.assertEquals(child.getName(), "test_child");
@@ -132,11 +132,11 @@ public class FoldersTest{
 			rootFolder.setName("root test");
 			rootFolder.setEnabled(true);
 			rootFolder.setIdUser(idUser);
-			rootFolder = layerAdminService.saveFolder(rootFolder);
+			rootFolder = foldersAdminService.saveFolder(rootFolder);
 			Assert.assertNotNull(rootFolder);
 			Assert.assertNotNull(rootFolder.getId());
 			Assert.assertEquals(rootFolder.getName(), "root test");
-			rootFolder = layerAdminService.getRootFolder(idUser);
+			rootFolder = foldersAdminService.getRootFolder(idUser);
 			Assert.assertNotNull(rootFolder);
 			Assert.assertNotNull(rootFolder.getId());
 			Assert.assertEquals(rootFolder.getName(), "root test");
@@ -145,7 +145,7 @@ public class FoldersTest{
 			folder.setName("test");
 			folder.setEnabled(true);
 			folder.setIdParent(rootFolder.getId());
-			folder = layerAdminService.saveFolder(folder);
+			folder = foldersAdminService.saveFolder(folder);
 			Assert.assertNotNull(folder);
 			Assert.assertNotNull(folder.getId());
 			Assert.assertEquals(folder.getName(), "test");
@@ -153,12 +153,12 @@ public class FoldersTest{
 			child.setName("test_child");
 			child.setEnabled(true);
 			child.setIdParent(rootFolder.getId());
-			child = layerAdminService.saveFolder(child);
+			child = foldersAdminService.saveFolder(child);
 			Assert.assertNotNull(child);
 			Assert.assertNotNull(child.getId());
 			Assert.assertEquals(child.getName(), "test_child");
 			Assert.assertEquals(rootFolder.getId(), child.getIdParent());
-			rootFolder = layerAdminService.getRootFolder(idUser);
+			rootFolder = foldersAdminService.getRootFolder(idUser);
 			Assert.assertNotNull(rootFolder);
 			Assert.assertNotNull(rootFolder.getFolderList());
 			Assert.assertEquals(rootFolder.getFolderList().size(), 2);

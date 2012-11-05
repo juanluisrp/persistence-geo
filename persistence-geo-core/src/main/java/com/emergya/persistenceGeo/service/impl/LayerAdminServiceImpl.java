@@ -465,18 +465,6 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		
 		return result;
 	}
-
-	@Override
-	@Cacheable("persistenceGeo")
-	public FolderDto getRootFolder(Long idUser) {
-		return entityFolderToDto(folderDao.findRootByUser(idUser));
-	}
-
-	@Override
-	@Cacheable("persistenceGeo")
-	public FolderDto getRootGroupFolder(Long idGroup) {
-		return entityFolderToDto(folderDao.findRootByGroup(idGroup));
-	}
 	
 	/**
 	 * Saves a folder

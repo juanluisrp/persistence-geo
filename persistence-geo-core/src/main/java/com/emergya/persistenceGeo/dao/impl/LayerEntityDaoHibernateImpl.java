@@ -143,4 +143,13 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstrac
 		return criteria.list();
 	}
 
+	@Override
+	public List<AbstractLayerEntity> getLayersByFolder(Long folderId) {
+		Criteria criteria = getSession().createCriteria(persistentClass)
+				.createAlias("folder", "folder")
+				.add(Restrictions.eq("folder.id", folderId));
+
+		return criteria.list();
+	}
+
 }

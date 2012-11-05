@@ -129,6 +129,10 @@ PersistenceGeoParser =
 						return this.getRestBaseUrl() + "/persistenceGeo/uploadStyle/";
 					},
 					
+					MOVE_LAYER_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/moveLayerTo";
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_NAMES:{},
@@ -166,6 +170,23 @@ PersistenceGeoParser =
 						if(!!userZone){
 							params.userZone = userZone;
 						}
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: moveLayerTo
+					 * 
+					 * Move a layer to a folder using PersistenceGeo 
+					 */
+					moveLayerTo: function(layerId, folderId, onsuccess, onfailure){
+						
+						var url = this.MOVE_LAYER_URL();
+						
+						var params = {
+								layerId: layerId,
+								toFolder: folderId
+						};
 						
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
 					},

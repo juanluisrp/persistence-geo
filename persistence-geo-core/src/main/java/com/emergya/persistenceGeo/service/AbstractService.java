@@ -40,18 +40,56 @@ import java.util.List;
  */
 public interface AbstractService {
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public List<? extends Serializable> getAll();
 	
+	/**
+	 * 
+	 * @param first
+	 * @param last
+	 * @return
+	 */
 	public List<? extends Serializable> getFromTo(Integer first, Integer last);
 	
+	/**
+	 * 
+	 * @return
+	 */
 	public Long getResults();
 	
+	/**
+	 * Obtain a object by Id
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public Serializable getById(Long id);
 	
+	/**
+	 * Create a nuew object
+	 * 
+	 * @param dto
+	 * @return
+	 */
 	public Serializable create(Serializable dto);
 	
+	/**
+	 * Update an object
+	 * 
+	 * @param dto
+	 * 
+	 * @return dto updated
+	 */
 	public Serializable update(Serializable dto);
 	
+	/**
+	 * Remove a object
+	 * 
+	 * @param dto to be removed
+	 */
 	public void delete(Serializable dto);
 	
 }
