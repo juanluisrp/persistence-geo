@@ -53,8 +53,8 @@ public class FoldersUtils {
 	 * 
 	 * @see FolderStyle
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, FolderStyle style){
-		getFolderTree(folder, tree, new String(), new Integer (0), style);
+	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, FolderStyle style, Boolean onlyNotEmpty) {
+		getFolderTree(folder, tree, new String(), new Integer (0), style, onlyNotEmpty);
 	}
 	
 	/**
@@ -66,8 +66,8 @@ public class FoldersUtils {
 	 * 
 	 * @see FolderStyle
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, FolderStyle style){
-		getFolderTree(folder, tree, parent, new Integer (0), style);
+	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, FolderStyle style, Boolean onlyNotEmpty) {
+		getFolderTree(folder, tree, parent, new Integer (0), style, onlyNotEmpty);
 	}
 	
 	/**
@@ -77,17 +77,22 @@ public class FoldersUtils {
 	 * @param tree building
 	 * @param level level on tree
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, Integer level, FolderStyle style){
+	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, Integer level, FolderStyle style, Boolean canHaveLayers) {
 		if(folder != null){
 			String name = getFolderName(folder.getName(), parent, level, style);
 			folder.setName(name);
-			tree.add(folder);
+			if(canHaveLayers == null
+					|| ((folder.getFolderList() == null)
+							|| (folder.getFolderList().isEmpty())) 
+								== canHaveLayers){
+				tree.add(folder);
+			}
 			if(folder.getFolderList() != null){
 				String previus = parent;
 				parent = name;
 				level++;
 				for(FolderDto subFolder: folder.getFolderList()){
-					getFolderTree(subFolder, tree, parent, level, style);
+					getFolderTree(subFolder, tree, parent, level, style, canHaveLayers);
 				}
 				level--;
 				parent = previus;
@@ -159,7 +164,7 @@ public class FoldersUtils {
 	 * @param level level on tree
 	 */
 	public static void getFolderTree(FolderDto folder, List<FolderDto> tree){
-		getFolderTree(folder, tree, new String());
+		getFolderTreeFiltered(folder, tree, null);
 	}
 	
 	/**
@@ -169,8 +174,19 @@ public class FoldersUtils {
 	 * @param tree building
 	 * @param level level on tree
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent){
-		getFolderTree(folder, tree, parent, FolderStyle.STRING);
+	public static void getFolderTreeFiltered(FolderDto folder, List<FolderDto> tree, Boolean onlyNotEmpty){
+		getFolderTree(folder, tree, new String(), onlyNotEmpty);
+	}
+	
+	/**
+	 * Recursive tree build
+	 * 
+	 * @param folder parent at tree
+	 * @param tree building
+	 * @param level level on tree
+	 */
+	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, Boolean onlyNotEmpty){
+		getFolderTree(folder, tree, parent, FolderStyle.STRING, onlyNotEmpty);
 	}
 
 	/**
