@@ -731,6 +731,14 @@ PersistenceGeoParser.AbstractLoader =
 			PersistenceGeoParser.AbstractLoader.postFunctionsGroups(layerData, layer, layerTree);
 			PersistenceGeoParser.AbstractLoader.postFunctionsPermission(layerData, layer);
 			PersistenceGeoParser.AbstractLoader.postFunctionsStyle(layerData, layer);
+			PersistenceGeoParser.AbstractLoader.postFunctionsOrder(layerData, layer);
+		},
+		
+		postFunctionsOrder: function (layerData, layer){
+			if(!!layerData.properties
+					&& !!layerData.properties.order){
+				layer.order = layerData.properties.order;
+			}
 		},
 		
 		postFunctionsGroups: function (layerData, layer, layerTree){
