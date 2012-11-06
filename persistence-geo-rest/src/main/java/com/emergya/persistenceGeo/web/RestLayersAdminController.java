@@ -669,7 +669,10 @@ public class RestLayersAdminController implements Serializable{
 					layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
 				}
 				
-				loadFiles.remove(idFile);
+				if(idFile != null 
+						&& loadFiles.containsKey(idFile)){
+					loadFiles.remove(idFile);
+				}
 				
 				return layer;
 	}

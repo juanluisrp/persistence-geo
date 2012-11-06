@@ -45,11 +45,11 @@ PersistenceGeoParser.loaders.WMSLoader =
 {
 
 	load: function (layerData, layerTree){
-		var visibility = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.visibility);
-		var transparent = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.transparent);
-		var isBaseLayer = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.isBaseLayer);
-		var opacity = PersistenceGeoParser.AbstractLoader.toNumber(layerData.properties.opacity);
-		var buffer = PersistenceGeoParser.AbstractLoader.toNumber(layerData.properties.buffer);
+		var visibility = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.visibility) || false;
+		var transparent = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.transparent) || true;
+		var isBaseLayer = PersistenceGeoParser.AbstractLoader.toBoolean(layerData.properties.isBaseLayer) || false;
+		var opacity = PersistenceGeoParser.AbstractLoader.toNumber(layerData.properties.opacity) || 0.5;
+		var buffer = PersistenceGeoParser.AbstractLoader.toNumber(layerData.properties.buffer) || 0;
 		
 		
 		var layer = new OpenLayers.Layer.WMS(
