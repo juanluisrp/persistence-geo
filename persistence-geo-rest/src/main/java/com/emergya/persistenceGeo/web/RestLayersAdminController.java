@@ -57,6 +57,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.emergya.persistenceGeo.dto.AuthorityDto;
+import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
 import com.emergya.persistenceGeo.dto.MapConfigurationDto;
 import com.emergya.persistenceGeo.dto.SimplePropertyDto;
@@ -64,6 +65,8 @@ import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.service.LayerAdminService;
 import com.emergya.persistenceGeo.service.MapConfigurationAdminService;
 import com.emergya.persistenceGeo.service.UserAdminService;
+import com.emergya.persistenceGeo.utils.FolderStyle;
+import com.emergya.persistenceGeo.utils.FoldersUtils;
 
 /**
  * Rest controller to admin and load layer and layers context
@@ -775,6 +778,221 @@ public class RestLayersAdminController implements Serializable{
 		}catch (Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * This method saves a folder related with a group
+	 * 
+	 * @param group
+	 */
+	@RequestMapping(value = "/persistenceGeo/saveFolderByGroup/{groupId}", method = RequestMethod.POST)
+	public @ResponseBody 
+	FolderDto saveFolderByGroup(@PathVariable String groupId,
+			@RequestParam("name") String name,
+			@RequestParam("enabled") String enabled,
+			@RequestParam("isChannel") String isChannel,
+			@RequestParam("isPlain") String isPlain,
+			@RequestParam(value = "parentFolder", required = false) String parentFolder){
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			Long idGroup = Long.decode(groupId);
+			FolderDto rootFolder = layerAdminService.getRootGroupFolder(idGroup);
+			if(StringUtils.isEmpty(parentFolder) || !StringUtils.isNumeric(parentFolder)){
+				return saveFolderBy(name, enabled, isChannel, isPlain, 
+						rootFolder != null ? rootFolder.getId() : null, null, idGroup);
+			}else{
+				return saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder), null, idGroup);
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * This method saves a folder related with a user
+	 * 
+	 * @param user
+	 */
+	@RequestMapping(value = "/persistenceGeo/saveFolder/{username}", method = RequestMethod.POST)
+	public @ResponseBody 
+	Map<String, Object> saveFolder(@PathVariable String username,
+			@RequestParam("name") String name,
+			@RequestParam("enabled") String enabled,
+			@RequestParam("isChannel") String isChannel,
+			@RequestParam("isPlain") String isPlain,
+			@RequestParam(value = "parentFolder", required = false) String parentFolder){
+		Map<String, Object> result = new HashMap<String, Object>();
+		FolderDto data = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			UserDto user = userAdminService.obtenerUsuario(username);
+			if(StringUtils.isEmpty(parentFolder) || !StringUtils.isNumeric(parentFolder)){
+				FolderDto rootFolder = layerAdminService.getRootFolder(user.getId());
+				data = saveFolderBy(name, enabled, isChannel, isPlain, 
+						rootFolder != null ? rootFolder.getId() : null, user.getId(), null);
+			}else{
+				data = saveFolderBy(name, enabled, isChannel, isPlain, Long.decode(parentFolder), user.getId(), null);
+			}
+			result.put(SUCCESS, true);
+			result.put(RESULTS, 1);
+			result.put(ROOT, data);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+			result.put(RESULTS, 0);
+			result.put(ROOT, null);
+		}
+		return result;
+	}
+	
+	private FolderDto saveFolderBy(String name, String enabled, String isChannel,
+			String isPlain, Long parentFolder, Long userId, Long groupId){
+		FolderDto folder = new FolderDto();
+		folder.setName(name);
+		folder.setEnabled(enabled != null ? enabled.toLowerCase().equals("true") : false);
+		folder.setIsChannel(isChannel != null ? isChannel.toLowerCase().equals("true") : false);
+		folder.setIsPlain(isPlain != null ? isPlain.toLowerCase().equals("true") : false);
+		folder.setIdParent(parentFolder);
+		folder.setIdAuth(groupId);
+		folder.setIdUser(userId);
+		
+		//TODO: folder.setZoneList(zoneList);
+		return layerAdminService.saveFolder(folder);
+	}
+
+
+	/**
+	 * This method loads all folders related with a user
+	 * 
+	 * @param username
+	 * 
+	 * @return JSON file with folders
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFolders/{username}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFolders(@PathVariable String username){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			if(username != null){
+				folders = new LinkedList<FolderDto>();
+				UserDto user = userAdminService.obtenerUsuario(username);
+				FolderDto rootFolder = layerAdminService.getRootFolder(user.getId());
+				FoldersUtils.getFolderTree(rootFolder, folders);
+			}
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, folders != null ? folders.size(): 0);
+		result.put(ROOT, folders);
+
+		return result;
+	}
+
+
+	/**
+	 * This method loads all folders related with a user
+	 * 
+	 * @param username
+	 * 
+	 * @return JSON file with folders
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFoldersByGroup/{idGroup}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFoldersByGroup(@PathVariable String idGroup){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			if(idGroup != null){
+				folders = new LinkedList<FolderDto>();
+				FolderDto rootFolder = layerAdminService.getRootGroupFolder(Long.decode(idGroup));
+				FoldersUtils.getFolderTree(rootFolder, folders);
+			}
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, folders != null ? folders.size(): 0);
+		result.put(ROOT, folders);
+
+		return result;
+	}
+	
+	/**
+	 * Load folder tree by user or group styled
+	 * 
+	 * @param type user or group, default group
+	 * @param style tree or string, default string
+	 * @param userOrGroup id group or username
+	 * 
+	 * @see FoldersUtils
+	 * @see FolderStyle
+	 * 
+	 * @return List of user or group folders parsed with style
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFolders/{type}/{style}/{userOrGroup}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFolders(@PathVariable String type,
+			@PathVariable String style, 
+			@PathVariable String userOrGroup){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			FolderDto rootFolder;
+			folders = new LinkedList<FolderDto>();
+			if(LOAD_FOLDERS_BY_USER.equals(type)){
+				UserDto user = userAdminService.obtenerUsuario(userOrGroup);
+				rootFolder = layerAdminService.getRootFolder(user.getId());
+			}else{
+				rootFolder = layerAdminService.getRootGroupFolder(Long.decode(userOrGroup));
+			}
+			if(LOAD_FOLDERS_STYLE_TREE.equals(style)){
+				FoldersUtils.getFolderTree(rootFolder, folders, FolderStyle.TREE);
+			}else{
+				FoldersUtils.getFolderTree(rootFolder, folders);
+			}
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, folders != null ? folders.size(): 0);
+		result.put(ROOT, folders);
+
+		return result;
 	}
 	
 	@RequestMapping(value = "/persistenceGeo/deleteLayerByLayerId/{layerId}", method = RequestMethod.POST)
