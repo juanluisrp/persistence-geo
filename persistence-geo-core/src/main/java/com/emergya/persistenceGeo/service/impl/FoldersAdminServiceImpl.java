@@ -46,6 +46,7 @@ import com.emergya.persistenceGeo.dao.LayerEntityDao;
 import com.emergya.persistenceGeo.dao.UserEntityDao;
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
 import com.emergya.persistenceGeo.metaModel.Instancer;
 import com.emergya.persistenceGeo.service.FoldersAdminService;
 
@@ -108,18 +109,29 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			dto.setCreateDate(entity.getCreateDate());
 			dto.setId(entity.getId());
 			dto.setName(entity.getName());
+			dto.setOrder(entity.getFolderOrder());
 			
 			
 			//Children
 			List<AbstractFolderEntity> children = folderDao.getFolders(entity.getId());
 			if(children != null){
+				dto.setIsChannel(false);
 				List<FolderDto> subFolders = new LinkedList<FolderDto>();
 				for(AbstractFolderEntity child: children){
 					//Recursive case
 					subFolders.add(entityToDto(child));
 				}
 				dto.setFolderList(subFolders);
-			}//else: base case
+			}else{
+				// only is channel if have layers
+				List<AbstractLayerEntity> layers = layerDao.getLayersByFolder(entity.getId());
+				if(layers != null 
+						&& !layers.isEmpty()){
+					dto.setIsChannel(true);
+				}else{
+					dto.setIsChannel(false);
+				}
+			}
 			
 			//Parent
 			if(entity.getParent() != null
@@ -157,6 +169,7 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			entity.setUpdateDate(dto.getUpdateDate());
 			entity.setCreateDate(dto.getCreateDate());
 			entity.setName(dto.getName());
+			entity.setFolderOrder(dto.getOrder());
 			
 			//TODO: Children if is necesary
 			

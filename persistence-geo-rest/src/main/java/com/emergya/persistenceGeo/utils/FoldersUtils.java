@@ -81,11 +81,19 @@ public class FoldersUtils {
 		if(folder != null){
 			String name = getFolderName(folder.getName(), parent, level, style);
 			folder.setName(name);
-			if(canHaveLayers == null
-					|| ((folder.getFolderList() == null)
-							|| (folder.getFolderList().isEmpty())) 
-								== canHaveLayers){
+			if(canHaveLayers == null){
 				tree.add(folder);
+			}else{
+				if(canHaveLayers && 
+						(folder.getIsChannel() 
+							|| (folder.getFolderList() == null
+								|| folder.getFolderList().isEmpty()))){
+					// only can have layers folders without children
+					tree.add(folder);
+				}else if(!canHaveLayers && !folder.getIsChannel()){
+					// only can have folders not layer channels (without children and without layers)
+					tree.add(folder);
+				}
 			}
 			if(folder.getFolderList() != null){
 				String previus = parent;

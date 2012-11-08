@@ -104,6 +104,9 @@ public class RestFoldersAdminController implements Serializable{
 			Long idFolder = Long.decode(folderId);
 			folder = (FolderDto) foldersAdminService.getById(idFolder);
 			folder.setIdParent(Long.decode(toFolder));
+			if(toOrder != null){
+				folder.setOrder(Integer.decode(toOrder));
+			}
 			folder = (FolderDto) foldersAdminService.update(folder);
 			
 			result.put(SUCCESS, true);

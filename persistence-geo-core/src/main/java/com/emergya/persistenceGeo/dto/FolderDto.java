@@ -56,6 +56,7 @@ public class FolderDto implements Serializable{
 	protected Long idParent;
 	protected Long idAuth;
 	protected Long idUser;
+	protected Integer order; 
 	
 	protected List<FolderDto> folderList;
 	protected List<String> zoneList;
@@ -203,5 +204,18 @@ public class FolderDto implements Serializable{
 	 */
 	public void setIdUser(Long idUser) {
 		this.idUser = idUser;
+	}
+	
+	/**
+	 * @return the order
+	 */
+	public Integer getOrder() {
+		return order;
+	}
+	/**
+	 * @param order the order to set
+	 */
+	public void setOrder(Integer order) {
+		this.order = order;
 	}
 }

@@ -425,6 +425,14 @@ public class RestLayersAdminController implements Serializable{
 			Long idLayer = Long.decode(layerId);
 			layer = (LayerDto) layerAdminService.getById(idLayer);
 			layer.setFolderId(Long.decode(toFolder));
+			
+			if(toOrder != null){
+				Map<String, String> properties = layer.getProperties() != null ? layer
+						.getProperties() : new HashMap<String, String>();
+				properties.put("order", toOrder);
+				layer.setProperties(properties);
+			}
+			
 			layer = (LayerDto) layerAdminService.update(layer);
 			
 			//Must already loaded in RestLayerAdminController

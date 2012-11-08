@@ -35,10 +35,12 @@ Ext.namespace("PersistenceGeoParser");
  * The PersistenceGeoParser is designed to parse data behind persistenceGeo 
  * library and sicecat viewer
  */
-PersistenceGeoParser = 
+PersistenceGeo = Ext.extend(Ext.Component,
 				{
 						
 					FOLDERS_ADDED:{},
+					
+					logEnabled: true,
 					
 					insertSQL: "",
 					
@@ -139,6 +141,8 @@ PersistenceGeoParser =
 					
 					LOADED_FOLDERS:{},
 					
+					LOADED_FOLDERS_OBJECTS:{},
+					
 					LOADED_FOLDERS_NAMES:{},
 					
 					ROOT_FOLDER:null,
@@ -183,13 +187,14 @@ PersistenceGeoParser =
 					 * 
 					 * Move a layer to a folder using PersistenceGeo 
 					 */
-					moveLayerTo: function(layerId, folderId, onsuccess, onfailure){
+					moveLayerTo: function(layerId, folderId, toOrder, onsuccess, onfailure){
 						
 						var url = this.MOVE_LAYER_URL();
 						
 						var params = {
 								layerId: layerId,
-								toFolder: folderId
+								toFolder: folderId,
+								toOrder: toOrder
 						};
 						
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
@@ -200,13 +205,14 @@ PersistenceGeoParser =
 					 * 
 					 * Move a folder to a folder using PersistenceGeo 
 					 */
-					moveFolderTo: function(folderId, toFolderId, onsuccess, onfailure){
+					moveFolderTo: function(folderId, toFolderId, toOrder, onsuccess, onfailure){
 						
 						var url = this.MOVE_FOLDER_URL();
 						
 						var params = {
 								folderId: folderId,
-								toFolder: toFolderId
+								toFolder: toFolderId,
+								toOrder: toOrder
 						};
 						
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
@@ -294,7 +300,7 @@ PersistenceGeoParser =
 				             idProperty: 'id',
 				             root: 'data',
 				             totalProperty: 'results',
-				             fields: ['id','name','idParent'],
+				             fields: ['id','name','idParent','order'],
 				             listeners: {
 				                 load: function(store, records, options) {
 										var i = 0; 
@@ -304,6 +310,7 @@ PersistenceGeoParser =
 					                		if(!!records[i].data.id 
 					                				&& !!records[i].data.name){
 					                			var folderName = records[i].data.name;
+					                			this_.LOADED_FOLDERS_OBJECTS[records[i].data.id] = records[i].data;
 					                			this_.LOADED_FOLDERS[folderName] = records[i].data.id;
 					                			this_.LOADED_FOLDERS_NAMES[records[i].data.id] = folderName;
 					                			// Root folder haven't '-'
@@ -312,7 +319,7 @@ PersistenceGeoParser =
 					                				this_.ROOT_FOLDER = folderName;
 					                			}
 					                			if(!!records[i].data.idParent
-					                					&& !(folderName == this_.ROOT_FOLDER)){
+					                					&& !!parents[records[i].data.idParent]){
 					                				//Add child
 					                				lastParent = parents[records[i].data.idParent];
 				                					lastParent.element.add(records[i].data.id, new Ext.util.MixedCollection());
@@ -423,8 +430,8 @@ PersistenceGeoParser =
 	                				var layer = this.LOADERS_CLASSES[records[i].data.type].load(records[i].data, layerTree);
 	                				layers.push(layer);
 	                			}catch (e){
-	                				//TODO: Log load layer error
-	                				console.log(e);
+	                				if(this.logEnabled)
+	                					console.log(e.stack);
 	                			}
 	                		}else{
 	                			console.log("ERROR loading " + records[i].data.type + " - " + this.LOADERS_CLASSES[records[i].data.type]);
@@ -681,12 +688,14 @@ PersistenceGeoParser =
 						});
 					}
 					
-};
+});
+
+var PersistenceGeoParser = new PersistenceGeo();
 
 /** api: (define)
  *  module = PersistenceGeoParser.AbstractLoader
  */
-Ext.namespace("PersistenceGeoParser.AbstractLoader");
+Ext.namespace("PersistenceGeo.AbstractLoader");
 
 /**
  * Class: PersistenceGeoParser.AbstractLoader
@@ -694,7 +703,7 @@ Ext.namespace("PersistenceGeoParser.AbstractLoader");
  * Abstract loader for Layers
  * 
  */
-PersistenceGeoParser.AbstractLoader = 
+PersistenceGeo.AbstractLoader =  Ext.extend(Ext.Component,
 	{
 		/**
 		 * Method to be called for generate OpenLayers layer
@@ -861,4 +870,6 @@ PersistenceGeoParser.AbstractLoader =
 			}
 		}
 		
-};
+});
+
+PersistenceGeoParser.AbstractLoader = new PersistenceGeo.AbstractLoader();
