@@ -795,6 +795,16 @@ PersistenceGeo.AbstractLoader =  Ext.extend(Ext.Component,
 			PersistenceGeoParser.AbstractLoader.postFunctionsPermission(layerData, layer);
 			PersistenceGeoParser.AbstractLoader.postFunctionsStyle(layerData, layer);
 			PersistenceGeoParser.AbstractLoader.postFunctionsOrder(layerData, layer);
+			PersistenceGeoParser.AbstractLoader.postFunctionsVisibility(layerData, layer);
+		},
+		
+		postFunctionsVisibility: function (layerData, layer){
+			if(!!layerData.properties){
+				var visibility = layerData.properties.visibility ? this.toBoolean(layerData.properties.visibility) : false;
+				if(layer.visibility != visibility){
+					layer.setVisibility(visibility);
+				}
+			}
 		},
 		
 		postFunctionsOrder: function (layerData, layer){
