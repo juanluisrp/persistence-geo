@@ -139,6 +139,10 @@ PersistenceGeo = Ext.extend(Ext.Component,
 						return this.getRestBaseUrl() + "/persistenceGeo/moveFolderTo";
 					},
 					
+					SAVE_LAYER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/saveLayerSimpleProperties";
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_OBJECTS:{},
@@ -161,6 +165,29 @@ PersistenceGeo = Ext.extend(Ext.Component,
 					
 					initFoldersByGroup: function(idGroup){
 						this.initFolders(idGroup, this.LOAD_FOLDERS_GROUP_BASE_URL() + idGroup);
+					},
+					
+					saveLayerName: function (layerId, name, onsuccess, onfailure){
+
+						var url = this.SAVE_LAYER_PROPERTIES_URL();
+						var params = {
+								layerId: layerId,
+								name: name
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					saveLayerProperties: function (layerId, properties, onsuccess, onfailure){
+
+						var url = this.SAVE_LAYER_PROPERTIES_URL();
+						
+						var params = {
+								layerId: layerId,
+								properties: this.getMapParse(properties)
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
 					},
 					
 					/**
@@ -686,8 +713,35 @@ PersistenceGeo = Ext.extend(Ext.Component,
 							success: onsuccess ? onsuccess : function(){},
 							failure: onfailure ? onfailure: function(){}
 						});
-					}
+					},
 					
+					/**
+					 * Private: getMapParse
+					 * 
+					 * Obtain map parse
+					 * 
+					 * @param properties
+					 * @returns
+					 */
+					getMapParse: function(properties){
+						var result = null;
+						if(!!properties){ //if properties != null
+							var paramsToSend = properties;
+							var aux = 0;
+							result = "";
+							for (param in paramsToSend){aux++;}
+							for (param in paramsToSend){
+								if(!!param){
+									result += param + "===" + paramsToSend[param];
+									if(aux > 1){
+										result += ",,,";
+									}
+								}
+								aux--;
+							}
+						}
+						return result;
+					}	
 });
 
 var PersistenceGeoParser = new PersistenceGeo();
