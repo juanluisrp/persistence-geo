@@ -143,6 +143,14 @@ PersistenceGeo = Ext.extend(Ext.Component,
 						return this.getRestBaseUrl() + "/persistenceGeo/saveLayerSimpleProperties";
 					},
 					
+					DELETE_FOLDER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/deleteFolder";
+					},
+					
+					RENAME_FOLDER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/renameFolder";
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_OBJECTS:{},
@@ -240,6 +248,39 @@ PersistenceGeo = Ext.extend(Ext.Component,
 								folderId: folderId,
 								toFolder: toFolderId,
 								toOrder: toOrder
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: moveFolderTo
+					 * 
+					 * Delete a folder to a folder using PersistenceGeo 
+					 */
+					deleteFolder: function(folderId, onsuccess, onfailure){
+						
+						var url = this.DELETE_FOLDER_PROPERTIES_URL();
+						
+						var params = {
+								folderId: folderId
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: renameFolder
+					 * 
+					 * Rename a folder using PersistenceGeo 
+					 */
+					renameFolder: function(folderId, newName, onsuccess, onfailure){
+						
+						var url = this.RENAME_FOLDER_PROPERTIES_URL();
+						
+						var params = {
+								folderId: folderId,
+								name: newName
 						};
 						
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
