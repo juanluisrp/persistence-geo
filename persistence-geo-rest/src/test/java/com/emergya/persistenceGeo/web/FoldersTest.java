@@ -45,7 +45,7 @@ import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.emergya.persistenceGeo.dto.FolderDto;
-import com.emergya.persistenceGeo.service.LayerAdminService;
+import com.emergya.persistenceGeo.service.FoldersAdminService;
 import com.emergya.persistenceGeo.utils.FoldersUtils;
 
 
@@ -64,17 +64,16 @@ public class FoldersTest{
 	private static final Log LOG = LogFactory.getLog(FoldersTest.class);
 	
 	@Resource
-	private LayerAdminService layerAdminService;
-	
+	private FoldersAdminService foldersAdminService;
 	
 	@Test
 	public void testCreateFolder() {
 		try{
 			List<FolderDto> folders = new LinkedList<FolderDto>();
-			FolderDto rootFolder = layerAdminService.getRootFolder(new Long(1));
-			FoldersUtils.getFolderTree(rootFolder, folders, new String(""));
+			FolderDto rootFolder = foldersAdminService.getRootFolder(new Long(1));
+			FoldersUtils.getFolderTree(rootFolder, folders, new String(""), null);
 			for(FolderDto folder: folders){
-				System.out.println(folder.getName());
+				LOG.debug(folder.getName());
 			}
 		}catch (Exception e){
 			LOG.error(e);

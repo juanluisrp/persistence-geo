@@ -58,6 +58,7 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	protected AbstractUserEntity user;
 	protected AbstractAuthorityEntity authority;
 	protected AbstractFolderEntity parent;
+	protected Integer folderOrder;
 
 	public AbstractFolderEntity(){
 		
@@ -113,10 +114,21 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	 */
 	public abstract AbstractFolderEntity getParent();
 	/**
+	 * @return the order
+	 */
+	public abstract Integer getFolderOrder();
+	/**
 	 * @param id the id to set
 	 */
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	/**
+	 * @param order the order to set
+	 */
+	public void setFolderOrder(Integer order) {
+		this.folderOrder = order;
 	}
 
 	/**

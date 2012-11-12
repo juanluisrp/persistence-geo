@@ -51,6 +51,8 @@ public interface LayerEntityDao extends GenericDAO<AbstractLayerEntity, Long> {
 	 */
 	public AbstractLayerEntity createLayer(String layerName);
 	
+	public List<AbstractLayerEntity> getLayersByFolder(Long folderId);
+	
 	/**
 	 * Save the layer in the system
 	 * 

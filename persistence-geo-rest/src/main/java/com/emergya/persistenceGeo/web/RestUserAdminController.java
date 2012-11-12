@@ -49,6 +49,7 @@ import com.emergya.persistenceGeo.dto.AuthorityDto;
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.dto.ZoneDto;
+import com.emergya.persistenceGeo.service.FoldersAdminService;
 import com.emergya.persistenceGeo.service.LayerAdminService;
 import com.emergya.persistenceGeo.service.UserAdminService;
 import com.emergya.persistenceGeo.service.ZoneAdminService;
@@ -74,6 +75,9 @@ public class RestUserAdminController implements Serializable{
 	
 	@Resource
 	private ZoneAdminService zoneAdminService;
+	
+	@Resource
+	private FoldersAdminService foldersAdminService;
 
 	@RequestMapping(value = "/persistenceGeo/admin/createUser", method = RequestMethod.POST)
 	public @ResponseBody
@@ -116,13 +120,13 @@ public class RestUserAdminController implements Serializable{
 			user = (UserDto) userAdminService.update(user);
 		}
 		
-		FolderDto folder = layerAdminService.getRootFolder(user.getId());
+		FolderDto folder = foldersAdminService.getRootFolder(user.getId());
 		if(folder == null){
 			//Create default user folder
 			folder = new FolderDto();
 			folder.setIdUser(user.getId());
 			folder.setName("");
-			layerAdminService.saveFolder(folder);
+			foldersAdminService.saveFolder(folder);
 		}
 		
 		return user;

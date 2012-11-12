@@ -1,5 +1,5 @@
 /*
- * LayerEntityDao.java
+ * FoldersService.java
  * 
  * Copyright (C) 2012
  * 
@@ -27,23 +27,36 @@
  * 
  * Authors:: Moisés Arcos Santiago (mailto:marcos@emergya.com)
  */
-package com.emergya.persistenceGeo.dao;
+package com.emergya.persistenceGeo.service;
 
-import com.emergya.persistenceGeo.metaModel.AbstractMapConfigurationEntity;
+import com.emergya.persistenceGeo.dto.FolderDto;
 
 /**
- * DAO that represents the layer
+ * Layers Administration Interface 
  * 
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public interface MapConfigurationEntityDao extends GenericDAO<AbstractMapConfigurationEntity, Long> {
-
+public interface FoldersAdminService extends AbstractService{
 	
-	public void updateMapConfiguration (Long mapConfigurationID,String bbox,String iP, String res);
+	/**
+	 * Get root folder for a user
+	 * 
+	 * @return root folder
+	 */
+	public FolderDto getRootFolder(Long idUser);
 	
-	public AbstractMapConfigurationEntity loadConfiguration();
+	/**
+	 * Get root folder for a group
+	 * 
+	 * @return root folder
+	 */
+	public FolderDto getRootGroupFolder(Long idGroup);
 	
-	public void removeMapConfiguration(Long mapConfigurationID);
-	
+	/**
+	 * Saves a folder
+	 * 
+	 * @return saved folder
+	 */
+	public FolderDto saveFolder(FolderDto folder);
 }

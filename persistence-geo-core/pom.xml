@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -35,7 +36,7 @@
 			<organization>Emergya Consultoria</organization>
 			<organizationUrl>http://www.emergya.es</organizationUrl>
 			<roles>
-				<role>Analista</role>
+                <role>Analyst</role>
 			</roles>
 		</developer>
 		<developer>
@@ -46,6 +47,16 @@
 			<organizationUrl>http://www.emergya.es</organizationUrl>
 			<roles>
 				<role>Junior Programmer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>jlrodriguez</id>
+            <name>Juan Luis Rodriguez Ponce</name>
+            <email>jlrodriguez@emergya.com</email>
+            <organization>Emergya Consultoria</organization>
+            <organizationUrl>http://www.emergya.es</organizationUrl>
+            <roles>
+                <role>Analyst</role>
 			</roles>
 		</developer>
 	</developers>
@@ -65,10 +76,11 @@
 
 	<!-- Environment Information -->
 	<scm>
-		<connection>scm:svn:http://svn.emergya.es/svn/sirdelgore</connection>
-		<developerConnection>scm:svn:http://svn.emergya.es/svn/sirdelgore</developerConnection>
-		<url>http://svn.emergya.es/svn/sirdelgore</url>
+        <connection>scm:git:git@github.com:Emergya/persistence-geo.git</connection>
+        <url>scm:git:git@github.com:Emergya/persistence-geo.git</url>
+        <developerConnection>scm:git:git@github.com:Emergya/persistence-geo.git</developerConnection>
 	</scm>
+
 
 
     <repositories>
@@ -101,7 +113,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!--Misc dependencies-->
+        <!--Misc dependencies -->
 
          <dependency>
             <groupId>junit</groupId>
@@ -162,6 +174,17 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
 		</dependency>
+        <dependency>
+            <groupId>it.geosolutions</groupId>
+            <artifactId>geoserver-manager</artifactId>
+            <version>${geoserver.manager.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils-core</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+
 
     </dependencies>
 
@@ -227,7 +250,9 @@
 	      <properties>
                 <filter.profile>test.properties</filter.profile>
 	      </properties>
-	      <activation><activeByDefault>true</activeByDefault></activation>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
 	    </profile>
 	    <profile>
 	    	<id>devel</id>
