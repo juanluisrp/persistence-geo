@@ -454,6 +454,68 @@ public class RestLayersAdminController implements Serializable{
 	}
 
 	/**
+	 * This method saves layer visibility, layerOpacity...
+	 * 
+	 * @param layerId
+	 * @param properties
+	 * 
+	 * @return JSON file with layer modified
+	 */
+	@RequestMapping(value = "/persistenceGeo/saveLayerSimpleProperties", 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> saveLayerSimpleProperties(@RequestParam("layerId") String layerId,
+			@RequestParam(value="name", required = false) String name,
+			@RequestParam(value="properties", required = false) String properties){
+		Map<String, Object> result = new HashMap<String, Object>();
+		LayerDto layer = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			Long idLayer = Long.decode(layerId);
+			layer = (LayerDto) layerAdminService.getById(idLayer);
+			
+			// override name
+			if(name != null){
+				layer.setName(name);
+			}
+			
+			// override properties
+			if(properties != null){
+				Map<String, String> propertyMap = getMapFromString(properties);
+				Map<String, String> layerProperties = layer.getProperties() != null ? layer
+						.getProperties() : new HashMap<String, String>();
+				for(String key: propertyMap.keySet()){
+					layerProperties.put(key, propertyMap.get(key));
+				}
+				layer.setProperties(layerProperties);
+			}
+			
+			//layer update
+			layer = (LayerDto) layerAdminService.update(layer);
+			
+			//Must already loaded in RestLayerAdminController
+			if(layer.getId() != null && layer.getData() != null){
+				layer.setData(null);
+				layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
+			}
+			
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, layer != null ? 1: 0);
+		result.put(ROOT, layer);
+
+		return result;
+	}
+
+	/**
 	 * This method loads json file with layer types
 	 * 
 	 * @param username

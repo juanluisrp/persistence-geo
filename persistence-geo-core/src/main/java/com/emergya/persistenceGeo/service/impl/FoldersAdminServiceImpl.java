@@ -29,6 +29,7 @@
  */
 package com.emergya.persistenceGeo.service.impl;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -196,4 +197,32 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 	protected GenericDAO<AbstractFolderEntity, Long> getDao() {
 		return folderDao;
 	}
+
+	/**
+	 *	Remove children and layers before remove folder
+	 */
+	@Override
+	public void delete(Serializable dto) {
+		FolderDto folder = (FolderDto) dto;
+		
+		//Carcade remove
+		if(folder.getFolderList() != null){
+			// children remove
+			for(FolderDto child: folder.getFolderList()){
+				delete(child);
+			}
+		}else if(folder.getIsChannel() == true){
+			//Remove layers
+			List<AbstractLayerEntity> layers = layerDao.getLayersByFolder(folder.getId());
+			if(layers != null){
+				for (AbstractLayerEntity layer: layers){
+					layerDao.makeTransient(layer);
+				}
+			}
+		}
+		
+		super.delete(dto);
+	}
+	
+	
 }

@@ -139,6 +139,18 @@ PersistenceGeo = Ext.extend(Ext.Component,
 						return this.getRestBaseUrl() + "/persistenceGeo/moveFolderTo";
 					},
 					
+					SAVE_LAYER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/saveLayerSimpleProperties";
+					},
+					
+					DELETE_FOLDER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/deleteFolder";
+					},
+					
+					RENAME_FOLDER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/renameFolder";
+					},
+					
 					LOADED_FOLDERS:{},
 					
 					LOADED_FOLDERS_OBJECTS:{},
@@ -161,6 +173,29 @@ PersistenceGeo = Ext.extend(Ext.Component,
 					
 					initFoldersByGroup: function(idGroup){
 						this.initFolders(idGroup, this.LOAD_FOLDERS_GROUP_BASE_URL() + idGroup);
+					},
+					
+					saveLayerName: function (layerId, name, onsuccess, onfailure){
+
+						var url = this.SAVE_LAYER_PROPERTIES_URL();
+						var params = {
+								layerId: layerId,
+								name: name
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					saveLayerProperties: function (layerId, properties, onsuccess, onfailure){
+
+						var url = this.SAVE_LAYER_PROPERTIES_URL();
+						
+						var params = {
+								layerId: layerId,
+								properties: this.getMapParse(properties)
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
 					},
 					
 					/**
@@ -213,6 +248,39 @@ PersistenceGeo = Ext.extend(Ext.Component,
 								folderId: folderId,
 								toFolder: toFolderId,
 								toOrder: toOrder
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: moveFolderTo
+					 * 
+					 * Delete a folder to a folder using PersistenceGeo 
+					 */
+					deleteFolder: function(folderId, onsuccess, onfailure){
+						
+						var url = this.DELETE_FOLDER_PROPERTIES_URL();
+						
+						var params = {
+								folderId: folderId
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: renameFolder
+					 * 
+					 * Rename a folder using PersistenceGeo 
+					 */
+					renameFolder: function(folderId, newName, onsuccess, onfailure){
+						
+						var url = this.RENAME_FOLDER_PROPERTIES_URL();
+						
+						var params = {
+								folderId: folderId,
+								name: newName
 						};
 						
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
@@ -686,8 +754,35 @@ PersistenceGeo = Ext.extend(Ext.Component,
 							success: onsuccess ? onsuccess : function(){},
 							failure: onfailure ? onfailure: function(){}
 						});
-					}
+					},
 					
+					/**
+					 * Private: getMapParse
+					 * 
+					 * Obtain map parse
+					 * 
+					 * @param properties
+					 * @returns
+					 */
+					getMapParse: function(properties){
+						var result = null;
+						if(!!properties){ //if properties != null
+							var paramsToSend = properties;
+							var aux = 0;
+							result = "";
+							for (param in paramsToSend){aux++;}
+							for (param in paramsToSend){
+								if(!!param){
+									result += param + "===" + paramsToSend[param];
+									if(aux > 1){
+										result += ",,,";
+									}
+								}
+								aux--;
+							}
+						}
+						return result;
+					}	
 });
 
 var PersistenceGeoParser = new PersistenceGeo();
@@ -741,6 +836,16 @@ PersistenceGeo.AbstractLoader =  Ext.extend(Ext.Component,
 			PersistenceGeoParser.AbstractLoader.postFunctionsPermission(layerData, layer);
 			PersistenceGeoParser.AbstractLoader.postFunctionsStyle(layerData, layer);
 			PersistenceGeoParser.AbstractLoader.postFunctionsOrder(layerData, layer);
+			PersistenceGeoParser.AbstractLoader.postFunctionsVisibility(layerData, layer);
+		},
+		
+		postFunctionsVisibility: function (layerData, layer){
+			if(!!layerData.properties){
+				var visibility = layerData.properties.visibility ? this.toBoolean(layerData.properties.visibility) : false;
+				if(layer.visibility != visibility){
+					layer.setVisibility(visibility);
+				}
+			}
 		},
 		
 		postFunctionsOrder: function (layerData, layer){
