@@ -36,7 +36,7 @@
             <organization>Emergya Consultoria</organization>
             <organizationUrl>http://www.emergya.es</organizationUrl>
             <roles>
-                <role>Analista</role>
+                <role>Analyst</role>
             </roles>
         </developer>
         <developer>
@@ -47,6 +47,16 @@
             <organizationUrl>http://www.emergya.es</organizationUrl>
             <roles>
                 <role>Junior Programmer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>jlrodriguez</id>
+            <name>Juan Luis Rodriguez Ponce</name>
+            <email>jlrodriguez@emergya.com</email>
+            <organization>Emergya Consultoria</organization>
+            <organizationUrl>http://www.emergya.es</organizationUrl>
+            <roles>
+                <role>Analyst</role>
             </roles>
         </developer>
     </developers>
@@ -66,10 +76,11 @@
 
     <!-- Environment Information -->
     <scm>
-        <connection>scm:svn:http://svn.emergya.es/svn/sirdelgore</connection>
-        <developerConnection>scm:svn:http://svn.emergya.es/svn/sirdelgore</developerConnection>
-        <url>http://svn.emergya.es/svn/sirdelgore</url>
+        <connection>scm:git:git@github.com:Emergya/persistence-geo.git</connection>
+        <url>scm:git:git@github.com:Emergya/persistence-geo.git</url>
+        <developerConnection>scm:git:git@github.com:Emergya/persistence-geo.git</developerConnection>
     </scm>
+
 
 
     <repositories>

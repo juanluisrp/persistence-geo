@@ -7,7 +7,6 @@ import it.geosolutions.geoserver.rest.decoder.RESTWorkspaceList.RESTShortWorkspa
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +18,8 @@ import com.emergya.persistenceGeo.dao.GeoserverDao;
 import com.emergya.persistenceGeo.exceptions.GeoserverException;
 import com.emergya.persistenceGeo.utils.GsFeatureDescriptor;
 import com.emergya.persistenceGeo.utils.GsLayerDescriptor;
-import com.emergya.persistenceGeo.utils.GsRestApiConfiguration;
 import com.emergya.persistenceGeo.utils.GsLayerDescriptor.GeometryType;
+import com.emergya.persistenceGeo.utils.GsRestApiConfiguration;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:geoserverTestContext.xml" })
@@ -28,7 +27,6 @@ public class GeoserverGsManagerDaoImplTest {
 	private static final String TABLE_NAME = "test_geometry_table";
 	private final static String WORKSPACE_NAME = "workspace_test";
 	private static final String DATASTORE_NAME = "datastore_test";
-	private static final String NEW_LAYER_NAME = "new_layer";
 	private static final String LAYER_TITLE = "new layer title";
 
 	private final static Log LOG = LogFactory
