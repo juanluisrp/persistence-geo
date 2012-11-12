@@ -104,6 +104,9 @@ public class RestFoldersAdminController implements Serializable{
 			Long idFolder = Long.decode(folderId);
 			folder = (FolderDto) foldersAdminService.getById(idFolder);
 			folder.setIdParent(Long.decode(toFolder));
+			if(toOrder != null){
+				folder.setOrder(Integer.decode(toOrder));
+			}
 			folder = (FolderDto) foldersAdminService.update(folder);
 			
 			result.put(SUCCESS, true);
@@ -339,6 +342,78 @@ public class RestFoldersAdminController implements Serializable{
 		
 		result.put(RESULTS, folders != null ? folders.size(): 0);
 		result.put(ROOT, folders);
+
+		return result;
+	}
+
+	/**
+	 * Remove a folder and her children
+	 * 
+	 * @param folderId
+	 * 
+	 * @return JSON file with success
+	 */
+	@RequestMapping(value = "/persistenceGeo/deleteFolder",
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> deleteFolder(@RequestParam("folderId") String folderId){
+		Map<String, Object> result = new HashMap<String, Object>();
+		FolderDto folder = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			Long idFolder = Long.decode(folderId);
+			folder = (FolderDto) foldersAdminService.getById(idFolder);
+			foldersAdminService.delete(folder);
+			result.put(SUCCESS, true);
+			result.put(RESULTS, 1);
+			result.put(ROOT, "");
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+			result.put(RESULTS, 0);
+			result.put(ROOT, null);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Rename a folder
+	 * 
+	 * @param folderId
+	 * @param name
+	 * 
+	 * @return JSON file with success
+	 */
+	@RequestMapping(value = "/persistenceGeo/renameFolder",
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> renameFolder(@RequestParam("folderId") String folderId,
+			@RequestParam("name") String name){
+		Map<String, Object> result = new HashMap<String, Object>();
+		FolderDto folder = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			Long idFolder = Long.decode(folderId);
+			folder = (FolderDto) foldersAdminService.getById(idFolder);
+			folder.setName(name);
+			folder = (FolderDto) foldersAdminService.update(folder);
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, folder != null ? 1 : 0);
+		result.put(ROOT, folder);
 
 		return result;
 	}

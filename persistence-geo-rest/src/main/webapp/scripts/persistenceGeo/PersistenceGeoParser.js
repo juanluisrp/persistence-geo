@@ -35,10 +35,12 @@ Ext.namespace("PersistenceGeoParser");
  * The PersistenceGeoParser is designed to parse data behind persistenceGeo 
  * library and sicecat viewer
  */
-PersistenceGeoParser = 
+PersistenceGeo = Ext.extend(Ext.Component,
 				{
 						
 					FOLDERS_ADDED:{},
+					
+					logEnabled: true,
 					
 					insertSQL: "",
 					
@@ -133,7 +135,25 @@ PersistenceGeoParser =
 						return this.getRestBaseUrl() + "/persistenceGeo/moveLayerTo";
 					},
 					
+					MOVE_FOLDER_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/moveFolderTo";
+					},
+					
+					SAVE_LAYER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/saveLayerSimpleProperties";
+					},
+					
+					DELETE_FOLDER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/deleteFolder";
+					},
+					
+					RENAME_FOLDER_PROPERTIES_URL: function(){
+						return this.getRestBaseUrl() + "/persistenceGeo/renameFolder";
+					},
+					
 					LOADED_FOLDERS:{},
+					
+					LOADED_FOLDERS_OBJECTS:{},
 					
 					LOADED_FOLDERS_NAMES:{},
 					
@@ -153,6 +173,29 @@ PersistenceGeoParser =
 					
 					initFoldersByGroup: function(idGroup){
 						this.initFolders(idGroup, this.LOAD_FOLDERS_GROUP_BASE_URL() + idGroup);
+					},
+					
+					saveLayerName: function (layerId, name, onsuccess, onfailure){
+
+						var url = this.SAVE_LAYER_PROPERTIES_URL();
+						var params = {
+								layerId: layerId,
+								name: name
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					saveLayerProperties: function (layerId, properties, onsuccess, onfailure){
+
+						var url = this.SAVE_LAYER_PROPERTIES_URL();
+						
+						var params = {
+								layerId: layerId,
+								properties: this.getMapParse(properties)
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
 					},
 					
 					/**
@@ -179,13 +222,65 @@ PersistenceGeoParser =
 					 * 
 					 * Move a layer to a folder using PersistenceGeo 
 					 */
-					moveLayerTo: function(layerId, folderId, onsuccess, onfailure){
+					moveLayerTo: function(layerId, folderId, toOrder, onsuccess, onfailure){
 						
 						var url = this.MOVE_LAYER_URL();
 						
 						var params = {
 								layerId: layerId,
-								toFolder: folderId
+								toFolder: folderId,
+								toOrder: toOrder
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: moveFolderTo
+					 * 
+					 * Move a folder to a folder using PersistenceGeo 
+					 */
+					moveFolderTo: function(folderId, toFolderId, toOrder, onsuccess, onfailure){
+						
+						var url = this.MOVE_FOLDER_URL();
+						
+						var params = {
+								folderId: folderId,
+								toFolder: toFolderId,
+								toOrder: toOrder
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: moveFolderTo
+					 * 
+					 * Delete a folder to a folder using PersistenceGeo 
+					 */
+					deleteFolder: function(folderId, onsuccess, onfailure){
+						
+						var url = this.DELETE_FOLDER_PROPERTIES_URL();
+						
+						var params = {
+								folderId: folderId
+						};
+						
+						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
+					},
+					
+					/**
+					 * Function: renameFolder
+					 * 
+					 * Rename a folder using PersistenceGeo 
+					 */
+					renameFolder: function(folderId, newName, onsuccess, onfailure){
+						
+						var url = this.RENAME_FOLDER_PROPERTIES_URL();
+						
+						var params = {
+								folderId: folderId,
+								name: newName
 						};
 						
 						this.sendFormPostData(url, params, "POST", onsuccess, onfailure);
@@ -273,7 +368,7 @@ PersistenceGeoParser =
 				             idProperty: 'id',
 				             root: 'data',
 				             totalProperty: 'results',
-				             fields: ['id','name','idParent'],
+				             fields: ['id','name','idParent','order'],
 				             listeners: {
 				                 load: function(store, records, options) {
 										var i = 0; 
@@ -283,6 +378,7 @@ PersistenceGeoParser =
 					                		if(!!records[i].data.id 
 					                				&& !!records[i].data.name){
 					                			var folderName = records[i].data.name;
+					                			this_.LOADED_FOLDERS_OBJECTS[records[i].data.id] = records[i].data;
 					                			this_.LOADED_FOLDERS[folderName] = records[i].data.id;
 					                			this_.LOADED_FOLDERS_NAMES[records[i].data.id] = folderName;
 					                			// Root folder haven't '-'
@@ -291,7 +387,7 @@ PersistenceGeoParser =
 					                				this_.ROOT_FOLDER = folderName;
 					                			}
 					                			if(!!records[i].data.idParent
-					                					&& !(folderName == this_.ROOT_FOLDER)){
+					                					&& !!parents[records[i].data.idParent]){
 					                				//Add child
 					                				lastParent = parents[records[i].data.idParent];
 				                					lastParent.element.add(records[i].data.id, new Ext.util.MixedCollection());
@@ -402,8 +498,8 @@ PersistenceGeoParser =
 	                				var layer = this.LOADERS_CLASSES[records[i].data.type].load(records[i].data, layerTree);
 	                				layers.push(layer);
 	                			}catch (e){
-	                				//TODO: Log load layer error
-	                				console.log(e);
+	                				if(this.logEnabled)
+	                					console.log(e.stack);
 	                			}
 	                		}else{
 	                			console.log("ERROR loading " + records[i].data.type + " - " + this.LOADERS_CLASSES[records[i].data.type]);
@@ -658,14 +754,43 @@ PersistenceGeoParser =
 							success: onsuccess ? onsuccess : function(){},
 							failure: onfailure ? onfailure: function(){}
 						});
-					}
+					},
 					
-};
+					/**
+					 * Private: getMapParse
+					 * 
+					 * Obtain map parse
+					 * 
+					 * @param properties
+					 * @returns
+					 */
+					getMapParse: function(properties){
+						var result = null;
+						if(!!properties){ //if properties != null
+							var paramsToSend = properties;
+							var aux = 0;
+							result = "";
+							for (param in paramsToSend){aux++;}
+							for (param in paramsToSend){
+								if(!!param){
+									result += param + "===" + paramsToSend[param];
+									if(aux > 1){
+										result += ",,,";
+									}
+								}
+								aux--;
+							}
+						}
+						return result;
+					}	
+});
+
+var PersistenceGeoParser = new PersistenceGeo();
 
 /** api: (define)
  *  module = PersistenceGeoParser.AbstractLoader
  */
-Ext.namespace("PersistenceGeoParser.AbstractLoader");
+Ext.namespace("PersistenceGeo.AbstractLoader");
 
 /**
  * Class: PersistenceGeoParser.AbstractLoader
@@ -673,7 +798,7 @@ Ext.namespace("PersistenceGeoParser.AbstractLoader");
  * Abstract loader for Layers
  * 
  */
-PersistenceGeoParser.AbstractLoader = 
+PersistenceGeo.AbstractLoader =  Ext.extend(Ext.Component,
 	{
 		/**
 		 * Method to be called for generate OpenLayers layer
@@ -710,6 +835,24 @@ PersistenceGeoParser.AbstractLoader =
 			PersistenceGeoParser.AbstractLoader.postFunctionsGroups(layerData, layer, layerTree);
 			PersistenceGeoParser.AbstractLoader.postFunctionsPermission(layerData, layer);
 			PersistenceGeoParser.AbstractLoader.postFunctionsStyle(layerData, layer);
+			PersistenceGeoParser.AbstractLoader.postFunctionsOrder(layerData, layer);
+			PersistenceGeoParser.AbstractLoader.postFunctionsVisibility(layerData, layer);
+		},
+		
+		postFunctionsVisibility: function (layerData, layer){
+			if(!!layerData.properties){
+				var visibility = layerData.properties.visibility ? this.toBoolean(layerData.properties.visibility) : false;
+				if(layer.visibility != visibility){
+					layer.setVisibility(visibility);
+				}
+			}
+		},
+		
+		postFunctionsOrder: function (layerData, layer){
+			if(!!layerData.properties
+					&& !!layerData.properties.order){
+				layer.order = layerData.properties.order;
+			}
 		},
 		
 		postFunctionsGroups: function (layerData, layer, layerTree){
@@ -832,4 +975,6 @@ PersistenceGeoParser.AbstractLoader =
 			}
 		}
 		
-};
+});
+
+PersistenceGeoParser.AbstractLoader = new PersistenceGeo.AbstractLoader();

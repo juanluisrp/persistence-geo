@@ -168,6 +168,65 @@ public class FoldersTest{
 		}
 	}
 	
+	@Test
+	public void testUpdateFolder() {
+		try{
+			UserDto user = createUser();
+			Assert.assertNotNull(user);
+			Assert.assertNotNull(user.getId());
+			Long idUser = user.getId();
+			FolderDto rootFolder = new FolderDto();
+			rootFolder.setName("root test");
+			rootFolder.setEnabled(true);
+			rootFolder.setIdUser(idUser);
+			rootFolder = foldersAdminService.saveFolder(rootFolder);
+			Assert.assertNotNull(rootFolder);
+			Assert.assertNotNull(rootFolder.getId());
+			Assert.assertEquals(rootFolder.getName(), "root test");
+			rootFolder = foldersAdminService.getRootFolder(idUser);
+			Assert.assertNotNull(rootFolder);
+			Assert.assertNotNull(rootFolder.getId());
+			Assert.assertEquals(rootFolder.getName(), "root test");
+			Assert.assertEquals(rootFolder.getIdUser(), idUser);
+			FolderDto folder = new FolderDto();
+			folder.setName("test");
+			folder.setEnabled(true);
+			folder.setIdParent(rootFolder.getId());
+			folder = foldersAdminService.saveFolder(folder);
+			Assert.assertNotNull(folder);
+			Assert.assertNotNull(folder.getId());
+			Assert.assertEquals(folder.getName(), "test");
+			FolderDto child = new FolderDto();
+			child.setName("test_child");
+			child.setEnabled(true);
+			child.setIdParent(rootFolder.getId());
+			child = foldersAdminService.saveFolder(child);
+			Assert.assertNotNull(child);
+			Assert.assertNotNull(child.getId());
+			Assert.assertEquals(child.getName(), "test_child");
+			Assert.assertEquals(rootFolder.getId(), child.getIdParent());
+			rootFolder = foldersAdminService.getRootFolder(idUser);
+			Assert.assertNotNull(rootFolder);
+			Assert.assertNotNull(rootFolder.getFolderList());
+			Assert.assertEquals(rootFolder.getFolderList().size(), 2);
+			// Update parent
+			FolderDto toUpdate = rootFolder.getFolderList().get(0);
+			toUpdate.setIdParent(rootFolder.getFolderList().get(1).getId());
+			child = (FolderDto) foldersAdminService.update(toUpdate);
+			rootFolder = foldersAdminService.getRootFolder(idUser);
+			Assert.assertNotNull(rootFolder);
+			Assert.assertNotNull(rootFolder.getFolderList());
+			Assert.assertEquals(rootFolder.getFolderList().size(), 1);
+			Assert.assertEquals(rootFolder.getFolderList().get(0).getId(), toUpdate.getIdParent());
+			Assert.assertNotNull(rootFolder.getFolderList().get(0).getFolderList());
+			Assert.assertEquals(rootFolder.getFolderList().get(0).getFolderList().size(), 1);
+			Assert.assertEquals(rootFolder.getFolderList().get(0).getFolderList().get(0).getId(), toUpdate.getId());
+		}catch (Exception e){
+			LOG.error(e);
+			Assert.fail();
+		}
+	}
+	
 	public UserDto createUser() {
 		try {
 			UserDto usuario = userAdminService.obtenerUsuario(testProperties.getProperty(PR_1_PARAM_1), testProperties.getProperty(PR_1_PARAM_1));

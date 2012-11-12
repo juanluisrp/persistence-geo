@@ -29,6 +29,7 @@
  */
 package com.emergya.persistenceGeo.service.impl;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,6 +47,7 @@ import com.emergya.persistenceGeo.dao.LayerEntityDao;
 import com.emergya.persistenceGeo.dao.UserEntityDao;
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
 import com.emergya.persistenceGeo.metaModel.Instancer;
 import com.emergya.persistenceGeo.service.FoldersAdminService;
 
@@ -108,18 +110,29 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			dto.setCreateDate(entity.getCreateDate());
 			dto.setId(entity.getId());
 			dto.setName(entity.getName());
+			dto.setOrder(entity.getFolderOrder());
 			
 			
 			//Children
 			List<AbstractFolderEntity> children = folderDao.getFolders(entity.getId());
 			if(children != null){
+				dto.setIsChannel(false);
 				List<FolderDto> subFolders = new LinkedList<FolderDto>();
 				for(AbstractFolderEntity child: children){
 					//Recursive case
 					subFolders.add(entityToDto(child));
 				}
 				dto.setFolderList(subFolders);
-			}//else: base case
+			}else{
+				// only is channel if have layers
+				List<AbstractLayerEntity> layers = layerDao.getLayersByFolder(entity.getId());
+				if(layers != null 
+						&& !layers.isEmpty()){
+					dto.setIsChannel(true);
+				}else{
+					dto.setIsChannel(false);
+				}
+			}
 			
 			//Parent
 			if(entity.getParent() != null
@@ -148,7 +161,7 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 		AbstractFolderEntity entity = null;
 		if(dto != null){
 			if(dto.getId() != null){
-				entity = folderDao.findById(dto.getId(), true);
+				entity = folderDao.findById(dto.getId(), false);
 			}else{
 				entity = instancer.createFolder();
 			}
@@ -157,6 +170,7 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			entity.setUpdateDate(dto.getUpdateDate());
 			entity.setCreateDate(dto.getCreateDate());
 			entity.setName(dto.getName());
+			entity.setFolderOrder(dto.getOrder());
 			
 			//TODO: Children if is necesary
 			
@@ -183,4 +197,32 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 	protected GenericDAO<AbstractFolderEntity, Long> getDao() {
 		return folderDao;
 	}
+
+	/**
+	 *	Remove children and layers before remove folder
+	 */
+	@Override
+	public void delete(Serializable dto) {
+		FolderDto folder = (FolderDto) dto;
+		
+		//Carcade remove
+		if(folder.getFolderList() != null){
+			// children remove
+			for(FolderDto child: folder.getFolderList()){
+				delete(child);
+			}
+		}else if(folder.getIsChannel() == true){
+			//Remove layers
+			List<AbstractLayerEntity> layers = layerDao.getLayersByFolder(folder.getId());
+			if(layers != null){
+				for (AbstractLayerEntity layer: layers){
+					layerDao.makeTransient(layer);
+				}
+			}
+		}
+		
+		super.delete(dto);
+	}
+	
+	
 }

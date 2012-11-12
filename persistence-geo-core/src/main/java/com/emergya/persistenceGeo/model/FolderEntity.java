@@ -77,6 +77,11 @@ public class FolderEntity extends AbstractFolderEntity {
 		return name;
 	}
 
+	@Column(name = "folderOrder")
+	public Integer getFolderOrder() {
+		return folderOrder;
+	}
+
 	@Column(name = "enabled")
 	public Boolean getEnabled() {
 		return enabled;
