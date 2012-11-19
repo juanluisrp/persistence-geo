@@ -112,4 +112,16 @@ public class ShpImporterImplTest extends ShpImporterImpl {
 
 	}
 
+	@Test
+	public void testImportAndReproject() {
+		boolean result = importer.importShpToDb(
+				"target/test-classes/ficheros/shapes/points_23030.shp",
+				"points_23030", true);
+		assertTrue("Couldn't import shp", result);
+		result = importer.importShpToDb(
+				"target/test-classes/ficheros/shapes/points_32719.shp",
+				"points_32719", true);
+		assertTrue("Couldn't import shp", result);
+	}
+
 }

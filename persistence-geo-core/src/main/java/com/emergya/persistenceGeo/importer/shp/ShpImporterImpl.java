@@ -56,8 +56,9 @@ public class ShpImporterImpl implements IShpImporter {
 	private static final String BASH_COMMAND = "bash";
 	private static final String BASH_COMMAND_FIRST_ARGUMENT = "-c";
 	private static final String DROP_TABLE_OPTION = "-d";
-	private static final String SHP2PGSQL_COMMAND = "shp2pgsql {0} -s {1} -g geom -k -i -I {2} "
-			+ "{3}.{4} | psql -h {5} -p {6} -d {7} -U {8}";
+	private static final String SHP2PGSQL_COMMAND = "shp2pgsql {0} -s {1}{2} -g geom -k -i -I {3} "
+			+ "{4}.{5} | psql -h {6} -p {7} -d {8} -U {9}";
+	private static final String GUESS_PROJECTION_COMMAND = "guessEPSG.py";
 
 	public ShpImporterImpl() {
 		checkForCommandLineUtils();
@@ -82,6 +83,15 @@ public class ShpImporterImpl implements IShpImporter {
 	 */
 	@Override
 	public boolean checkIfAllFilesExist(String folder, String filename) {
+		return checkForExtensions(folder, filename, EXTENSIONS_TO_CHECK);
+	}
+
+	private boolean checkIfPrjFileExist(String folder, String filename) {
+		return checkForExtensions(folder, filename, new String[] { ".shp" });
+	}
+
+	private boolean checkForExtensions(String folder, String filename,
+			String[] extensions) {
 		String basename = folder;
 		if (!folder.endsWith(File.separator)) {
 			basename += File.separator;
@@ -92,7 +102,7 @@ public class ShpImporterImpl implements IShpImporter {
 			return false;
 		}
 		// Look for mandatory files.
-		for (String extension : EXTENSIONS_TO_CHECK) {
+		for (String extension : extensions) {
 			File file = new File(basename + filename + extension);
 			if (!file.exists() || !file.canRead() || !file.isFile()) {
 				LOG.info("SHP verificacion return false. File "
@@ -106,11 +116,17 @@ public class ShpImporterImpl implements IShpImporter {
 
 	/*
 	 * (non-Javadoc)
-	 * @see com.emergya.persistenceGeo.importer.shp.IShpImporter#importShpToDb(java.lang.String, java.lang.String, boolean)
+	 * 
+	 * @see
+	 * com.emergya.persistenceGeo.importer.shp.IShpImporter#importShpToDb(java
+	 * .lang.String, java.lang.String, boolean)
 	 */
 	@Override
-	public boolean importShpToDb(String pathToShp, String tableName, boolean dropExistingTable) {
+	public boolean importShpToDb(String pathToShp, String tableName,
+			boolean dropExistingTable) {
 		boolean result = true;
+		String srcProjection = "";
+		Runtime rt = Runtime.getRuntime();
 		if (pathToShp == null || !pathToShp.endsWith(".shp")) {
 			throw new IllegalArgumentException(
 					"pathToShp does not end with .shp");
@@ -124,21 +140,66 @@ public class ShpImporterImpl implements IShpImporter {
 			throw new ShpImporterException(
 					"Not all mandatory shape file components could be found");
 		}
+
+		// If exists a .prj file try to guess the EPSG code. If not code found
+		// defaults to EPSG:4326
+		if (checkIfPrjFileExist(path, file)) {
+			String prjPath = pathToShp.substring(0, pathToShp.lastIndexOf('.'))
+					+ ".prj";
+			try {
+				Process proc = rt.exec(new String[] { GUESS_PROJECTION_COMMAND,
+						prjPath });
+				BufferedReader standarStream = new BufferedReader(
+						new InputStreamReader(proc.getInputStream()));
+
+				int projStatus = proc.waitFor();
+				String line;
+				if (projStatus == 0) {
+					while ((line = standarStream.readLine()) != null) {
+						if (!"EPSG:-1".equals(line)) {
+							srcProjection = line.split(":")[1] + ":";
+						}
+					}
+				} else {
+					if (LOG.isWarnEnabled()) {
+						LOG.warn(GUESS_PROJECTION_COMMAND + " return code was "
+								+ projStatus);
+					}
+					if (LOG.isDebugEnabled()) {
+						BufferedReader errorStream = new BufferedReader(
+								new InputStreamReader(proc.getErrorStream()));
+						while ((line = errorStream.readLine()) != null) {
+							LOG.debug(GUESS_PROJECTION_COMMAND + ": " + line);
+						}
+					}
+
+				}
+
+			} catch (IOException e) {
+				if (LOG.isErrorEnabled()) {
+					LOG.error("guessEPSG.py not found. Please put this file "
+							+ " in the path");
+				}
+			} catch (InterruptedException e) {
+				LOG.error(GUESS_PROJECTION_COMMAND + " thread interrupted", e);
+			}
+
+		}
+
 		File shp = new File(pathToShp);
 		String dropTableParameter = "";
 		if (dropExistingTable) {
 			dropTableParameter = DROP_TABLE_OPTION;
 		}
 
-		String command = MessageFormat.format(SHP2PGSQL_COMMAND, dropTableParameter,
-				dbConfig.getDestSrid(), shp.getAbsolutePath(),
-				dbConfig.getSchema(), tableName, dbConfig.getPostgresHost(),
-				dbConfig.getPostgresPort(), dbConfig.getDatabaseName(),
-				dbConfig.getPostgresUser());
+		String command = MessageFormat.format(SHP2PGSQL_COMMAND,
+				dropTableParameter, srcProjection, dbConfig.getDestSrid(),
+				shp.getAbsolutePath(), dbConfig.getSchema(), tableName,
+				dbConfig.getPostgresHost(), dbConfig.getPostgresPort(),
+				dbConfig.getDatabaseName(), dbConfig.getPostgresUser());
 		if (LOG.isDebugEnabled()) {
 			LOG.debug("SHPIMPORTER Command: " + command);
 		}
-		Runtime rt = Runtime.getRuntime();
 		try {
 			Process proc = rt.exec(
 					new String[] { BASH_COMMAND, BASH_COMMAND_FIRST_ARGUMENT,
