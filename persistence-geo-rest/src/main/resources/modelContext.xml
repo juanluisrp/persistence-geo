@@ -20,6 +20,7 @@
             </list>
         </property>
     </bean>
+
     
     <!-- ============================== -->
     <!-- ==========  DAO layer ======== -->
@@ -36,9 +37,8 @@
 		<property name="url" value="${database.jdbc.url}" />
 		<property name="username" value="${database.jdbc.user}" />
 		<property name="password" value="${database.jdbc.password}" />
-        <property name="initialSize" value="10" />
-        <property name="maxActive" value="5" />
-        <property name="maxWait" value="5000" />
+		<property name="removeAbandonedTimeout" value="1" />
+		<property name="removeAbandoned" value="true" />
 	</bean>
     <bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
         <property name="sessionFactory" ref="sessionFactory"/>
@@ -47,7 +47,7 @@
         <property name="dataSource" ref="dataSourceHibernate"/>
         <property name="packagesToScan">
         	<list>
-                <value>com.emergya</value>
+                <value>com.emergya.persistenceGeo.model</value>
             </list>
         </property>
         <property name="hibernateProperties">

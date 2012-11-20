@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.emergya</groupId>
 	    <artifactId>persistence-geo</artifactId>
-	    <version>1.1-SNAPSHOT</version>
+	    <version>1.1</version>
     </parent>
 
 	<artifactId>persistence-geo-core</artifactId>
@@ -65,9 +65,9 @@
 
 	<!-- Environment Information -->
 	<scm>
-		<connection>scm:svn:http://svn.emergya.es/svn/sirdelgore</connection>
-		<developerConnection>scm:svn:http://svn.emergya.es/svn/sirdelgore</developerConnection>
-		<url>http://svn.emergya.es/svn/sirdelgore</url>
+		<connection>scm:svn:http://svn.emergya.es/svn/sirdelgore/tags/persistence-geo-1.1/sirdelgore</connection>
+		<developerConnection>scm:svn:http://svn.emergya.es/svn/sirdelgore/tags/persistence-geo-1.1/sirdelgore</developerConnection>
+		<url>http://svn.emergya.es/svn/sirdelgore/tags/persistence-geo-1.1/sirdelgore</url>
 	</scm>
 
 
