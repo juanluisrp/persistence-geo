@@ -64,9 +64,9 @@
 
     <!-- Environment Information -->
     <scm>
-        <connection>scm:git:git@github.com:Emergya/persistence-geo.git</connection>
-        <developerConnection>scm:git:git@github.com:Emergya/persistence-geo.git</developerConnection>
-        <url>scm:git:git@github.com:Emergya/persistence-geo.git</url>
+        <connection>scm:git:git@github.com:juanluisrp/persistence-geo.git</connection>
+        <developerConnection>scm:git:git@github.com:juanluisrp/persistence-geo.git</developerConnection>
+        <url>scm:git:git@github.com:juanluisrp/persistence-geo.git</url>
     </scm>
 
 
@@ -131,4 +131,58 @@
         <module>persistence-geo-core</module>
         <module>persistence-geo-rest</module>
     </modules>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.1</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>create</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <shortRevisionLength>8</shortRevisionLength>
+                        <doCheck>false</doCheck>
+                        <doUpdate>false</doUpdate>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Implementation-Build>${buildNumber}</Implementation-Build>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>2.3</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Implementation-Build>${buildNumber}</Implementation-Build>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
