@@ -28,7 +28,8 @@
  */
 package com.emergya.persistenceGeo.importer.shp;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,7 +40,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.emergya.persistenceGeo.exceptions.ShpImporterException;
-import com.emergya.persistenceGeo.utils.GeographicDatabaseConfiguration;
 
 /**
  * @author <a href="mailto:jlrodriguez@emergya.com">jlrodriguez</a>
@@ -47,7 +47,7 @@ import com.emergya.persistenceGeo.utils.GeographicDatabaseConfiguration;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:shpTestContext.xml" })
-public class ShpImporterImplTest extends ShpImporterImpl {
+public class ShpImporterImplTest {
 
 	@Rule
 	public ExpectedException thrown = ExpectedException.none();

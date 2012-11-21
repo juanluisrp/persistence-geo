@@ -67,7 +67,7 @@ public class ShpImporterImpl implements IShpImporter {
 	@Autowired(required = false)
 	private DataSource dataSource;
 
-	@Autowired
+	@Autowired(required = false)
 	private GeographicDatabaseConfiguration dbConfig;
 
 	public void setDbConfig(GeographicDatabaseConfiguration config) {

@@ -28,7 +28,7 @@
  */
 package com.emergya.persistenceGeo.dbutils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,19 +38,13 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.emergya.persistenceGeo.exceptions.DbUtilsException;
 
 /**
  * @author <a href="mailto:jlrodriguez@emergya.com">jlrodriguez</a>
@@ -64,7 +58,6 @@ public class DatabaseUtilsImplTest {
 	private IDatabaseUtils dbUtils;
 	@Autowired
 	private DataSource ds;
-	private boolean created = false;
 
 	@Before
 	public void init() throws SQLException {
@@ -123,16 +116,6 @@ public class DatabaseUtilsImplTest {
 			assertEquals("Wrong new column name found", "NEW_COL" + (i + 1),
 					newNames.get(i).toUpperCase());
 		}
-	}
-	
-	@Test(expected=DbUtilsException.class)
-	public final void testClashColumns() {
-		Map<String, String> columns = new HashMap<String, String>();
-		columns.put("COL1", "NEW_COL1");
-		columns.put("COL2", "COL2");
-		columns.put("COL3", "NEW_COL3");
-
-		dbUtils.changeColumnNames("test_table", columns);
 	}
 
 }
