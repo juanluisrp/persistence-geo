@@ -69,4 +69,19 @@ public abstract class AbstractLayerPropertyEntity extends AbstractEntity {
 		this.value = value;
 	}
 
+	/** 
+	 * Clone an entity. Reset id
+	 * 
+	 * @see java.lang.Object#clone()
+	 */
+	public Object clone() throws CloneNotSupportedException {
+		AbstractLayerPropertyEntity result = (AbstractLayerPropertyEntity) super.clone();
+		
+		result.id = null; // id null
+		result.name = this.getName() != null ? new String(this.name) : null;
+		result.value = this.getValue() != null ? new String(this.value) : null;	
+				
+		return result;
+	}
+
 }
