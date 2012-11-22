@@ -114,9 +114,11 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			for(FolderDto child: folder.getFolderList()){
 				delete(child);
 			}
-		}else if(folder.getIsChannel() == true){
-			//Remove layers
-			List<AbstractLayerEntity> layers = layerDao.getLayersByFolder(folder.getId());
+		}
+
+		//Remove layers
+		List<AbstractLayerEntity> layers = layerDao.getLayersByFolder(folder.getId());
+		if(layers != null){
 			if(layers != null){
 				for (AbstractLayerEntity layer: layers){
 					layerDao.makeTransient(layer);
@@ -134,12 +136,14 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 	 * @param targetUserId target user's <code>id</code>
 	 * @param merge indicate if target user folders must be maintained
 	 */
+	@Transactional
 	public FolderDto copyUserContext(Long originUserId, Long targetUserId, boolean merge){
+		FolderDto toCopy = getRootFolder(originUserId);
 		if(!merge){
 			deleteUserContext(targetUserId);
 		}
 		// copy root folder
-		return copyFolder(targetUserId, getRootFolder(originUserId));
+		return copyFolder(targetUserId, toCopy);
 	}
 	
 	/**
@@ -213,6 +217,7 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			return entityToDto(folderDao.findById(result.getId(), false));
 			
 		}catch (Exception e){
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -232,7 +237,8 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			
 			//Children
 			List<AbstractFolderEntity> children = folderDao.getFolders(entity.getId());
-			if(children != null){
+			if(children != null 
+					&&  !children.isEmpty()){
 				dto.setIsChannel(false);
 				List<FolderDto> subFolders = new LinkedList<FolderDto>();
 				for(AbstractFolderEntity child: children){

@@ -28,7 +28,9 @@ package com.emergya.persistenceGeo.service.impl;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
@@ -113,6 +115,32 @@ public class CloneUserContextTest{
 		}
 	}
 	
+	@Test
+	public void testCloneUserContextLayerNotEmpty() {
+		try{
+			UserDto user = createUser();
+			Assert.assertNotNull(user);
+			Assert.assertNotNull(user.getId());
+			createFolder(user);
+			UserDto userTarget = createUser();
+			Assert.assertNotNull(userTarget);
+			Assert.assertNotNull(userTarget.getId());
+			Assert.assertFalse(userTarget.getId().equals(user.getId()));
+			createFolder(userTarget);
+			FolderDto originFolder = foldersAdminService.getRootFolder(user.getId());
+			Assert.assertNotNull(originFolder.getFolderList());
+			FolderDto rootFolder = foldersAdminService.getRootFolder(userTarget.getId());
+			Assert.assertNotNull(rootFolder);
+			Assert.assertNotNull(originFolder);
+			rootFolder = foldersAdminService.copyUserContext(user.getId(), userTarget.getId(), false);
+			AssertCloned(originFolder, rootFolder);
+		}catch (Exception e){
+			e.printStackTrace();
+			LOG.error(e);
+			Assert.fail();
+		}
+	}
+	
 	private void AssertCloned(FolderDto originFolder, FolderDto folderCloned){
 		// id not equals and folder size
 		Assert.assertNotNull(folderCloned);
@@ -173,47 +201,47 @@ public class CloneUserContextTest{
 		try{
 			Long idUser = user.getId();
 			FolderDto rootFolder = new FolderDto();
-			rootFolder.setName("root test");
+			rootFolder.setName(nextRandomName("root test"));
 			rootFolder.setEnabled(true);
 			rootFolder.setIdUser(idUser);
 			rootFolder = foldersAdminService.saveFolder(rootFolder);
 			Assert.assertNotNull(rootFolder);
 			Assert.assertNotNull(rootFolder.getId());
-			Assert.assertEquals(rootFolder.getName(), "root test");
+			Assert.assertEquals(rootFolder.getName(), actualRandomName("root test"));
 			rootFolder = foldersAdminService.getRootFolder(idUser);
 			Assert.assertNotNull(rootFolder);
 			Assert.assertNotNull(rootFolder.getId());
-			Assert.assertEquals(rootFolder.getName(), "root test");
+			Assert.assertEquals(rootFolder.getName(), actualRandomName("root test"));
 			Assert.assertEquals(rootFolder.getIdUser(), idUser);
 			FolderDto folder = new FolderDto();
-			folder.setName("test");
+			folder.setName(nextRandomName("test"));
 			folder.setEnabled(true);
 			folder.setIdParent(rootFolder.getId());
 			folder = foldersAdminService.saveFolder(folder);
 			Assert.assertNotNull(folder);
 			Assert.assertNotNull(folder.getId());
-			Assert.assertEquals(folder.getName(), "test");
+			Assert.assertEquals(folder.getName(), actualRandomName("test"));
 			FolderDto child = new FolderDto();
-			child.setName("test_child");
+			child.setName(nextRandomName("test_child"));
 			child.setEnabled(true);
 			child.setIdParent(rootFolder.getId());
 			child = foldersAdminService.saveFolder(child);
 			Assert.assertNotNull(child);
 			Assert.assertNotNull(child.getId());
-			Assert.assertEquals(child.getName(), "test_child");
+			Assert.assertEquals(child.getName(), actualRandomName("test_child"));
 			Assert.assertEquals(rootFolder.getId(), child.getIdParent());
 			rootFolder = foldersAdminService.getRootFolder(idUser);
 			Assert.assertNotNull(rootFolder);
 			Assert.assertNotNull(rootFolder.getFolderList());
 			Assert.assertEquals(rootFolder.getFolderList().size(), 2);
 			LayerDto layer = new LayerDto();
-			layer.setName(PR_2_LAYER_NAME);
+			layer.setName(nextRandomName(PR_2_LAYER_NAME));
 			layer.setType(LayerAdminService.TYPE_KML);
 			layer.setData(new File(PR_2_LAYER_DATA));
 			layer.setType("KML");
 			layer.setFolderId(child.getId());
 			layer = (LayerDto) layerAdminService.create(layer);
-			List<LayerDto> layers = layerAdminService.getLayersByName(PR_2_LAYER_NAME);
+			List<LayerDto> layers = layerAdminService.getLayersByName(actualRandomName(PR_2_LAYER_NAME));
 			Assert.assertNotNull(layers);
 			Assert.assertEquals(layers.size(), 1);
 			Assert.assertEquals(layers.get(0).getId(), layer.getId());
@@ -222,8 +250,6 @@ public class CloneUserContextTest{
 			Assert.fail();
 		}
 	}
-	
-	private Random random = new Random();
 	
 	public UserDto createUser() {
 		try {
@@ -236,6 +262,19 @@ public class CloneUserContextTest{
 			Assert.fail();
 		}
 		return null;
+	}
+	
+	private static Random random = new Random();
+	private static Map<String, String> actualRandomNames = new HashMap<String, String>();
+	
+	private static String nextRandomName(String name){
+		String value = name + random.nextInt();
+		actualRandomNames.put(name, value);
+		return value;
+	}
+	
+	private static String actualRandomName(String name){
+		return actualRandomNames.get(name);
 	}
 
 }

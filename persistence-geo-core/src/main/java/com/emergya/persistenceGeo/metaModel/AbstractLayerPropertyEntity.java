@@ -35,7 +35,7 @@ package com.emergya.persistenceGeo.metaModel;
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
-public abstract class AbstractLayerPropertyEntity extends AbstractEntity {
+public abstract class AbstractLayerPropertyEntity extends AbstractEntity implements Cloneable {
 	
 	/**
 	 * 
