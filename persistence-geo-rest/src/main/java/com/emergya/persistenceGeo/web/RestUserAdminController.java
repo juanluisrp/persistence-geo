@@ -170,6 +170,18 @@ public class RestUserAdminController implements Serializable{
 		return checkAndCreateAuth(userGroup, userZone);
 	}
 	
+	private static String SUPERADMIN_AUTH = "SUPERADMIN";
+	private static String AUTH_WITHOUT_ZONE = "NO_ZONE";
+	private static String AUTH_WITH_ZONE = "ZONE_AUTHS";
+	private static Map<String, Long> DEFAULT_AUTH_TREE;
+	
+	static{
+		DEFAULT_AUTH_TREE = new HashMap<String, Long>();
+		DEFAULT_AUTH_TREE.put(SUPERADMIN_AUTH, new Long(1));
+		DEFAULT_AUTH_TREE.put(AUTH_WITHOUT_ZONE, new Long(2));
+		DEFAULT_AUTH_TREE.put(AUTH_WITH_ZONE, new Long(3));
+	}
+	
 	private AuthorityDto checkAndCreateAuth(String name, String zone){
 		AuthorityDto dto = null;
 		List<AuthorityDto> groups = (List<AuthorityDto>) userAdminService.obtenerGruposUsuarios();
@@ -189,8 +201,10 @@ public class RestUserAdminController implements Serializable{
 			dto = new AuthorityDto();
 			dto.setNombre(name);
 			dto.setZone(zone);
+			dto.setParentId(DEFAULT_AUTH_TREE.get(AUTH_WITHOUT_ZONE));
 			if(zone != null){
 				dto.setNombre(name + "_" + zone);
+				dto.setParentId(DEFAULT_AUTH_TREE.get(AUTH_WITH_ZONE));
 			}
 			dto.setId(userAdminService.crearGrupoUsuarios(dto));
 		}

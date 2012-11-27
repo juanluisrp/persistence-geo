@@ -59,7 +59,8 @@ public abstract class AbstractAuthorityEntity extends AbstractEntity{
 	protected AbstractAuthorityTypeEntity authType;
 	protected List layerList;
 	protected AbstractZoneEntity zone;
-
+	protected AbstractAuthorityEntity parent;
+	
 	/**
 	 * Getters methods to map this entity
 	 */
@@ -71,6 +72,7 @@ public abstract class AbstractAuthorityEntity extends AbstractEntity{
 	public abstract AbstractAuthorityTypeEntity getAuthType();
 	public abstract List getLayerList();
 	public abstract AbstractZoneEntity getZone();
+	public abstract AbstractAuthorityEntity getParent();
 
     public AbstractAuthorityEntity() {
     }
@@ -109,6 +111,10 @@ public abstract class AbstractAuthorityEntity extends AbstractEntity{
 
 	public void setZone(AbstractZoneEntity zone) {
 		this.zone = zone;
+	}
+
+	public void setParent(AbstractAuthorityEntity parent) {
+		this.parent = parent;
 	}
 
 }

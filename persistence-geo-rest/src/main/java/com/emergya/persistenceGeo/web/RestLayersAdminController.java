@@ -63,7 +63,6 @@ import com.emergya.persistenceGeo.dto.SimplePropertyDto;
 import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.service.LayerAdminService;
 import com.emergya.persistenceGeo.service.MapConfigurationAdminService;
-import com.emergya.persistenceGeo.service.UserAdminService;
 
 /**
  * Rest controller to admin and load layer and layers context
@@ -71,15 +70,13 @@ import com.emergya.persistenceGeo.service.UserAdminService;
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  */
 @Controller
-public class RestLayersAdminController implements Serializable{
+public class RestLayersAdminController extends RestPersistenceGeoController
+		implements Serializable {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3028127910300105478L;
-	
-	@Resource
-	private UserAdminService userAdminService;
 	@Resource
 	private LayerAdminService layerAdminService;
 	@Resource
@@ -87,10 +84,6 @@ public class RestLayersAdminController implements Serializable{
 	
 	private Map<Long, File> loadedLayers = new ConcurrentHashMap<Long, File>();
 	private Map<Long, File> loadFiles = new ConcurrentHashMap<Long, File>();
-	
-	protected final String RESULTS= "results";
-	protected final String ROOT= "data";
-	protected final String SUCCESS= "success";
 
 	public static final String LOAD_FOLDERS_BY_USER = "user";
 	public static final String LOAD_FOLDERS_BY_GROUP = "group";
@@ -217,19 +210,15 @@ public class RestLayersAdminController implements Serializable{
 	 * @return JSON file with layers
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/persistenceGeo/loadLayersByGroup/{groupId}", method = RequestMethod.GET, 
+	@RequestMapping(value = "/persistenceGeo/loadLayersByGroup/{groupId}", 
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody
 	Map<String, Object> loadLayersByGroup(@PathVariable String groupId){
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<LayerDto> layers = null;
 		try{
-			/*
-			//TODO: Secure with logged user
-			String username = ((UserDetails) SecurityContextHolder.getContext()
-					.getAuthentication().getPrincipal()).getUsername(); 
-			 */
-			if(groupId != null){
+			if(groupId != null 
+					&& canAccess(Long.decode(groupId))){
 				layers = layerAdminService.getLayersByAuthority(Long.decode(groupId));
 			}else{
 				layers = ListUtils.EMPTY_LIST;

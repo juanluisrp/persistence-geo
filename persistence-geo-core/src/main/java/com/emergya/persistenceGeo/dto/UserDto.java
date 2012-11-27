@@ -60,7 +60,14 @@ public class UserDto implements Serializable {
     
     //private List<String> grupos;
     private String authority;
+    private Long authorityId;
 	
+	public Long getAuthorityId() {
+		return authorityId;
+	}
+	public void setAuthorityId(Long authorityId) {
+		this.authorityId = authorityId;
+	}
 	public Long getId() {
 		return id;
 	}

@@ -442,6 +442,18 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		return (List<LayerDto>) entitiesToDtos(layerDao.findByAuthorityId(id));
 	}
 
+	/**
+	 * Get a layer list by authority id
+	 * 
+	 * @param layerName
+	 * @param isChannel indicates if layers can be channel layers 
+	 * 
+	 * @return list
+	 */
+	public List<LayerDto> getLayersByAuthority(Long id, Boolean isChannel){
+		return (List<LayerDto>) entitiesToDtos(layerDao.findByAuthorityId(id, isChannel));
+	}
+
 	@Override
 	@Cacheable("persistenceGeo")
 	public List<String> getAllLayerTypes() {
