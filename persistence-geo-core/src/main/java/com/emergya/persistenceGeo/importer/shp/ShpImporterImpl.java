@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 
+import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.apache.commons.logging.Log;
@@ -59,9 +60,15 @@ public class ShpImporterImpl implements IShpImporter {
 	private static final String SHP2PGSQL_COMMAND = "shp2pgsql {0} -s {1}{2} -g geom -k -i -I {3} "
 			+ "{4}.{5} | psql -h {6} -p {7} -d {8} -U {9}";
 	private static final String GUESS_PROJECTION_COMMAND = "guessEPSG.py";
+	
+	@Resource
+	private Boolean checkForCommandLine; 
 
 	public ShpImporterImpl() {
-		checkForCommandLineUtils();
+		if(checkForCommandLine != null
+				&& checkForCommandLine){
+			checkForCommandLineUtils();
+		}
 	}
 
 	@Autowired(required = false)
