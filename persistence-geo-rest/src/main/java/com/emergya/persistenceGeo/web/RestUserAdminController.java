@@ -38,6 +38,9 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,6 +81,10 @@ public class RestUserAdminController implements Serializable{
 	
 	@Resource
 	private FoldersAdminService foldersAdminService;
+	
+	protected final String RESULTS= "results";
+	protected final String ROOT= "data";
+	protected final String SUCCESS= "success";
 
 	@RequestMapping(value = "/persistenceGeo/admin/createUser", method = RequestMethod.POST)
 	public @ResponseBody
@@ -190,9 +197,6 @@ public class RestUserAdminController implements Serializable{
 		return dto;
 	}
 	
-	protected final String RESULTS= "results";
-	protected final String ROOT= "data";
-	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/persistenceGeo/getAllUsers", method = RequestMethod.GET)
 	public @ResponseBody
@@ -248,6 +252,36 @@ public class RestUserAdminController implements Serializable{
 		result.put(RESULTS, zones != null ? zones.size() : 0);
 		result.put(ROOT, zones != null ? zones : ListUtils.EMPTY_LIST);
 		
+		return result;
+	}
+	
+	/**
+	 * Obtain user logged info
+	 *
+	 * @return json with user info or null if is not logged 
+	 */
+	@RequestMapping(value = "/persistenceGeo/getUserInfo", method = RequestMethod.POST, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> getUserInfo(){
+		Map<String, Object> result = new HashMap<String, Object>();
+		UserDto user = null;
+		try{
+			// Secure with logged user
+			String userLogged = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername();
+			if(userLogged != null){
+				user = userAdminService.obtenerUsuario(userLogged);
+			}
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, user != null ? 1: 0);
+		result.put(ROOT, user);
+
 		return result;
 	}
 
