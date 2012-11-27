@@ -260,7 +260,7 @@ public class RestUserAdminController implements Serializable{
 	 *
 	 * @return json with user info or null if is not logged 
 	 */
-	@RequestMapping(value = "/persistenceGeo/getUserInfo", method = RequestMethod.POST, 
+	@RequestMapping(value = "/persistenceGeo/getUserInfo", 
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody
 	Map<String, Object> getUserInfo(){
