@@ -38,6 +38,9 @@ import javax.annotation.Resource;
 
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -78,6 +81,10 @@ public class RestUserAdminController implements Serializable{
 	
 	@Resource
 	private FoldersAdminService foldersAdminService;
+	
+	protected final String RESULTS= "results";
+	protected final String ROOT= "data";
+	protected final String SUCCESS= "success";
 
 	@RequestMapping(value = "/persistenceGeo/admin/createUser", method = RequestMethod.POST)
 	public @ResponseBody
@@ -163,6 +170,18 @@ public class RestUserAdminController implements Serializable{
 		return checkAndCreateAuth(userGroup, userZone);
 	}
 	
+	private static String SUPERADMIN_AUTH = "SUPERADMIN";
+	private static String AUTH_WITHOUT_ZONE = "NO_ZONE";
+	private static String AUTH_WITH_ZONE = "ZONE_AUTHS";
+	private static Map<String, Long> DEFAULT_AUTH_TREE;
+	
+	static{
+		DEFAULT_AUTH_TREE = new HashMap<String, Long>();
+		DEFAULT_AUTH_TREE.put(SUPERADMIN_AUTH, new Long(1));
+		DEFAULT_AUTH_TREE.put(AUTH_WITHOUT_ZONE, new Long(2));
+		DEFAULT_AUTH_TREE.put(AUTH_WITH_ZONE, new Long(3));
+	}
+	
 	private AuthorityDto checkAndCreateAuth(String name, String zone){
 		AuthorityDto dto = null;
 		List<AuthorityDto> groups = (List<AuthorityDto>) userAdminService.obtenerGruposUsuarios();
@@ -182,16 +201,15 @@ public class RestUserAdminController implements Serializable{
 			dto = new AuthorityDto();
 			dto.setNombre(name);
 			dto.setZone(zone);
+			dto.setParentId(DEFAULT_AUTH_TREE.get(AUTH_WITHOUT_ZONE));
 			if(zone != null){
 				dto.setNombre(name + "_" + zone);
+				dto.setParentId(DEFAULT_AUTH_TREE.get(AUTH_WITH_ZONE));
 			}
 			dto.setId(userAdminService.crearGrupoUsuarios(dto));
 		}
 		return dto;
 	}
-	
-	protected final String RESULTS= "results";
-	protected final String ROOT= "data";
 	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/persistenceGeo/getAllUsers", method = RequestMethod.GET)
@@ -248,6 +266,36 @@ public class RestUserAdminController implements Serializable{
 		result.put(RESULTS, zones != null ? zones.size() : 0);
 		result.put(ROOT, zones != null ? zones : ListUtils.EMPTY_LIST);
 		
+		return result;
+	}
+	
+	/**
+	 * Obtain user logged info
+	 *
+	 * @return json with user info or null if is not logged 
+	 */
+	@RequestMapping(value = "/persistenceGeo/getUserInfo", 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> getUserInfo(){
+		Map<String, Object> result = new HashMap<String, Object>();
+		UserDto user = null;
+		try{
+			// Secure with logged user
+			String userLogged = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername();
+			if(userLogged != null){
+				user = userAdminService.obtenerUsuario(userLogged);
+			}
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, user != null ? 1: 0);
+		result.put(ROOT, user);
+
 		return result;
 	}
 

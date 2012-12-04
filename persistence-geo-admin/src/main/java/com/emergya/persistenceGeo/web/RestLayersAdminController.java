@@ -63,7 +63,6 @@ import com.emergya.persistenceGeo.dto.SimplePropertyDto;
 import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.service.LayerAdminService;
 import com.emergya.persistenceGeo.service.MapConfigurationAdminService;
-import com.emergya.persistenceGeo.service.UserAdminService;
 
 /**
  * Rest controller to admin and load layer and layers context
@@ -71,15 +70,13 @@ import com.emergya.persistenceGeo.service.UserAdminService;
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  */
 @Controller
-public class RestLayersAdminController implements Serializable{
+public class RestLayersAdminController extends RestPersistenceGeoController
+		implements Serializable {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3028127910300105478L;
-	
-	@Resource
-	private UserAdminService userAdminService;
 	@Resource
 	private LayerAdminService layerAdminService;
 	@Resource
@@ -87,10 +84,6 @@ public class RestLayersAdminController implements Serializable{
 	
 	private Map<Long, File> loadedLayers = new ConcurrentHashMap<Long, File>();
 	private Map<Long, File> loadFiles = new ConcurrentHashMap<Long, File>();
-	
-	protected final String RESULTS= "results";
-	protected final String ROOT= "data";
-	protected final String SUCCESS= "success";
 
 	public static final String LOAD_FOLDERS_BY_USER = "user";
 	public static final String LOAD_FOLDERS_BY_GROUP = "group";
@@ -217,19 +210,15 @@ public class RestLayersAdminController implements Serializable{
 	 * @return JSON file with layers
 	 */
 	@SuppressWarnings("unchecked")
-	@RequestMapping(value = "/persistenceGeo/loadLayersByGroup/{groupId}", method = RequestMethod.GET, 
+	@RequestMapping(value = "/persistenceGeo/loadLayersByGroup/{groupId}", 
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody
 	Map<String, Object> loadLayersByGroup(@PathVariable String groupId){
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<LayerDto> layers = null;
 		try{
-			/*
-			//TODO: Secure with logged user
-			String username = ((UserDetails) SecurityContextHolder.getContext()
-					.getAuthentication().getPrincipal()).getUsername(); 
-			 */
-			if(groupId != null){
+			if(groupId != null 
+					&& canAccess(Long.decode(groupId))){
 				layers = layerAdminService.getLayersByAuthority(Long.decode(groupId));
 			}else{
 				layers = ListUtils.EMPTY_LIST;
@@ -694,57 +683,65 @@ public class RestLayersAdminController implements Serializable{
 	private LayerDto copyDataToLayer(String name, String type,
 			String properties, String enabled, String order_layer,
 			String is_channel, String publicized, String server_resource,
-			String idFile, LayerDto layer, String folderId, boolean update) {
-		// Add request parameter
-				layer.setName(name);
-				layer.setType(type);
-				layer.setServer_resource(server_resource);
-				layer.setEnabled(enabled != null ? enabled.toLowerCase().equals("true")
-						: false);
-				layer.setOrder(order_layer);
-				layer.setPertenece_a_canal(is_channel != null ? is_channel
-						.toLowerCase().equals("true") : false);
-				layer.setPublicized(publicized != null ? publicized.toLowerCase()
-						.equals("true") : false);
-				//Folder id
-				if(!StringUtils.isEmpty(folderId) 
-						&& StringUtils.isNumeric(folderId)){
-					layer.setFolderId(Long.decode(folderId));
-				}
+			String idFile, LayerDto layer, String folderId, Boolean update) {
+			// Add request parameter
+			layer.setName(name);
+			layer.setType(type);
+			layer.setServer_resource(server_resource);
+			layer.setEnabled(enabled != null ? enabled.toLowerCase().equals("true")
+					: false);
+			layer.setOrder(order_layer);
+			layer.setPertenece_a_canal(is_channel != null ? is_channel
+					.toLowerCase().equals("true") : false);
+			layer.setPublicized(publicized != null ? publicized.toLowerCase()
+					.equals("true") : false);
+			//Folder id
+			if(!StringUtils.isEmpty(folderId) 
+					&& StringUtils.isNumeric(folderId)){
+				layer.setFolderId(Long.decode(folderId));
+			}
 
-				// Layer properties
-				if (properties != null) {
-					layer.setProperties(getMapFromString(properties));
+			// Layer properties
+			if (properties != null) {
+				layer.setProperties(getMapFromString(properties));
+			}
+			
+			//Only if a file has been saved
+			if(idFile != null){
+				File temp = loadFiles.get(Long.decode(idFile));
+				// Layer data
+				if (temp != null) {
+					layer.setData(temp);
 				}
-				
-				//Only if a file has been saved
-				if(idFile != null){
-					File temp = loadFiles.get(Long.decode(idFile));
-					// Layer data
-					if (temp != null) {
-						layer.setData(temp);
-					}
-				}
+			}
 
-				// Save the layer
+			// Save the layer
+			if(update != null){
 				if(update){
-					layer = (LayerDto) layerAdminService.update(layer);
+					layer = (LayerDto) layerAdminService.update(layer);	
 				}else{
 					layer = (LayerDto) layerAdminService.create(layer);
 				}
-				
-				if(layer.getId() != null && layer.getData() != null){
-					loadedLayers.put(layer.getId(), layer.getData());
-					layer.setData(null);
-					layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
-				}
-				
-				if(idFile != null 
-						&& loadFiles.containsKey(idFile)){
-					loadFiles.remove(idFile);
-				}
-				
-				return layer;
+			}else{
+				// temp layer
+				loadedLayers.put(Long.decode(idFile), layer.getData());
+				layer.setData(null);
+				layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+idFile);
+			}
+			
+			if(layer.getId() != null && layer.getData() != null){
+				// 
+				loadedLayers.put(layer.getId(), layer.getData());
+				layer.setData(null);
+				layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
+			}
+			
+			if(idFile != null 
+					&& loadFiles.containsKey(idFile)){
+				loadFiles.remove(idFile);
+			}
+			
+			return layer;
 	}
 
 	/**
@@ -858,6 +855,42 @@ public class RestLayersAdminController implements Serializable{
 			result.put(SUCCESS, false);
 			result.put(ROOT, "No se ha podido borrar la capa");
 		}
+		return result;
+	}
+
+	/**
+	 * This method save a temp layer
+	 * 
+	 * @return JSON file layer information
+	 */
+	@RequestMapping(value = "/persistenceGeo/saveLayerTempLayer", 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> saveLayerTempLayer(@RequestParam("name") String name,
+			@RequestParam("type") String type,
+			@RequestParam(value="properties", required=false) String properties,
+			@RequestParam(value="enabled", required=false) String enabled,
+			@RequestParam(value="order_layer", required=false) String order_layer,
+			@RequestParam(value="is_channel", required=false) String is_channel,
+			@RequestParam(value="publicized", required=false) String publicized,
+			@RequestParam(value="server_resource", required=false) String server_resource,
+			@RequestParam(value="folderId", required=false) String folderId,
+			@RequestParam(value="idFile", required=false) String idFile){
+		Map<String, Object> result = new HashMap<String, Object>();
+		LayerDto layer = new LayerDto();
+		try{
+			//Copy layerData
+			layer = copyDataToLayer(name, type, properties, enabled, order_layer,
+					is_channel, publicized, server_resource, idFile, layer, folderId, null);
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, layer != null ? 1: 0);
+		result.put(ROOT, layer);
+
 		return result;
 	}
 

@@ -85,6 +85,16 @@ public interface LayerAdminService extends AbstractService {
 	public List<LayerDto> getLayersByAuthority(Long id);
 
 	/**
+	 * Get a layer list by authority id
+	 * 
+	 * @param layerName
+	 * @param isChannel indicates if layers can be channel layers 
+	 * 
+	 * @return list
+	 */
+	public List<LayerDto> getLayersByAuthority(Long id, Boolean isChannel);
+
+	/**
 	 * Get a layer list by name
 	 * 
 	 * @param layerName

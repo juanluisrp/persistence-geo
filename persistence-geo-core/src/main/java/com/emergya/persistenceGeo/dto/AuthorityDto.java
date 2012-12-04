@@ -57,7 +57,14 @@ public class AuthorityDto implements Serializable {
     private List<String> layerList;
     private List<String> privateLayerList;
     private String zone;
+    private Long parentId;
     
+	public Long getParentId() {
+		return parentId;
+	}
+	public void setParentId(Long parentId) {
+		this.parentId = parentId;
+	}
 	public Long getId() {
 		return id;
 	}
