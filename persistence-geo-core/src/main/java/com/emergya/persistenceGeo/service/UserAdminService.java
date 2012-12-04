@@ -133,4 +133,15 @@ public interface UserAdminService extends AbstractService{
 	 */
 	public List<UserDto> getUsersByGroup(Long idGroup); 
 	
+	/**
+	 * An user can load group's layers
+	 * 
+	 * @param idUser
+	 * @param idGroup
+	 * 
+	 * @return true if the user identified by <code>idUser</code> is member of
+	 *         group identified by <code>idGroup</code> of a child of this group
+	 */
+	public Boolean canLoad(Long idUser, Long idGroup);
+	
 }

@@ -7,7 +7,10 @@
         location="classpath:/shpImporterProperties.properties" />
     <context:annotation-config />
     <context:component-scan base-package="com.emergya.persistenceGeo.importer.shp"/>
-       
+    
+    <bean class="java.lang.Boolean" id="checkForCommandLine">
+    	<constructor-arg value="true" />
+    </bean>
     
     <bean
         class="com.emergya.persistenceGeo.utils.GeographicDatabaseConfiguration">
