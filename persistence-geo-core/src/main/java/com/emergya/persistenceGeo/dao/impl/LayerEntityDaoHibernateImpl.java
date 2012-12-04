@@ -35,6 +35,7 @@ import javax.annotation.Resource;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -139,6 +140,35 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstrac
 		Criteria criteria = getSession().createCriteria(persistentClass)
 						.createAlias("auth", "auth")
 						.add(Restrictions.eq("auth.id", id));
+		
+		return criteria.list();
+	}
+
+	
+	/**
+	 * Get a layers list by authority
+	 * 
+	 * @param <code>id</code>
+	 * 
+	 * @param <code>isChannel</code> compare with entity property and filter by this. False value get null values too
+	 * 
+	 * @return Entities list associated with the identifier or null if not found 
+	 */
+	public List<AbstractLayerEntity> findByAuthorityId(Long id,
+			Boolean isChannel){
+		Criteria criteria = getSession().createCriteria(persistentClass)
+						.createAlias("auth", "auth")
+						.add(Restrictions.eq("auth.id", id));
+		if(isChannel == null){
+			criteria.add(Restrictions.isNull("isChannel"));
+		}else if(isChannel){
+			criteria.add(Restrictions.eq("isChannel", isChannel));
+		}else{
+			Disjunction dis = Restrictions.disjunction();
+			dis.add(Restrictions.isNull("isChannel"));
+			dis.add(Restrictions.eq("isChannel", isChannel));
+			criteria.add(dis);
+		}
 		
 		return criteria.list();
 	}

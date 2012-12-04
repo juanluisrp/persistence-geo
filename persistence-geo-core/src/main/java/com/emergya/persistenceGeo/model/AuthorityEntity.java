@@ -115,4 +115,10 @@ public class AuthorityEntity extends AbstractAuthorityEntity {
 		return (ZoneEntity) zone;
 	}
 
+	@ManyToOne
+	@JoinColumn(name = "auth_parent_id")
+	public AuthorityEntity getParent() {
+		return (AuthorityEntity) parent;
+	}
+
 }

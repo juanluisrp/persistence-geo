@@ -234,6 +234,17 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		entity.setFolder(folder);
 		layerDao.save(entity);
 	}
+	
+	/**
+	 * Get layers by folder
+	 * 
+	 * @param folderId to be loaded
+	 * 
+	 * @return all layers in the folder
+	 */
+	public List<LayerDto> getLayersByFolder(Long folderId){
+		return (List<LayerDto>) entitiesToDtos(layerDao.getLayersByFolder(folderId));
+	}
 
 	protected LayerDto entityToDto(AbstractLayerEntity entity) {
 		LayerDto dto = null;
@@ -440,6 +451,18 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	@Cacheable("persistenceGeo")
 	public List<LayerDto> getLayersByAuthority(Long id) {
 		return (List<LayerDto>) entitiesToDtos(layerDao.findByAuthorityId(id));
+	}
+
+	/**
+	 * Get a layer list by authority id
+	 * 
+	 * @param layerName
+	 * @param isChannel indicates if layers can be channel layers 
+	 * 
+	 * @return list
+	 */
+	public List<LayerDto> getLayersByAuthority(Long id, Boolean isChannel){
+		return (List<LayerDto>) entitiesToDtos(layerDao.findByAuthorityId(id, isChannel));
 	}
 
 	@Override

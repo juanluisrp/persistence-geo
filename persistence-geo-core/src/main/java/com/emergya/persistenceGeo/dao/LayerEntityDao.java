@@ -105,5 +105,17 @@ public interface LayerEntityDao extends GenericDAO<AbstractLayerEntity, Long> {
 	 * @return Entities list associated with the identifier or null if not found 
 	 */
 	public List<AbstractLayerEntity> findByAuthorityId(Long id);
+
+	
+	/**
+	 * Get a layers list by authority
+	 * 
+	 * @param <code>id</code>
+	 * @param <code>isChannel</code> compare with entity property and filter by this. False value get null values too
+	 * 
+	 * @return Entities list associated with the identifier or null if not found 
+	 */
+	public List<AbstractLayerEntity> findByAuthorityId(Long id,
+			Boolean isChannel);
 	
 }

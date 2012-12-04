@@ -100,4 +100,54 @@ public class UserAdminServiceImplTest{
 		}
 	}
 
+	@Test
+	public void testCreateGroupsHierarchy() {
+		try {
+			AuthorityDto dto = new AuthorityDto();
+			dto.setNombre("grupoTest");
+			dto.setZone("Sevilla");
+			Long id = userAdminService.crearGrupoUsuarios(dto);
+			Assert.assertEquals(dto.getNombre(), userAdminService.obtenerGrupoUsuarios(id).getNombre());
+			dto = new AuthorityDto();
+			dto.setNombre("grupoTest2");
+			dto.setZone("Camas");
+			dto.setParentId(id);
+			Long idChild = userAdminService.crearGrupoUsuarios(dto);
+			AuthorityDto child = userAdminService.obtenerGrupoUsuarios(idChild);
+			Assert.assertEquals(dto.getNombre(), child.getNombre());
+			Assert.assertEquals(dto.getParentId(), id);
+		} catch (Exception e) {
+			LOG.error("Error  \n", e);
+			Assert.fail();
+		}
+	}
+
+	@Test
+	public void testCheckGroupsHierarchy() {
+		try {
+			AuthorityDto dto = new AuthorityDto();
+			dto.setNombre("grupoTest");
+			dto.setZone("Sevilla");
+			Long id = userAdminService.crearGrupoUsuarios(dto);
+			Assert.assertEquals(dto.getNombre(), userAdminService.obtenerGrupoUsuarios(id).getNombre());
+			dto = new AuthorityDto();
+			dto.setNombre("grupoTest2");
+			dto.setZone("Camas");
+			dto.setParentId(id);
+			Long idChild = userAdminService.crearGrupoUsuarios(dto);
+			AuthorityDto child = userAdminService.obtenerGrupoUsuarios(idChild);
+			Assert.assertEquals(dto.getNombre(), child.getNombre());
+			Assert.assertEquals(dto.getParentId(), id);
+			UserDto user = new UserDto();
+			user.setUsername("test_user_hierarchy");
+			user.setPassword("test_user_hierarchy");
+			user.setAuthority("grupoTest2");
+			user = (UserDto) userAdminService.create(user);
+			Assert.assertTrue(userAdminService.canLoad(user.getId(), id));
+		} catch (Exception e) {
+			LOG.error("Error  \n", e);
+			Assert.fail();
+		}
+	}
+
 }

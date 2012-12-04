@@ -164,6 +164,36 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 		AbstractAuthorityEntity entity = authorityDao.makePersistent(dtoToEntity(dto));
 		return entity.getId();
 	}
+	
+	/**
+	 * An user can load group's layers
+	 * 
+	 * @param idUser
+	 * @param idGroup
+	 * 
+	 * @return true if the user identified by <code>idUser</code> is member of
+	 *         group identified by <code>idGroup</code> of a child of this group
+	 */
+	public Boolean canLoad(Long idUser, Long idGroup){
+		AbstractUserEntity user = userDao.findById(idUser, false);
+		return user.getAuthority() != null 
+				&& idGroup != null
+				&& isInAuthTree(user.getAuthority(), idGroup);
+	}
+	
+	/**
+	 * Check if an authority is in authority tree ascendent of authority
+	 * 
+	 * @param authority
+	 * @param idGroup
+	 * 
+	 * @return true if group identified by <code>idGroup</code> is founded in tree
+	 */
+	private Boolean isInAuthTree(AbstractAuthorityEntity authority, Long idGroup){
+		return authority.getId().equals(idGroup)
+				|| (authority.getParent() != null ? isInAuthTree(
+						authority.getParent(), idGroup) : false);
+	}
 
 	/**
 	 * Asocia un usuario a un grupo en particular
@@ -269,6 +299,7 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 			AbstractAuthorityEntity authority = userDao.findByUserID((Long) user.getId());
 			if (authority != null) {
 				dto.setAuthority(authority.getName());
+				dto.setAuthorityId(authority.getId());
 			}
 //			// Add layer
 //			List<AbstractLayerEntity> layers = user.getLayerList();
@@ -289,6 +320,8 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 			dto = new AuthorityDto();
 			dto.setNombre(entity.getName());
 			dto.setId(entity.getId());
+			dto.setParentId(entity.getParent() != null ? entity.getParent()
+					.getId() : null);
 			List<String> usuarios = new LinkedList<String>();
 			if (entity.getPeople() != null) {
 				Set<AbstractUserEntity> users = (Set<AbstractUserEntity>) entity.getPeople();
@@ -331,6 +364,10 @@ public class UserAdminServiceImpl extends AbstractServiceImpl<UserDto, AbstractU
 					//TODO: ¿Creates a new zone if not exists?
 					entity.setZone(zoneDao.createZone(dto.getZone()));
 				}
+			}
+			
+			if(dto.getParentId() != null){
+				entity.setParent(authorityDao.findById(dto.getParentId(), false));
 			}
 				
 			
