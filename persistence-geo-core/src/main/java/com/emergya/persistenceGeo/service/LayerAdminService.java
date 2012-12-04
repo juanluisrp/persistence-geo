@@ -85,6 +85,16 @@ public interface LayerAdminService extends AbstractService {
 	public List<LayerDto> getLayersByAuthority(Long id);
 
 	/**
+	 * Get a layer list by authority id
+	 * 
+	 * @param layerName
+	 * @param isChannel indicates if layers can be channel layers 
+	 * 
+	 * @return list
+	 */
+	public List<LayerDto> getLayersByAuthority(Long id, Boolean isChannel);
+
+	/**
 	 * Get a layer list by name
 	 * 
 	 * @param layerName
@@ -165,4 +175,13 @@ public interface LayerAdminService extends AbstractService {
 	 * Delete a layer
 	 */
 	public void deleteLayerById(Long layerId);
+
+	/**
+	 * Get layers by folder
+	 * 
+	 * @param folderId to be loaded
+	 * 
+	 * @return all layers in the folder
+	 */
+	public List<LayerDto> getLayersByFolder(Long folderId);
 }

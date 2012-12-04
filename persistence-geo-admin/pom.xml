@@ -6,11 +6,11 @@
 	<parent>
 		<groupId>com.emergya</groupId>
 		<artifactId>persistence-geo</artifactId>
-	        <version>1.3-ohiggins-SNAPSHOT</version>
+        <version>1.3-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>persistence-geo-rest</artifactId>
-	<packaging>war</packaging>
+	<artifactId>persistence-geo-admin</artifactId>
+	<packaging>jar</packaging>
 	<!-- Project Information -->
 	<licenses>
 		<license>
@@ -19,9 +19,9 @@
 		</license>
 	</licenses>
 
-	<name>Vista con Spring3 MVC</name>
+	<name>Rest controllers for persistenceGeo admin</name>
 	<url>http://www.emergya.es</url>
-	<description>Vista basada en spring3-mvc para el proyecto persistence-geo</description>
+	<description>Basic controllers for manage persistence-geo using REST</description>
 
 	<organization>
 		<name>Emergya</name>
@@ -66,11 +66,6 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>persistence-geo-core</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>persistence-geo-admin</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<!-- SPRING DEPENDENCIES -->
@@ -226,35 +221,10 @@
 				</configuration>
 			</plugin>
 
-			<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>maven-jetty-plugin</artifactId>
-				<version>${maven-jetty-plugin.version}</version>
-
-				<configuration>
-					<scanIntervalSeconds>9999</scanIntervalSeconds>
-					<systemProperties>
-						<systemProperty>
-							<name>org.mortbay.util.URI.charset</name>
-							<value>${project.build.sourceEncoding}</value>
-						</systemProperty>
-						<systemProperty>
-							<name>org.mortbay.jetty.Request.queryEncoding</name>
-							<value>${project.build.sourceEncoding}</value>
-						</systemProperty>
-					</systemProperties>
-					<contextPath>${project.artifactId}</contextPath>
-				</configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>buildnumber-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-			</plugin>
 
 
 		</plugins>
