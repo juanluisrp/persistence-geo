@@ -1,9 +1,9 @@
 /*
- * FolderStyle.java
+ * Treeable.java
  * 
  * Copyright (C) 2012
  * 
- * This file is part of persistenceGeo project
+ * This file is part of Proyecto persistenceGeo
  * 
  * This software is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -27,44 +27,26 @@
  * 
  * Authors:: Alejandro Díaz Torres (mailto:adiaz@emergya.com)
  */
-package com.emergya.persistenceGeo.utils;
+package com.emergya.persistenceGeo.dto;
 
 /**
- * Folder style to generate tree
+ * Interface to be implemented by DTOs that are able to build a DTO's tree
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
- * 
- * @see FoldersUtils
+ *
  */
-public enum FolderStyle {
+public interface Treeable {
 	/**
-	 * Default tree generaction as:
-	 * <ul>
-	 * 	<li>parent</li>
-	 * 	<li>- child</li>
-	 *  <li>-- 2nd level 1</li>
-	 *  <li>- another child</li>
-	 *  <li>-- 2nd level 2</li>
-	 * </ul>
+	 * @return Id of DTO
 	 */
-	TREE, 
+	public Long getId();
 	/**
-	 * String parse as:
-	 * <ul>
-	 * 	<li>parent</li>
-	 * 	<li>parent-child</li>
-	 *  <li>parent-child-2nd level 1</li>
-	 *  <li>parent-another child</li>
-	 *  <li>parent-another child-2nd level 2</li>
-	 * </ul>
+	 * @return Text to show in tree
 	 */
-	STRING, 
+	public String getText();
 	/**
-	 * String parse as in only one level:
-	 * <ul>
-	 * 	<li>child</li>
-	 *  <li>another child</li>
-	 * </ul>
+	 * @return indicates if DTO is a le
 	 */
-	NORMAL
+	public boolean getLeaf();
+
 }

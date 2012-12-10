@@ -31,8 +31,6 @@ package com.emergya.persistenceGeo.utils;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.emergya.persistenceGeo.dto.FolderDto;
 
 /**
@@ -41,8 +39,12 @@ import com.emergya.persistenceGeo.dto.FolderDto;
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  */
 public class FoldersUtils {
-
-	private static final String TREE_LEVEL = "-";
+	
+	
+	private static IFolderDecorator folderDecorator;
+	static{
+		folderDecorator = new FolderStyleDecorator();
+	}
 	
 	/**
 	 * Recursive tree build
@@ -79,11 +81,10 @@ public class FoldersUtils {
 	 */
 	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, Integer level, FolderStyle style, Boolean canHaveLayers) {
 		if(folder != null){
-			String name = getFolderName(folder.getName(), parent, level, style);
-			folder.setName(name);
 			if(canHaveLayers == null){
-				tree.add(folder);
+				folderDecorator.applyStyle(folder, tree, parent, style, level);
 			}else{
+				folder = folderDecorator.applyStyle(folder, parent, style, level);
 				if(canHaveLayers && 
 						(folder.getIsChannel() 
 							|| (folder.getFolderList() == null
@@ -94,74 +95,19 @@ public class FoldersUtils {
 					// only can have folders not layer channels (without children and without layers)
 					tree.add(folder);
 				}
-			}
-			if(folder.getFolderList() != null){
-				String previus = parent;
-				parent = name;
-				level++;
-				for(FolderDto subFolder: folder.getFolderList()){
-					getFolderTree(subFolder, tree, parent, level, style, canHaveLayers);
+
+				if(folder.getFolderList() != null){
+					String previus = parent;
+					parent = folder.getName();
+					level++;
+					for(FolderDto subFolder: folder.getFolderList()){
+						getFolderTree(subFolder, tree, parent, level, style, canHaveLayers);
+					}
+					level--;
+					parent = previus;
 				}
-				level--;
-				parent = previus;
 			}
 		}
-	}
-
-	public static String getFolderName(String name, String parent,
-			Integer level, FolderStyle style) {
-		if(FolderStyle.STRING.equals(style)){
-			return getFolderNameString(name, parent);
-		}else{
-			return getFolderNameTree(name, parent, level);
-		}
-	}
-
-	/**
-	 * Build folder name on tree
-	 * 
-	 * @param name default name on tree
-	 * @param parent
-	 * 
-	 * @return tree folder '' 
-	 */
-	public static String getFolderName(String name, String parent, FolderStyle style) {
-		return getFolderName(name, parent, new Integer(0), style);
-	}
-	
-	/**
-	 * Build folder name on tree
-	 * 
-	 * @param name default name on tree
-	 * @param parent
-	 * 
-	 * @return tree folder '' 
-	 */
-	private static String getFolderNameTree(String name, String parent, Integer level) {
-		String result = name;
-		for(int i = 0; i < level; i++){
-			result = TREE_LEVEL + result;
-		}
-		result = result.replace(name, " " + name);
-		return result;
-	}
-
-	/**
-	 * Build folder name on string
-	 * 
-	 * @param name default name on string
-	 * @param parent
-	 * 
-	 * @return string folder 'parent-name' 
-	 */
-	private static String getFolderNameString (String name, String parent){
-		String result;
-		if(!StringUtils.isEmpty(parent)){
-			result = parent + TREE_LEVEL + name;
-		}else{
-			result = name;
-		}
-		return result;
 	}
 	
 	/**
@@ -195,17 +141,5 @@ public class FoldersUtils {
 	 */
 	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, Boolean onlyNotEmpty){
 		getFolderTree(folder, tree, parent, FolderStyle.STRING, onlyNotEmpty);
-	}
-
-	/**
-	 * Build folder name on tree
-	 * 
-	 * @param name default name on tree
-	 * @param parent
-	 * 
-	 * @return tree folder '' 
-	 */
-	public static String getFolderName(String name, String parent) {
-		return getFolderName(name, parent, FolderStyle.STRING);
 	}
 }

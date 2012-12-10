@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 
@@ -457,6 +458,87 @@ public class RestFoldersAdminController implements Serializable{
 
 		result.put(RESULTS, folder != null ? 1 : 0);
 		result.put(ROOT, folder);
+
+		return result;
+	}
+	
+	//TODO: REMOVE
+	static Map<Long, FolderDto> FOLDERS;
+	static final Long ROOT_FOLDER = new Long(1);
+	static Map<Long, FolderDto> LAYERS;
+	static{
+		FOLDERS = new ConcurrentHashMap<Long, FolderDto>();
+		FolderDto rootFolder = new FolderDto();
+		rootFolder.setId(ROOT_FOLDER);
+		rootFolder.setName("ROOT");
+		List<FolderDto> children = new LinkedList<FolderDto>();
+		FolderDto child1 = new FolderDto();
+		child1.setId(new Long(2));
+		child1.setName("child1");;
+		child1.setIdParent(ROOT_FOLDER);
+		children.add(child1);
+		FOLDERS.put(new Long(2), child1);
+		FolderDto child2 = new FolderDto();
+		child2.setId(new Long(3));
+		child2.setName("child2");;
+		child2.setIdParent(ROOT_FOLDER);
+		children.add(child2);
+		FolderDto child3 = new FolderDto();
+		child3.setId(new Long(4));
+		child3.setName("child3");;
+		child3.setIdParent(new Long(3));
+		List<FolderDto> children2 = new LinkedList<FolderDto>();
+		children2.add(child3);
+		child2.setFolderList(children2);
+		FOLDERS.put(new Long(3), child2);
+		FOLDERS.put(new Long(4), child3);
+		rootFolder.setFolderList(children);
+		FOLDERS.put(ROOT_FOLDER, rootFolder);
+	}
+
+
+	/**
+	 * This method loads all folders related with a user
+	 * 
+	 * @param username
+	 * 
+	 * @return JSON file with folders
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFoldersById/{idFolder}", 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFoldersById(@PathVariable String idFolder,
+			@RequestParam(value="filter", required=false) String filter){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+		try{
+			/*
+			//TODO: Secure with logged user
+			String username = ((UserDetails) SecurityContextHolder.getContext()
+					.getAuthentication().getPrincipal()).getUsername(); 
+			 */
+			if(idFolder != null){
+				folders = new LinkedList<FolderDto>();
+				FolderDto rootFolder;
+				
+				//TODO: get from Service layer 
+//				if(filter != null){
+//					rootFolder = foldersAdminService.getRootGroupFolder(Long.decode(idGroup));
+//				}else{
+//					rootFolder = foldersAdminService.getRootGroupFolder(Long.decode(idGroup));
+//				}
+				rootFolder = FOLDERS.get(Long.decode(idFolder)); //TODO: REMOVE
+				
+				FoldersUtils.getFolderTree(rootFolder, folders, null, FolderStyle.NORMAL, null);
+			}
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, folders != null ? folders.size(): 0);
+		result.put(ROOT, folders);
 
 		return result;
 	}
