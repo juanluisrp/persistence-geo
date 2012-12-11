@@ -91,7 +91,32 @@ public class RestZoneController implements Serializable{
 		}
 		result.put(RESULTS, zones != null ? zones.size() : 0);
 		result.put(ROOT, zones != null ? zones : ListUtils.EMPTY_LIST);
-		
+
+		return result;
+	}
+
+	/**
+	 * Get all zones of a specific type
+	 *
+	 * @param type Type of the zone
+	 *
+	 * @return all zones of a specified type
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/persistenceGeo/getZonesByType", method = RequestMethod.GET)
+	public @ResponseBody
+	Map<String, Object> getZonesByType(@RequestParam(value="type", required = true)String zoneType) {
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<ZoneDto> zones = null;
+		try {
+			zones = (List<ZoneDto>) zoneAdminService.findByType(zoneType);
+			result.put(SUCCESS, true);
+		} catch (Exception e) {
+			result.put(SUCCESS, false);
+		}
+		result.put(RESULTS, zones != null ? zones.size() : 0);
+		result.put(ROOT, zones != null ? zones : ListUtils.EMPTY_LIST);
+
 		return result;
 	}
 
