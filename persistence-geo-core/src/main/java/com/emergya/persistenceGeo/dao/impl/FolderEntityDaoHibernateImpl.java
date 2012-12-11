@@ -169,4 +169,49 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstra
 		return criteria.list();
 	}
 
+    /**
+     * Get a folders list by zones. If zoneId is NULL returns all the
+     * folder not associated to any zone.
+     *
+     * @params <code>zoneId</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+	@Override
+    public List<AbstractFolderEntity> findByZone(Long zoneId) {
+        List<AbstractFolderEntity> folderList = new LinkedList<AbstractFolderEntity>();
+        folderList.addAll(
+            getSession().createCriteria(persistentClass)
+				.createAlias("zone", "zone")
+                .add(Restrictions.eq("zone.id", zoneId)).list()
+        );
+        return folderList;
+    }
+
+    /**
+     * Get a folders list by zones with an specific parent. If zoneId is NULL
+     * returns all the folder not associated to any zone. If parentId is NULL
+     * the returned folders are root folders.
+     *
+     * @params <code>zoneId</code>
+     * @params <code>parentId</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+	@Override
+    public List<AbstractFolderEntity> findByZone(Long zoneId, Long parentId) {
+        List<AbstractFolderEntity> folderList = new LinkedList<AbstractFolderEntity>();
+        Criteria criteria = getSession().createCriteria(persistentClass)
+			.createAlias("zone", "zone")
+            .add(Restrictions.eq("zone.id", zoneId));
+        if (parentId == null) {
+			criteria.add(Restrictions.isNull("parent"));
+        } else {
+			criteria.createAlias("parent", "parent");
+			criteria.add(Restrictions.eq("parent.id", parentId));
+        }
+        folderList.addAll(criteria.list());
+        return folderList;
+    }
+
 }

@@ -80,13 +80,9 @@ public class TreeFolderDto extends FolderDto implements Treeable{
 			}
 		}
 
-		// clone zones
-		if(origin.zoneList != null){
-			this.zoneList = new LinkedList<String>();
-			for(String zone: origin.zoneList){
-				this.zoneList.add(new String(zone));
-			}
-		}
+		// clone zone
+		this.zoneId = origin.zoneId != null ? new Long(origin.zoneId)
+				: null;
 		
 	}
 
