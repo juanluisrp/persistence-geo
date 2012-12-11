@@ -110,6 +110,7 @@
         <ojdbc.version>11.2.0.3.0</ojdbc.version>
         <geoserver.manager.version>1.4.3</geoserver.manager.version>
         <mockito.version>1.9.5</mockito.version>
+        <guava.version>13.0.1</guava.version>
     </properties>
 
     <dependencies>
@@ -129,7 +130,8 @@
 
     <modules>
         <module>persistence-geo-core</module>
-        <module>persistence-geo-admin</module>
+        <module>persistence-geo-geoserver</module>
+	<module>persistence-geo-admin</module>
         <module>persistence-geo-rest</module>
     </modules>
     <build>
