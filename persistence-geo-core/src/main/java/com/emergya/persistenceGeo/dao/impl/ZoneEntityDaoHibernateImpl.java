@@ -87,8 +87,19 @@ public class ZoneEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstract
 	}
 
 	/**
-	 * Delete a zone by the zone identifier 
-	 * 
+	 * Get a zones list by its type
+	 *
+	 * @param <code>zoneType</code>
+	 *
+	 * @return Entities list associated with the zone type or null if not found
+	 */
+	public List<AbstractZoneEntity> findByType(String zoneType) {
+		return findByCriteria(Restrictions.eq("type", zoneType));
+	}
+
+	/**
+	 * Delete a zone by the zone identifier
+	 *
 	 * @param <code>zoneID</code>
 	 * 
 	 */

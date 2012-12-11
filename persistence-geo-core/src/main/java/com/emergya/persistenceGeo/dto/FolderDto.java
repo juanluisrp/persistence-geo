@@ -60,8 +60,8 @@ public class FolderDto implements Serializable, Cloneable{
 	protected Integer order; 
 	
 	protected List<FolderDto> folderList;
-	protected List<String> zoneList;
-	
+    protected Long zoneId;
+
 	/**
 	 * @return the id
 	 */
@@ -111,10 +111,10 @@ public class FolderDto implements Serializable, Cloneable{
 		return folderList;
 	}
 	/**
-	 * @return the zoneList
+	 * @return the zoneId
 	 */
-	public List<String> getZoneList() {
-		return zoneList;
+	public Long getZoneId() {
+		return zoneId;
 	}
 	/**
 	 * @param id the id to set
@@ -165,10 +165,10 @@ public class FolderDto implements Serializable, Cloneable{
 		this.folderList = folderList;
 	}
 	/**
-	 * @param zoneList the zoneList to set
+	 * @param zoneId the zoneId to set
 	 */
-	public void setZoneList(List<String> zoneList) {
-		this.zoneList = zoneList;
+	public void setZoneId(Long zoneId) {
+		this.zoneId = zoneId;
 	}
 	/**
 	 * @return the idParent
@@ -256,16 +256,11 @@ public class FolderDto implements Serializable, Cloneable{
 			}
 		}
 
-		// clone zones
-		if(this.zoneList != null){
-			result.zoneList = new LinkedList<String>();
-			for(String zone: this.zoneList){
-				result.zoneList.add(new String(zone));
-			}
-		}
-		
+		// clone zone
+		result.zoneId = this.zoneId != null ? new Long(this.zoneId) : null;
+
 		return result;
 	}
-	
-	
+
+
 }

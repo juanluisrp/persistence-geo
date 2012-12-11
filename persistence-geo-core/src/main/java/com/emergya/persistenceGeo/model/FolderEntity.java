@@ -115,9 +115,11 @@ public class FolderEntity extends AbstractFolderEntity {
 		return id;
 	}
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "zoneList")
-	public List<ZoneEntity> getZoneList() {
-		return zoneList;
+	@ManyToOne(fetch = FetchType.LAZY,
+			cascade = CascadeType.MERGE)
+	@JoinColumn(name="folder_zone_id")
+	public ZoneEntity getZone() {
+		return (ZoneEntity) zone;
 	}
 
 	@ManyToOne(cascade = CascadeType.MERGE, fetch  = FetchType.LAZY)

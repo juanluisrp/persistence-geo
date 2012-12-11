@@ -41,6 +41,7 @@ import org.springframework.stereotype.Repository;
 
 import com.emergya.persistenceGeo.dao.FolderEntityDao;
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractZoneEntity;
 import com.emergya.persistenceGeo.metaModel.Instancer;
 
 /**
@@ -139,5 +140,48 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstra
 				.createAlias("parent", "parent")
 				.add(Restrictions.eq("parent.id", parentFolder)).list();
 	}
+
+    /**
+     * Get a folders list by zones. If zoneId is NULL returns all the
+     * folder not associated to any zone.
+     *
+     * @params <code>zoneId</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+	@Override
+    public List<AbstractFolderEntity> findByZone(Long zoneId) {
+        List<AbstractFolderEntity> folderList = new LinkedList<AbstractFolderEntity>();
+        folderList.addAll(
+            getSession().createCriteria(persistentClass)
+				.createAlias("zone", "zone")
+                .add(Restrictions.eq("zone.id", zoneId)).list()
+        );
+        return folderList;
+    }
+
+    /**
+     * Get a folders list by zones with an specific parent. If zoneId is NULL
+     * returns all the folder not associated to any zone. If parentId is NULL
+     * the returned folders are root folders.
+     *
+     * @params <code>zoneId</code>
+     * @params <code>parentId</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+	@Override
+    public List<AbstractFolderEntity> findByZone(Long zoneId, Long parentId) {
+        List<AbstractFolderEntity> folderList = new LinkedList<AbstractFolderEntity>();
+        folderList.addAll(
+            getSession().createCriteria(persistentClass)
+				.createAlias("parent", "parent")
+				.add(Restrictions.eq("parent.id", parentId))
+				.createAlias("zone", "zone")
+                .add(Restrictions.eq("zone.id", zoneId))
+                .list()
+        );
+        return folderList;
+    }
 
 }
