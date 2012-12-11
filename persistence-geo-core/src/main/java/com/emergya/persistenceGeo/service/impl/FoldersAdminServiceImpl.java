@@ -45,10 +45,13 @@ import com.emergya.persistenceGeo.dao.FolderEntityDao;
 import com.emergya.persistenceGeo.dao.GenericDAO;
 import com.emergya.persistenceGeo.dao.LayerEntityDao;
 import com.emergya.persistenceGeo.dao.UserEntityDao;
+import com.emergya.persistenceGeo.dao.ZoneEntityDao;
 import com.emergya.persistenceGeo.dto.FolderDto;
+import com.emergya.persistenceGeo.dto.ZoneDto;
 import com.emergya.persistenceGeo.metaModel.AbstractFolderEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractUserEntity;
+import com.emergya.persistenceGeo.metaModel.AbstractZoneEntity;
 import com.emergya.persistenceGeo.metaModel.Instancer;
 import com.emergya.persistenceGeo.service.FoldersAdminService;
 
@@ -74,7 +77,9 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 	private UserEntityDao userDao;
 	@Resource
 	private AuthorityEntityDao authDao;
-	
+	@Resource
+	private ZoneEntityDao zoneDao;
+
 	public FoldersAdminServiceImpl(){
 		super();
 	}
@@ -222,6 +227,42 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 		}
 	}
 
+    /**
+     * Get a folders list by zones. If zoneId is NULL returns all the
+     * folder not associated to any zone.
+     *
+     * @params <code>zoneId</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+    public List<FolderDto> findByZone(Long zoneId) {
+        List<FolderDto> foldersDto = new LinkedList<FolderDto>();
+        List<AbstractFolderEntity> folders = folderDao.findByZone(zoneId);
+        for (AbstractFolderEntity folderEntity: folders) {
+            foldersDto.add(entityToDto(folderEntity));
+        }
+        return foldersDto;
+    }
+
+    /**
+     * Get a folders list by zones with an specific parent. If zoneId is NULL
+     * returns all the folder not associated to any zone. If parentId is NULL
+     * the returned folders are root folders.
+     *
+     * @params <code>zoneId</code>
+     * @params <code>parentId</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+    public List<FolderDto> findByZone(Long zoneId, Long parentId) {
+        List<FolderDto> foldersDto = new LinkedList<FolderDto>();
+        List<AbstractFolderEntity> folders = folderDao.findByZone(zoneId, parentId);
+        for (AbstractFolderEntity folderEntity: folders) {
+            foldersDto.add(entityToDto(folderEntity));
+        }
+        return foldersDto;
+    }
+
 	protected FolderDto entityToDto(AbstractFolderEntity entity) {
 		FolderDto dto = null;
 		if(entity != null){
@@ -274,8 +315,12 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 					&& entity.getUser().getId() != null){
 				dto.setIdUser((Long) entity.getUser().getId());
 			}
-			
-			//TODO: entity.setZoneList(zoneList);
+
+			// Zone
+            if (entity.getZone() != null
+                    && entity.getZone().getId() != null) {
+                dto.setZoneId((Long) entity.getZone().getId());
+            }
 		}
 		return dto;
 	}
@@ -310,8 +355,11 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			if(dto.getIdUser() != null){
 				entity.setUser(userDao.findById(dto.getIdUser(), false));
 			}
-			
-			//TODO: entity.setZoneList(zoneList);
+
+			// Zone
+            if (dto.getZoneId() != null) {
+                entity.setZone(zoneDao.findById(dto.getZoneId(), false));
+            }
 		}
 		return entity;
 	}

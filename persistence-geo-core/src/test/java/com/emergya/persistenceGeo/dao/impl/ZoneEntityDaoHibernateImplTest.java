@@ -97,34 +97,34 @@ public class ZoneEntityDaoHibernateImplTest {
 		try {
 
             AbstractZoneEntity zone1 = zoneDao.createZone("zone1.test");
-            zone1.setType("R");
+            zone1.setType("R.test");
             zone1 = zoneDao.makePersistent(zone1);
 
             AbstractZoneEntity zone2 = zoneDao.createZone("zone2.test");
-            zone2.setType("R");
+            zone2.setType("R.test");
             zone2 = zoneDao.makePersistent(zone2);
 
             AbstractZoneEntity zone3 = zoneDao.createZone("zone3.test");
-            zone3.setType("R");
+            zone3.setType("R.test");
             zone3 = zoneDao.makePersistent(zone3);
 
             AbstractZoneEntity zone4 = zoneDao.createZone("zone4.test");
-            zone4.setType("M");
+            zone4.setType("M.test");
             zone4 = zoneDao.makePersistent(zone4);
 
 
             List<AbstractZoneEntity> zones;
 
-			zones = zoneDao.findByType("R");
+			zones = zoneDao.findByType("R.test");
 			for (AbstractZoneEntity zoneEntity: zones) {
-			    Assert.assertEquals(zoneEntity.getType(), "R");
+			    Assert.assertEquals(zoneEntity.getType(), "R.test");
             }
             Assert.assertEquals(zones.size(), 3);
 
 
-			zones = zoneDao.findByType("M");
+			zones = zoneDao.findByType("M.test");
 			for (AbstractZoneEntity zoneEntity: zones) {
-			    Assert.assertEquals(zoneEntity.getType(), "M");
+			    Assert.assertEquals(zoneEntity.getType(), "M.test");
             }
             Assert.assertEquals(zones.size(), 1);
 

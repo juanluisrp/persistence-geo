@@ -31,6 +31,7 @@ package com.emergya.persistenceGeo.service.impl;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.LinkedList;
 
 import javax.annotation.Resource;
 
@@ -78,6 +79,15 @@ public class ZoneAdminServiceImpl extends AbstractServiceImpl<ZoneDto, AbstractZ
 		return super.getAll();
 	}
 
+    public List<ZoneDto> findByType(String type) {
+        List<ZoneDto> zonesDto = new LinkedList<ZoneDto>();
+        List<AbstractZoneEntity> zones = zoneDao.findByType(type);
+        for (AbstractZoneEntity zoneEntity: zones) {
+            zonesDto.add(entityToDto(zoneEntity));
+        }
+        return zonesDto;
+    }
+
 	@Override
 	protected ZoneDto entityToDto(AbstractZoneEntity entity) {
 		ZoneDto dto = null;
@@ -90,6 +100,7 @@ public class ZoneAdminServiceImpl extends AbstractServiceImpl<ZoneDto, AbstractZ
 			dto.setName(entity.getName());
 			dto.setType(entity.getType());
 			dto.setUpdateDate(entity.getUpdateDate());
+            dto.setEnabled(entity.getEnabled());
 		}
 		return dto;
 	}
@@ -110,8 +121,9 @@ public class ZoneAdminServiceImpl extends AbstractServiceImpl<ZoneDto, AbstractZ
 			entity.setName(dto.getName());
 			entity.setType(dto.getType());
 			entity.setUpdateDate(dto.getUpdateDate());
+            entity.setEnabled(dto.getEnabled());
 		}
 		return entity;
 	}
-	
+
 }

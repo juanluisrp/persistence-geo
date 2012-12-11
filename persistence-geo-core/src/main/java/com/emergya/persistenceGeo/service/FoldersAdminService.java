@@ -29,6 +29,8 @@
  */
 package com.emergya.persistenceGeo.service;
 
+import java.util.List;
+
 import com.emergya.persistenceGeo.dto.FolderDto;
 
 /**
@@ -88,4 +90,26 @@ public interface FoldersAdminService extends AbstractService{
 	 * @return copied
 	 */
 	public FolderDto copyFolder(Long targetUserId, FolderDto originFolder);
+
+    /**
+     * Get a folders list by zones. If zoneId is NULL returns all the
+     * folder not associated to any zone.
+     *
+     * @params <code>zoneId</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+    public List<FolderDto> findByZone(Long zoneId);
+
+    /**
+     * Get a folders list by zones with an specific parent. If zoneId is NULL
+     * returns all the folder not associated to any zone. If parentId is NULL
+     * the returned folders are root folders.
+     *
+     * @params <code>zoneId</code>
+     * @params <code>parentId</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+    public List<FolderDto> findByZone(Long zoneId, Long parentId);
 }

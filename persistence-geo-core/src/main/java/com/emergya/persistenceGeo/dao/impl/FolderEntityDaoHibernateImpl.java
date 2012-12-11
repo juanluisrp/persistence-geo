@@ -35,6 +35,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -173,14 +174,16 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstra
 	@Override
     public List<AbstractFolderEntity> findByZone(Long zoneId, Long parentId) {
         List<AbstractFolderEntity> folderList = new LinkedList<AbstractFolderEntity>();
-        folderList.addAll(
-            getSession().createCriteria(persistentClass)
-				.createAlias("parent", "parent")
-				.add(Restrictions.eq("parent.id", parentId))
-				.createAlias("zone", "zone")
-                .add(Restrictions.eq("zone.id", zoneId))
-                .list()
-        );
+        Criteria criteria = getSession().createCriteria(persistentClass)
+			.createAlias("zone", "zone")
+            .add(Restrictions.eq("zone.id", zoneId));
+        if (parentId == null) {
+			criteria.add(Restrictions.isNull("parent"));
+        } else {
+			criteria.createAlias("parent", "parent");
+			criteria.add(Restrictions.eq("parent.id", parentId));
+        }
+        folderList.addAll(criteria.list());
         return folderList;
     }
 

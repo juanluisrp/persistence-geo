@@ -29,6 +29,10 @@
  */
 package com.emergya.persistenceGeo.service;
 
+import java.util.List;
+
+import com.emergya.persistenceGeo.dto.ZoneDto;
+
 
 /**
  * Interfaz de administracion de usuarios y grupos de usuarios 
@@ -36,6 +40,7 @@ package com.emergya.persistenceGeo.service;
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
-public interface ZoneAdminService extends AbstractService{ 
-	
+public interface ZoneAdminService extends AbstractService{
+
+    public List<ZoneDto> findByType(String type);
 }
