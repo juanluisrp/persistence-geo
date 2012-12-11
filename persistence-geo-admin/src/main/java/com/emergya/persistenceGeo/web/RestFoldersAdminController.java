@@ -37,6 +37,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -575,4 +576,41 @@ public class RestFoldersAdminController implements Serializable{
 		return result;
 	}
 
+
+	/**
+	 * Returns all the folders of a specific zone and optionaly with
+     * a specific parent folder.
+	 *
+	 * @param zone Zone the folder belongs to
+     * @param parent Folder parent id
+	 *
+	 * @return JSON file with success
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFoldersByZone",
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFoldersByZone(@RequestParam(value="zone", required=true) Long zoneId,
+            @RequestParam(value="parent", required=false) Long parentId) {
+
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+
+		try {
+
+            if (parentId == null) {
+                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId);
+            } else {
+                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, parentId);
+            }
+			result.put(SUCCESS, true);
+
+		} catch (Exception e) {
+			result.put(SUCCESS, false);
+		}
+
+		result.put(RESULTS, folders != null ? folders.size() : 0);
+		result.put(ROOT, folders != null ? folders : ListUtils.EMPTY_LIST);
+
+		return result;
+    }
 }
