@@ -38,12 +38,20 @@ import com.emergya.persistenceGeo.dto.FolderDto;
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  */
+@SuppressWarnings("rawtypes")
 public class FoldersUtils {
 	
 	
 	private static IFolderDecorator folderDecorator;
 	static{
 		folderDecorator = new FolderStyleDecorator();
+	}
+	
+	/**
+	 * @return default style decorator
+	 */
+	public static IFolderDecorator getFolderDecorator() {
+		return folderDecorator;
 	}
 	
 	/**
@@ -55,7 +63,7 @@ public class FoldersUtils {
 	 * 
 	 * @see FolderStyle
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, FolderStyle style, Boolean onlyNotEmpty) {
+	public static void getFolderTree(FolderDto folder, List tree, FolderStyle style, Boolean onlyNotEmpty) {
 		getFolderTree(folder, tree, new String(), new Integer (0), style, onlyNotEmpty);
 	}
 	
@@ -68,7 +76,7 @@ public class FoldersUtils {
 	 * 
 	 * @see FolderStyle
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, FolderStyle style, Boolean onlyNotEmpty) {
+	public static void getFolderTree(FolderDto folder, List tree, String parent, FolderStyle style, Boolean onlyNotEmpty) {
 		getFolderTree(folder, tree, parent, new Integer (0), style, onlyNotEmpty);
 	}
 	
@@ -79,7 +87,8 @@ public class FoldersUtils {
 	 * @param tree building
 	 * @param level level on tree
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, Integer level, FolderStyle style, Boolean canHaveLayers) {
+	@SuppressWarnings("unchecked")
+	public static void getFolderTree(FolderDto folder, List tree, String parent, Integer level, FolderStyle style, Boolean canHaveLayers) {
 		if(folder != null){
 			if(canHaveLayers == null){
 				folderDecorator.applyStyle(folder, tree, parent, style, level);
@@ -117,7 +126,7 @@ public class FoldersUtils {
 	 * @param tree building
 	 * @param level level on tree
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree){
+	public static void getFolderTree(FolderDto folder, List tree){
 		getFolderTreeFiltered(folder, tree, null);
 	}
 	
@@ -128,7 +137,7 @@ public class FoldersUtils {
 	 * @param tree building
 	 * @param level level on tree
 	 */
-	public static void getFolderTreeFiltered(FolderDto folder, List<FolderDto> tree, Boolean onlyNotEmpty){
+	public static void getFolderTreeFiltered(FolderDto folder, List tree, Boolean onlyNotEmpty){
 		getFolderTree(folder, tree, new String(), onlyNotEmpty);
 	}
 	
@@ -139,7 +148,7 @@ public class FoldersUtils {
 	 * @param tree building
 	 * @param level level on tree
 	 */
-	public static void getFolderTree(FolderDto folder, List<FolderDto> tree, String parent, Boolean onlyNotEmpty){
+	public static void getFolderTree(FolderDto folder, List tree, String parent, Boolean onlyNotEmpty){
 		getFolderTree(folder, tree, parent, FolderStyle.STRING, onlyNotEmpty);
 	}
 }

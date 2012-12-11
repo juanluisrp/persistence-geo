@@ -29,6 +29,7 @@
  */
 package com.emergya.persistenceGeo.utils;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.emergya.persistenceGeo.dto.FolderDto;
@@ -76,7 +77,7 @@ public interface IFolderDecorator {
 	 * @param style
 	 * @param level
 	 */
-	public void applyStyle(FolderDto rootFolder, List<FolderDto> tree, String parent, FolderStyle style, Integer level);
+	public void applyStyle(FolderDto rootFolder, List<? extends Serializable> tree, String parent, FolderStyle style, Integer level);
 	
 	/**
 	 * Decorate a folder with default FolderStyle

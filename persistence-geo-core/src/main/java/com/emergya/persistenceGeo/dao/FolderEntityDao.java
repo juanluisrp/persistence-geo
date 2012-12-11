@@ -102,6 +102,16 @@ public interface FolderEntityDao extends GenericDAO<AbstractFolderEntity, Long> 
 	 * @return Entity without parent folder for the group 
 	 */
 	public AbstractFolderEntity findRootByGroup(Long idGroup);
+
+	/**
+	 * Get all channel folders filtered
+	 * 
+	 * @param inZone indicates if obtain channel folders with a zone. If this parameter is null only obtain not zoned channels
+	 * @param idZone filter by zone. Obtain only channels of the zone identified by <code>idZone</code>
+	 * 
+	 * @return folder list
+	 */
+	public List<AbstractFolderEntity> getChannelFolders(Boolean inZone, Long idZone);
 	
 	
 }

@@ -184,4 +184,14 @@ public interface LayerAdminService extends AbstractService {
 	 * @return all layers in the folder
 	 */
 	public List<LayerDto> getLayersByFolder(Long folderId);
+
+	/**
+	 * Get layers by folder
+	 * 
+	 * @param folderId to be loaded
+	 * @param isChannel
+	 * 
+	 * @return all layers in the folder
+	 */
+	public List<LayerDto> getLayersByFolder(Long folderId, Boolean isChannel);
 }

@@ -222,6 +222,19 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 		}
 	}
 
+	/**
+	 * Get all channel folders filterd
+	 * 
+	 * @param inZone indicates if obtain channel folders with a zone. If this parameter is null only obtain not zoned channels
+	 * @param idZone filter by zone. Obtain only channels of the zone identified by <code>idZone</code>
+	 * 
+	 * @return folder list
+	 */
+	@SuppressWarnings("unchecked")
+	public List<FolderDto> getChannelFolders(Boolean inZone, Long idZone){
+		return (List<FolderDto>) entitiesToDtos(folderDao.getChannelFolders(inZone, idZone));
+	}
+
 	protected FolderDto entityToDto(AbstractFolderEntity entity) {
 		FolderDto dto = null;
 		if(entity != null){
@@ -233,7 +246,6 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 			dto.setId(entity.getId());
 			dto.setName(entity.getName());
 			dto.setOrder(entity.getFolderOrder());
-			
 			
 			//Children
 			List<AbstractFolderEntity> children = folderDao.getFolders(entity.getId());
@@ -253,7 +265,12 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 						&& !layers.isEmpty()){
 					dto.setIsChannel(true);
 				}else{
-					dto.setIsChannel(false);
+					if(entity.getIsChannel() != null 
+							&& entity.getIsChannel()){
+						dto.setIsChannel(entity.getIsChannel());
+					}else{
+						dto.setIsChannel(false);
+					}
 				}
 			}
 			

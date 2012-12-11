@@ -51,7 +51,24 @@ public interface LayerEntityDao extends GenericDAO<AbstractLayerEntity, Long> {
 	 */
 	public AbstractLayerEntity createLayer(String layerName);
 	
+	/**
+	 * Get layers by folder
+	 * 
+	 * @param folderId
+	 * 
+	 * @return all layers in a folder
+	 */
 	public List<AbstractLayerEntity> getLayersByFolder(Long folderId);
+	
+	/**
+	 * Get layers by folder
+	 * 
+	 * @param folderId
+	 * @param isChannel
+	 * 
+	 * @return all layers in a folder mark as channel
+	 */
+	public List<AbstractLayerEntity> getLayersByFolder(Long folderId, Boolean isChannel);
 	
 	/**
 	 * Save the layer in the system

@@ -41,6 +41,7 @@ import com.emergya.persistenceGeo.dto.TreeFolderDto;
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  */
+@SuppressWarnings("rawtypes")
 public class FolderStyleDecorator implements IFolderDecorator {
 
 	private static final String TREE_LEVEL = "-";
@@ -120,8 +121,9 @@ public class FolderStyleDecorator implements IFolderDecorator {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void applyStyle(FolderDto folder, List<FolderDto> tree,
+	public void applyStyle(FolderDto folder, List tree,
 			String parent, FolderStyle style, Integer level) {
 		if(folder != null){
 			if(FolderStyle.NORMAL.equals(style)){

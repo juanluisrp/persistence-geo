@@ -29,13 +29,15 @@
  */
 package com.emergya.persistenceGeo.dto;
 
+import java.io.Serializable;
+
 /**
  * Interface to be implemented by DTOs that are able to build a DTO's tree
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
-public interface Treeable {
+public interface Treeable extends Serializable{
 	/**
 	 * @return Id of DTO
 	 */

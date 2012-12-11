@@ -181,5 +181,31 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstrac
 
 		return criteria.list();
 	}
+	
+	/**
+	 * Get layers by folder
+	 * 
+	 * @param folderId
+	 * @param isChannel
+	 * 
+	 * @return all layers in a folder mark as channel
+	 */
+	public List<AbstractLayerEntity> getLayersByFolder(Long folderId, Boolean isChannel){
+		Criteria criteria = getSession().createCriteria(persistentClass)
+				.createAlias("folder", "folder")
+				.add(Restrictions.eq("folder.id", folderId));
+		if(isChannel == null){
+			criteria.add(Restrictions.isNull("isChannel"));
+		}else if(isChannel){
+			criteria.add(Restrictions.eq("isChannel", isChannel));
+		}else{
+			Disjunction dis = Restrictions.disjunction();
+			dis.add(Restrictions.isNull("isChannel"));
+			dis.add(Restrictions.eq("isChannel", isChannel));
+			criteria.add(dis);
+		}
+		
+		return criteria.list();
+	}
 
 }

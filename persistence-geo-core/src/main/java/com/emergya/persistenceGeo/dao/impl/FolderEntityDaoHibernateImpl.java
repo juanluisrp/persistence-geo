@@ -34,6 +34,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -138,6 +139,34 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstra
 		return getSession().createCriteria(persistentClass)
 				.createAlias("parent", "parent")
 				.add(Restrictions.eq("parent.id", parentFolder)).list();
+	}
+	
+	private static String ZONE = "zone";
+
+	/**
+	 * Get all channel folders filtered
+	 * 
+	 * @param inZone indicates if obtain channel folders with a zone. If this parameter is null only obtain not zoned channels
+	 * @param idZone filter by zone. Obtain only channels of the zone identified by <code>idZone</code>
+	 * 
+	 * @return folder list
+	 */
+	public List<AbstractFolderEntity> getChannelFolders(Boolean inZone, Long idZone){
+		Criteria criteria = getSession().createCriteria(persistentClass);
+		//FIXME: remove this fixme when merge
+		if(inZone != null){ 
+			if(inZone){
+				criteria.add(Restrictions.isNotNull(ZONE));
+			}else{
+				criteria.add(Restrictions.isNull(ZONE));
+			}
+		}
+		if(idZone != null){
+			criteria.createAlias(ZONE, ZONE)
+			.add(Restrictions.eq(ZONE + ".id", idZone));
+		}
+		
+		return criteria.list();
 	}
 
 }

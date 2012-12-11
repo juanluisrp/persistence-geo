@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Resource;
 
@@ -48,8 +47,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.emergya.persistenceGeo.dto.FolderDto;
+import com.emergya.persistenceGeo.dto.LayerDto;
+import com.emergya.persistenceGeo.dto.TreeLayerDto;
+import com.emergya.persistenceGeo.dto.Treeable;
 import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.service.FoldersAdminService;
+import com.emergya.persistenceGeo.service.LayerAdminService;
 import com.emergya.persistenceGeo.service.UserAdminService;
 import com.emergya.persistenceGeo.utils.FolderStyle;
 import com.emergya.persistenceGeo.utils.FoldersUtils;
@@ -71,6 +74,8 @@ public class RestFoldersAdminController implements Serializable{
 	private UserAdminService userAdminService;
 	@Resource
 	private FoldersAdminService foldersAdminService;
+	@Resource
+	private LayerAdminService layerAdminService;
 	
 	protected final String RESULTS= "results";
 	protected final String ROOT= "data";
@@ -80,6 +85,21 @@ public class RestFoldersAdminController implements Serializable{
 	public static final String LOAD_FOLDERS_BY_GROUP = "group";
 	public static final String LOAD_FOLDERS_STYLE_TREE = "tree";
 	public static final String LOAD_FOLDERS_STYLE_STRING = "string";
+	
+	/**
+	 * Filter to show zone channels in {@link RestFoldersAdminController#loadChannels(String)}
+	 */
+	public static final String ALL_CHANNEL_IN_ZONES = "ALL_CHANNEL_IN_ZONES";
+	
+	/**
+	 * Filter to show  only channel layers in {@link RestFoldersAdminController#loadFoldersById(String, String)}
+	 */
+	public static final String ONLY_CHANNEL_MARK = "ONLY_CHANNEL_MARK";
+	
+	/**
+	 * Filter to show  only not channel layers in {@link RestFoldersAdminController#loadFoldersById(String, String)}
+	 */
+	public static final String ONLY_NOT_CHANNEL_MARK = "ONLY_NOT_CHANNEL_MARK";
 
 	/**
 	 * This method loads layers.json related with a folder
@@ -461,46 +481,12 @@ public class RestFoldersAdminController implements Serializable{
 
 		return result;
 	}
-	
-	//TODO: REMOVE
-	static Map<Long, FolderDto> FOLDERS;
-	static final Long ROOT_FOLDER = new Long(1);
-	static Map<Long, FolderDto> LAYERS;
-	static{
-		FOLDERS = new ConcurrentHashMap<Long, FolderDto>();
-		FolderDto rootFolder = new FolderDto();
-		rootFolder.setId(ROOT_FOLDER);
-		rootFolder.setName("ROOT");
-		List<FolderDto> children = new LinkedList<FolderDto>();
-		FolderDto child1 = new FolderDto();
-		child1.setId(new Long(2));
-		child1.setName("child1");;
-		child1.setIdParent(ROOT_FOLDER);
-		children.add(child1);
-		FOLDERS.put(new Long(2), child1);
-		FolderDto child2 = new FolderDto();
-		child2.setId(new Long(3));
-		child2.setName("child2");;
-		child2.setIdParent(ROOT_FOLDER);
-		children.add(child2);
-		FolderDto child3 = new FolderDto();
-		child3.setId(new Long(4));
-		child3.setName("child3");;
-		child3.setIdParent(new Long(3));
-		List<FolderDto> children2 = new LinkedList<FolderDto>();
-		children2.add(child3);
-		child2.setFolderList(children2);
-		FOLDERS.put(new Long(3), child2);
-		FOLDERS.put(new Long(4), child3);
-		rootFolder.setFolderList(children);
-		FOLDERS.put(ROOT_FOLDER, rootFolder);
-	}
 
 
 	/**
-	 * This method loads all folders related with a user
+	 * This method loads all folders or layers in a folder
 	 * 
-	 * @param username
+	 * @param idFolder
 	 * 
 	 * @return JSON file with folders
 	 */
@@ -510,26 +496,72 @@ public class RestFoldersAdminController implements Serializable{
 	Map<String, Object> loadFoldersById(@PathVariable String idFolder,
 			@RequestParam(value="filter", required=false) String filter){
 		Map<String, Object> result = new HashMap<String, Object>();
-		List<FolderDto> folders = null;
+		List<Treeable> tree = null;
 		try{
-			/*
-			//TODO: Secure with logged user
-			String username = ((UserDetails) SecurityContextHolder.getContext()
-					.getAuthentication().getPrincipal()).getUsername(); 
-			 */
 			if(idFolder != null){
-				folders = new LinkedList<FolderDto>();
-				FolderDto rootFolder;
+				Long folderId = new Long(idFolder);
+				tree = new LinkedList<Treeable>();
 				
-				//TODO: get from Service layer 
-//				if(filter != null){
-//					rootFolder = foldersAdminService.getRootGroupFolder(Long.decode(idGroup));
-//				}else{
-//					rootFolder = foldersAdminService.getRootGroupFolder(Long.decode(idGroup));
-//				}
-				rootFolder = FOLDERS.get(Long.decode(idFolder)); //TODO: REMOVE
-				
-				FoldersUtils.getFolderTree(rootFolder, folders, null, FolderStyle.NORMAL, null);
+				List<FolderDto> previusFolders = ((FolderDto) foldersAdminService.getById(folderId)).getFolderList();
+				if(previusFolders != null 
+						&& !previusFolders.isEmpty()){ 
+					for(FolderDto subRes: previusFolders){
+						tree.add((Treeable) FoldersUtils.getFolderDecorator().applyStyle(subRes, FolderStyle.NORMAL));
+					}
+				}else{
+					Boolean isChannel = null;
+					if(ONLY_CHANNEL_MARK.equals(filter)){
+						isChannel = Boolean.TRUE;
+					}else if(ONLY_NOT_CHANNEL_MARK.equals(filter)){
+						isChannel = Boolean.FALSE;
+					}
+					List<LayerDto> previusLayers = layerAdminService.getLayersByFolder(folderId, isChannel);
+					for(LayerDto subRes: previusLayers){
+						tree.add(new TreeLayerDto(subRes));
+					}
+				}
+			}
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+		}
+		
+		result.put(RESULTS, tree != null ? tree.size(): 0);
+		result.put(ROOT, tree);
+
+		return result;
+	}
+
+	/**
+	 * This method loads all channel folders in a zone
+	 * 
+	 * @param filter can be null {@link RestFoldersAdminController#ALL_CHANNEL_IN_ZONES} or id zone to filter 
+	 * 
+	 * @return JSON file with folders
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadChannels", 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadChannels(@RequestParam(value="filter", required = false) String filter){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+		List<FolderDto> previusFolders = null;
+		try{
+			if(filter != null){
+				if(ALL_CHANNEL_IN_ZONES.equals(filter)){
+					previusFolders = foldersAdminService.getChannelFolders(Boolean.TRUE, null);
+				}else{
+					Long zoneId = Long.decode(filter);
+					previusFolders = foldersAdminService.getChannelFolders(null, zoneId);
+				}
+			}else{
+				previusFolders = foldersAdminService.getChannelFolders(Boolean.FALSE, null);	
+			} 
+			folders = new LinkedList<FolderDto>();
+			
+			for(FolderDto subRes: previusFolders){
+				folders.add(FoldersUtils.getFolderDecorator().applyStyle(subRes, FolderStyle.NORMAL));
 			}
 			result.put(SUCCESS, true);
 		}catch (Exception e){

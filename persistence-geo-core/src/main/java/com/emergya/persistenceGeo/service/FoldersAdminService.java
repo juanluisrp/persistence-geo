@@ -29,6 +29,8 @@
  */
 package com.emergya.persistenceGeo.service;
 
+import java.util.List;
+
 import com.emergya.persistenceGeo.dto.FolderDto;
 
 /**
@@ -88,4 +90,14 @@ public interface FoldersAdminService extends AbstractService{
 	 * @return copied
 	 */
 	public FolderDto copyFolder(Long targetUserId, FolderDto originFolder);
+
+	/**
+	 * Get all channel folders filterd
+	 * 
+	 * @param inZone indicates if obtain channel folders with a zone. If this parameter is null only obtain not zoned channels
+	 * @param idZone filter by zone. Obtain only channels of the zone identified by <code>idZone</code>
+	 * 
+	 * @return folder list
+	 */
+	public List<FolderDto> getChannelFolders(Boolean inZone, Long idZone);
 }
