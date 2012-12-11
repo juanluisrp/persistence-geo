@@ -102,7 +102,6 @@ public class RestZoneController implements Serializable{
 	 *
 	 * @return all zones of a specified type
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/persistenceGeo/getZonesByType", method = RequestMethod.GET)
 	public @ResponseBody
 	Map<String, Object> getZonesByType(@RequestParam(value="type", required = true)String zoneType) {
