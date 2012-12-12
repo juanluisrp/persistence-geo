@@ -234,7 +234,7 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		entity.setFolder(folder);
 		layerDao.save(entity);
 	}
-	
+
 	/**
 	 * Get layers by folder
 	 * 
@@ -251,11 +251,12 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 	 * 
 	 * @param folderId to be loaded
 	 * @param isChannel
+	 * @param isEnabled
 	 * 
 	 * @return all layers in the folder
 	 */
-	public List<LayerDto> getLayersByFolder(Long folderId, Boolean isChannel){
-		return (List<LayerDto>) entitiesToDtos(layerDao.getLayersByFolder(folderId, isChannel));
+	public List<LayerDto> getLayersByFolder(Long folderId, Boolean isChannel, Boolean isEnabled){
+		return (List<LayerDto>) entitiesToDtos(layerDao.getLayersByFolder(folderId, isChannel, isEnabled));
 	}
 
 	protected LayerDto entityToDto(AbstractLayerEntity entity) {
@@ -477,7 +478,6 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		return (List<LayerDto>) entitiesToDtos(layerDao.findByAuthorityId(id, isChannel));
 	}
 
-	@Override
 	@Cacheable("persistenceGeo")
 	public List<String> getAllLayerTypes() {
 		List<String> result = new LinkedList<String>();
@@ -489,7 +489,6 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		return result;
 	}
 
-	@Override
 	@Cacheable("persistenceGeo")
 	public List<String> getAllLayerTypeProperties(String layerType) {
 		List<String> result = new LinkedList<String>();
@@ -499,6 +498,10 @@ public class LayerAdminServiceImpl extends AbstractServiceImpl<LayerDto, Abstrac
 		}
 		
 		return result;
+	}
+
+	public List<LayerDto> getLayersByFolder(Long folderId, Boolean isChannel) {
+		return (List<LayerDto>) entitiesToDtos(layerDao.getLayersByFolder(folderId, isChannel, Boolean.TRUE));
 	}
 	
 	/**

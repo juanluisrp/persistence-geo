@@ -73,7 +73,6 @@ public class RestZoneController implements Serializable{
 	 * 
 	 * @return all zones if idZone is null or child zones of idZone otherwise
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/persistenceGeo/getAllZones", method = RequestMethod.GET)
 	public @ResponseBody
 	Map<String, Object> getAllZones(@RequestParam(value="idZone", required = false)String idZone) {
@@ -81,9 +80,9 @@ public class RestZoneController implements Serializable{
 		List<ZoneDto> zones = null;
 		try{
 			if(idZone == null){
-				zones = (List<ZoneDto>) zoneAdminService.getAll();
+				zones = (List<ZoneDto>) zoneAdminService.findAllEnabled();
 			}else{
-				zones = (List<ZoneDto>) zoneAdminService.getAll(); //TODO: get by parent
+				zones = (List<ZoneDto>) zoneAdminService.findByParent(Long.decode(idZone), Boolean.TRUE); 
 			}
 			result.put(SUCCESS, true);
 		}catch (Exception e){
@@ -108,7 +107,7 @@ public class RestZoneController implements Serializable{
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<ZoneDto> zones = null;
 		try {
-			zones = (List<ZoneDto>) zoneAdminService.findByType(zoneType);
+			zones = (List<ZoneDto>) zoneAdminService.findByType(zoneType, true);
 			result.put(SUCCESS, true);
 		} catch (Exception e) {
 			result.put(SUCCESS, false);

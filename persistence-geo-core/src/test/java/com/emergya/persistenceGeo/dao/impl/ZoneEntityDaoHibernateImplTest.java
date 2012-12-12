@@ -31,8 +31,8 @@ package com.emergya.persistenceGeo.dao.impl;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Properties;
 import java.util.List;
+import java.util.Properties;
 
 import javax.annotation.Resource;
 

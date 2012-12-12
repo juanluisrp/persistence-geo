@@ -134,4 +134,39 @@ public interface FolderEntityDao extends GenericDAO<AbstractFolderEntity, Long> 
      * @return Entities list associated with the zoneId or null if not found
      */
     public List<AbstractFolderEntity> findByZone(Long zoneId, Long parentId);
+
+    /**
+     * Get a folders list by zones with an specific parent. If zoneId is NULL
+     * returns all the folder not associated to any zone. If parentId is NULL
+     * the returned folders are root folders.
+     *
+     * @param <code>zoneId</code>
+     * @param <code>parentId</code>
+     * @param <code>isEnabled</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+    public List<AbstractFolderEntity> findByZone(Long zoneId, Long parentId, Boolean isEnable);
+
+    /**
+     * Get a folders list by zones. If zoneId is NULL returns all the
+     * folder not associated to any zone.
+     *
+     * @param <code>zoneId</code>
+     * @param <code>isEnabled</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+    public List<AbstractFolderEntity> findByZone(Long zoneId, Boolean isEnable);
+
+	/**
+	 * Get all channel folders filtered
+	 * 
+	 * @param inZone indicates if obtain channel folders with a zone. If this parameter is null only obtain not zoned channels
+	 * @param idZone filter by zone. Obtain only channels of the zone identified by <code>idZone</code>
+     * @param <code>isEnabled</code>
+	 * 
+	 * @return folder list
+	 */
+	public List<AbstractFolderEntity> getChannelFolders(Boolean inZone, Long idZone, Boolean isEnable);
 }

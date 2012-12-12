@@ -503,7 +503,7 @@ public class RestFoldersAdminController implements Serializable{
 				Long folderId = new Long(idFolder);
 				tree = new LinkedList<Treeable>();
 				
-				List<FolderDto> previusFolders = ((FolderDto) foldersAdminService.getById(folderId)).getFolderList();
+				List<FolderDto> previusFolders = foldersAdminService.findByZone(null, folderId, Boolean.TRUE);
 				if(previusFolders != null 
 						&& !previusFolders.isEmpty()){ 
 					for(FolderDto subRes: previusFolders){
@@ -516,7 +516,7 @@ public class RestFoldersAdminController implements Serializable{
 					}else if(ONLY_NOT_CHANNEL_MARK.equals(filter)){
 						isChannel = Boolean.FALSE;
 					}
-					List<LayerDto> previusLayers = layerAdminService.getLayersByFolder(folderId, isChannel);
+					List<LayerDto> previusLayers = layerAdminService.getLayersByFolder(folderId, isChannel, Boolean.TRUE);
 					for(LayerDto subRes: previusLayers){
 						tree.add(new TreeLayerDto(subRes));
 					}
@@ -551,13 +551,13 @@ public class RestFoldersAdminController implements Serializable{
 		try{
 			if(filter != null){
 				if(ALL_CHANNEL_IN_ZONES.equals(filter)){
-					previusFolders = foldersAdminService.getChannelFolders(Boolean.TRUE, null);
+					previusFolders = foldersAdminService.getChannelFolders(Boolean.TRUE, null, Boolean.TRUE);
 				}else{
 					Long zoneId = Long.decode(filter);
-					previusFolders = foldersAdminService.getChannelFolders(null, zoneId);
+					previusFolders = foldersAdminService.getChannelFolders(null, zoneId, Boolean.TRUE);
 				}
 			}else{
-				previusFolders = foldersAdminService.getChannelFolders(Boolean.FALSE, null);	
+				previusFolders = foldersAdminService.getChannelFolders(Boolean.FALSE, null, Boolean.TRUE);	
 			} 
 			folders = new LinkedList<FolderDto>();
 			
@@ -598,9 +598,9 @@ public class RestFoldersAdminController implements Serializable{
 		try {
 
             if (parentId == null) {
-                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId);
+                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, Boolean.TRUE);
             } else {
-                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, parentId);
+                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, parentId, Boolean.TRUE);
             }
 			result.put(SUCCESS, true);
 

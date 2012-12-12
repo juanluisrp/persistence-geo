@@ -43,4 +43,10 @@ import com.emergya.persistenceGeo.dto.ZoneDto;
 public interface ZoneAdminService extends AbstractService{
 
     public List<ZoneDto> findByType(String type);
+
+    public List<ZoneDto> findByType(String type, Boolean isEnabled);
+    
+    public List<ZoneDto> findAllEnabled();
+    
+    public List<ZoneDto> findByParent(Long idParent, Boolean isEnabled);
 }

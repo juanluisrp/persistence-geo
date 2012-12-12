@@ -100,6 +100,17 @@ public interface FoldersAdminService extends AbstractService{
 	 * @return folder list
 	 */
 	public List<FolderDto> getChannelFolders(Boolean inZone, Long idZone);
+	
+	/**
+	 * Get all channel folders filterd
+	 * 
+	 * @param inZone indicates if obtain channel folders with a zone. If this parameter is null only obtain not zoned channels
+	 * @param idZone filter by zone. Obtain only channels of the zone identified by <code>idZone</code>
+	 * @param isEnabled
+	 * 
+	 * @return folder list
+	 */
+	public List<FolderDto> getChannelFolders(Boolean inZone, Long idZone, Boolean isEnabled);
 
     /**
      * Get a folders list by zones. If zoneId is NULL returns all the
@@ -112,15 +123,39 @@ public interface FoldersAdminService extends AbstractService{
     public List<FolderDto> findByZone(Long zoneId);
 
     /**
+     * Get a folders list by zones. If zoneId is NULL returns all the
+     * folder not associated to any zone.
+     *
+     * @param <code>zoneId</code>
+     * @param <code>isEnabled</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+    public List<FolderDto> findByZone(Long zoneId, Boolean isEnabled);
+
+    /**
      * Get a folders list by zones with an specific parent. If zoneId is NULL
      * returns all the folder not associated to any zone. If parentId is NULL
      * the returned folders are root folders.
      *
-     * @params <code>zoneId</code>
-     * @params <code>parentId</code>
+     * @param <code>zoneId</code>
+     * @param <code>parentId</code>
      *
      * @return Entities list associated with the zoneId or null if not found
      */
     public List<FolderDto> findByZone(Long zoneId, Long parentId);
+
+    /**
+     * Get a folders list by zones with an specific parent. If zoneId is NULL
+     * returns all the folder not associated to any zone. If parentId is NULL
+     * the returned folders are root folders.
+     *
+     * @param <code>zoneId</code>
+     * @param <code>parentId</code>
+     * @param <code>isEnabled</code>
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+    public List<FolderDto> findByZone(Long zoneId, Long parentId, Boolean isEnabled);
     
 }

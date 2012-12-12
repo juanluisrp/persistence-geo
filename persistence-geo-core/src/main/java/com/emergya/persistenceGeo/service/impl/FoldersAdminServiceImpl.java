@@ -52,6 +52,7 @@ import com.emergya.persistenceGeo.metaModel.AbstractLayerEntity;
 import com.emergya.persistenceGeo.metaModel.AbstractUserEntity;
 import com.emergya.persistenceGeo.metaModel.Instancer;
 import com.emergya.persistenceGeo.service.FoldersAdminService;
+import com.emergya.persistenceGeo.service.LayerAdminService;
 
 /**
  * FoldersAdminService transactional implementation based on daos uses
@@ -77,6 +78,9 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
 	private AuthorityEntityDao authDao;
 	@Resource
 	private ZoneEntityDao zoneDao;
+	
+	@Resource
+	private LayerAdminService layerAdminService;
 
 	public FoldersAdminServiceImpl(){
 		super();
@@ -272,6 +276,50 @@ public class FoldersAdminServiceImpl extends AbstractServiceImpl<FolderDto, Abst
             foldersDto.add(entityToDto(folderEntity));
         }
         return foldersDto;
+    }
+	
+	/**
+	 * Get all channel folders filtered
+	 * 
+	 * @param inZone indicates if obtain channel folders with a zone. If this parameter is null only obtain not zoned channels
+	 * @param idZone filter by zone. Obtain only channels of the zone identified by <code>idZone</code>
+	 * @param isEnabled
+	 * 
+	 * @return folder list
+	 */
+	@SuppressWarnings("unchecked")
+	public List<FolderDto> getChannelFolders(Boolean inZone, Long idZone, Boolean isEnabled){
+		return (List<FolderDto>) entitiesToDtos(folderDao.getChannelFolders(inZone, idZone, isEnabled));
+	}
+
+    /**
+     * Get a folders list by zones. If zoneId is NULL returns all the
+     * folder not associated to any zone.
+     *
+     * @param <code>zoneId</code>
+	 * @param isEnabled
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+	@SuppressWarnings("unchecked")
+    public List<FolderDto> findByZone(Long zoneId, Boolean isEnabled){
+		return (List<FolderDto>) entitiesToDtos(folderDao.findByZone(zoneId, isEnabled));
+    }
+
+    /**
+     * Get a folders list by zones with an specific parent. If zoneId is NULL
+     * returns all the folder not associated to any zone. If parentId is NULL
+     * the returned folders are root folders.
+     *
+     * @param <code>zoneId</code>
+     * @param <code>parentId</code>
+	 * @param isEnabled
+     *
+     * @return Entities list associated with the zoneId or null if not found
+     */
+	@SuppressWarnings("unchecked")
+    public List<FolderDto> findByZone(Long zoneId, Long parentId, Boolean isEnabled){
+		return (List<FolderDto>) entitiesToDtos(folderDao.findByZone(zoneId, parentId, isEnabled));
     }
 
 	protected FolderDto entityToDto(AbstractFolderEntity entity) {

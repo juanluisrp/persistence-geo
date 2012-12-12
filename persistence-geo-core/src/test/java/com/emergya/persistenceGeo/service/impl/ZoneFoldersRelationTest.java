@@ -25,7 +25,6 @@
  */
 package com.emergya.persistenceGeo.service.impl;
 
-import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -43,10 +42,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.emergya.persistenceGeo.dto.ZoneDto;
 import com.emergya.persistenceGeo.dto.FolderDto;
-import com.emergya.persistenceGeo.service.ZoneAdminService;
+import com.emergya.persistenceGeo.dto.ZoneDto;
 import com.emergya.persistenceGeo.service.FoldersAdminService;
+import com.emergya.persistenceGeo.service.ZoneAdminService;
 
 
 /**
@@ -226,7 +225,7 @@ public class ZoneFoldersRelationTest {
             folder3 = (FolderDto) foldersAdminService.create(folder3);
 
 
-            folders = foldersAdminService.findByZone(zone1.getId(), null);
+            folders = foldersAdminService.findByZone(zone1.getId(), null, Boolean.TRUE);
             for (FolderDto folderDto: folders) {
                 Assert.assertEquals(folderDto.getZoneId(), zone1.getId());
 			    Assert.assertEquals(folderDto.getIdParent(), null);
