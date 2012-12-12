@@ -589,8 +589,8 @@ public class RestFoldersAdminController implements Serializable{
 	@RequestMapping(value = "/persistenceGeo/loadFoldersByZone",
 			produces = {MediaType.APPLICATION_JSON_VALUE})
 	public @ResponseBody
-	Map<String, Object> loadFoldersByZone(@RequestParam(value="zone", required=true) Long zoneId,
-            @RequestParam(value="parent", required=false) Long parentId) {
+	Map<String, Object> loadFoldersByZone(@RequestParam(value="zone", required=true) String zoneId,
+            @RequestParam(value="parent", required=false) String parentId) {
 
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<FolderDto> folders = null;
@@ -598,9 +598,9 @@ public class RestFoldersAdminController implements Serializable{
 		try {
 
             if (parentId == null) {
-                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, Boolean.TRUE);
+                folders = (List<FolderDto>) foldersAdminService.findByZone(new Long(zoneId), Boolean.TRUE);
             } else {
-                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, parentId, Boolean.TRUE);
+                folders = (List<FolderDto>) foldersAdminService.findByZone(new Long(zoneId), new Long(parentId), Boolean.TRUE);
             }
 			result.put(SUCCESS, true);
 
