@@ -108,7 +108,7 @@ public class RestZoneController implements Serializable{
 		Map<String, Object> result = new HashMap<String, Object>();
 		List<ZoneDto> zones = null;
 		try {
-			zones = (List<ZoneDto>) zoneAdminService.findByType(zoneType);
+			zones = (List<ZoneDto>) zoneAdminService.findByType(zoneType, true);
 			result.put(SUCCESS, true);
 		} catch (Exception e) {
 			result.put(SUCCESS, false);
