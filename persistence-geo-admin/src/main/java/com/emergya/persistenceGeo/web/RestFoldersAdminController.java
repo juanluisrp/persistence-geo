@@ -598,9 +598,9 @@ public class RestFoldersAdminController implements Serializable{
 		try {
 
             if (parentId == null) {
-                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId);
+                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, true);
             } else {
-                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, parentId);
+                folders = (List<FolderDto>) foldersAdminService.findByZone(zoneId, parentId, true);
             }
 			result.put(SUCCESS, true);
 
