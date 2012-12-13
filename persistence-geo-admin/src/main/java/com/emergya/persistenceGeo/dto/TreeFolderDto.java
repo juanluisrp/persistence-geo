@@ -98,4 +98,8 @@ public class TreeFolderDto extends FolderDto implements Treeable{
 		return getName();
 	}
 
+	public String getType() {
+		return getType();
+	}
+
 }

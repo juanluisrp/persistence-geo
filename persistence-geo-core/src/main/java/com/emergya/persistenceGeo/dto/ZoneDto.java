@@ -28,13 +28,15 @@ package com.emergya.persistenceGeo.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.emergya.persistenceGeo.dto.AbstractDto;
+
 /**
  * Zone data transfer object
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
-public class ZoneDto implements Serializable {
+public class ZoneDto extends AbstractDto implements Serializable {
 
 	/**
 	 * 

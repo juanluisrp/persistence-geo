@@ -34,6 +34,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
+import com.emergya.persistenceGeo.dto.AbstractDto;
+
 /**
  * Layer Data Transfer Object 
  * 
@@ -41,7 +43,7 @@ import java.util.Map;
  * @author <a href="mailto:marcos@emergya.com">marcos</a>
  *
  */
-public class LayerDto implements Serializable, Cloneable {
+public class LayerDto extends AbstractDto implements Serializable, Cloneable {
 
 	/**
 	 * 

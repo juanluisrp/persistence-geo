@@ -49,7 +49,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
-import com.emergya.persistenceGeo.dto.TreeLayerDto;
+import com.emergya.persistenceGeo.dto.TreeNode;
 import com.emergya.persistenceGeo.dto.Treeable;
 import com.emergya.persistenceGeo.dto.UserDto;
 import com.emergya.persistenceGeo.service.FoldersAdminService;
@@ -518,7 +518,7 @@ public class RestFoldersAdminController implements Serializable{
 					}
 					List<LayerDto> previusLayers = layerAdminService.getLayersByFolder(folderId, isChannel, Boolean.TRUE);
 					for(LayerDto subRes: previusLayers){
-						tree.add(new TreeLayerDto(subRes));
+						tree.add(new TreeNode(subRes, true));
 					}
 				}
 			}

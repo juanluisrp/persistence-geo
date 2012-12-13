@@ -34,13 +34,15 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.emergya.persistenceGeo.dto.AbstractDto;
+
 /**
  * Folder DTO
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
-public class FolderDto implements Serializable, Cloneable{
+public class FolderDto extends AbstractDto implements Serializable, Cloneable{
 
 	/**
 	 * 
