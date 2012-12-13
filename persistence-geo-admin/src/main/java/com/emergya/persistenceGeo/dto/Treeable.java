@@ -54,5 +54,9 @@ public interface Treeable extends Serializable{
 	 * @return The original class/type of the node
 	 */
 	public String getType();
+	/**
+	 * @return The original data of the node
+	 */
+	public Object getData();
 
 }

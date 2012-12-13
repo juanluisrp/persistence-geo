@@ -29,37 +29,53 @@
  */
 package com.emergya.persistenceGeo.dto;
 
-//import java.util.Date;
-//import java.util.LinkedList;
-
-import com.emergya.persistenceGeo.dto.Treeable;
-import com.emergya.persistenceGeo.dto.AbstractDto;
-
 /**
- * Folder DTO for show in folder tree
+ * Tree node implementation
  *
  * @author <a href="mailto:ahernandez@emergya.com">ahernandez</a>
+ * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
  *
  */
 public class TreeNode implements Treeable {
 
 	private static final long serialVersionUID = 7848394150785096968L;
 
-    // The original object
-    private AbstractDto data;
+    /**
+     *  The original object
+     */
+    private Object data;
 
-    // TRUE if this node isn't a container of nodes
+    /**
+     *  TRUE if this node isn't a container of nodes
+     */
 	private boolean leaf;
 
-    // A string that indicates what was the original class
+    /**
+     *  A string that indicates what was the original class
+     */
     private String type;
+    
+    /**
+     * Node's id
+     */
+    private Long id;
+    
+    /**
+     * Text to show
+     */
+    private String text;
 
-
-	public TreeNode(AbstractDto origin, boolean isLeaf, String type) {
+	public TreeNode(Object origin, Long id, String text, String type, boolean isLeaf) {
 		super();
         this.data = origin;
-        this.leaf = leaf;
+        this.id = id;
+        this.text = text;
         this.type = type;
+        this.leaf = isLeaf;
+	}
+
+	public TreeNode(AbstractDto origin, boolean isLeaf, String type) {
+		this(origin, origin.getId(), origin.getName(), type, isLeaf);
 	}
 
 	public TreeNode(AbstractDto origin, boolean isLeaf) {
@@ -70,18 +86,14 @@ public class TreeNode implements Treeable {
         this(origin, true, "");
 	}
 
-    public Long getId() {
-        return data.getId() != null ? new Long(data.getId()) : null;
-    }
-
-	public String getText() {
-        return data.getName() != null ? new String(data.getName()) : null;
+	public Object getData() {
+		return data;
 	}
 
-    public void setText(String text) {
-        //data.setId(id);
-    }
-
+	public void setData(Object data) {
+		this.data = data;
+	}
+	
 	public boolean getLeaf() {
 		return leaf;
 	}
@@ -94,8 +106,24 @@ public class TreeNode implements Treeable {
 		return type;
 	}
 
-    public void setType(String type) {
-        this.type = type;
-    }
+	public void setType(String type) {
+		this.type = type;
+	}
 
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
+	
 }

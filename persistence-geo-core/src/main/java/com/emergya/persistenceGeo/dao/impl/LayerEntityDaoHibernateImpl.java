@@ -221,15 +221,15 @@ public class LayerEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstrac
 		Criteria criteria = getSession().createCriteria(persistentClass)
 				.createAlias("folder", "folder")
 				.add(Restrictions.eq("folder.id", folderId));
-		if(isChannel == null){
-			criteria.add(Restrictions.isNull("isChannel"));
-		}else if(isChannel){
-			criteria.add(Restrictions.eq("isChannel", isChannel));
-		}else{
-			Disjunction dis = Restrictions.disjunction();
-			dis.add(Restrictions.isNull("isChannel"));
-			dis.add(Restrictions.eq("isChannel", isChannel));
-			criteria.add(dis);
+		if(isChannel != null){
+			if(isChannel){
+				criteria.add(Restrictions.eq("isChannel", isChannel));
+			}else{
+				Disjunction dis = Restrictions.disjunction();
+				dis.add(Restrictions.isNull("isChannel"));
+				dis.add(Restrictions.eq("isChannel", isChannel));
+				criteria.add(dis);
+			}
 		}
 		if(isEnabled == null){
 			criteria.add(Restrictions.isNull("enabled"));

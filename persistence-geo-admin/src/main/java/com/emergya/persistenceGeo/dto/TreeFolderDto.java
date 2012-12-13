@@ -36,30 +36,34 @@ import java.util.LinkedList;
  * Folder DTO for show in folder tree
  * 
  * @author <a href="mailto:adiaz@emergya.com">adiaz</a>
- *
+ * 
  */
-public class TreeFolderDto extends FolderDto implements Treeable{
-	
+public class TreeFolderDto extends FolderDto implements Treeable {
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7848354150705096968L;
-	
+
 	/**
 	 * Default is true
 	 */
 	private boolean leaf = true;
 	
-	public TreeFolderDto(FolderDto origin){
+	private FolderDto origin;
+
+	public TreeFolderDto(FolderDto origin) {
 
 		super();
-		 
+		
+		this.origin = origin;
+
 		this.id = origin.id != null ? new Long(origin.id) : null; // clone id
 		this.name = origin.name != null ? new String(origin.name) : null;
 		this.enabled = origin.enabled != null ? new Boolean(origin.enabled)
 				: null;
-		this.isChannel = origin.isChannel != null ? new Boolean(origin.isChannel)
-				: null;
+		this.isChannel = origin.isChannel != null ? new Boolean(
+				origin.isChannel) : null;
 		this.isPlain = origin.isChannel != null ? new Boolean(origin.isChannel)
 				: null;
 		this.createDate = origin.createDate != null ? (Date) origin.createDate
@@ -71,19 +75,18 @@ public class TreeFolderDto extends FolderDto implements Treeable{
 		this.idAuth = origin.idAuth != null ? new Long(origin.idAuth) : null;
 		this.idUser = origin.idUser != null ? new Long(origin.idUser) : null;
 		this.order = origin.order != null ? new Integer(origin.order) : null;
-		
+
 		// clone folder list
-		if(origin.folderList != null){
+		if (origin.folderList != null) {
 			this.folderList = new LinkedList<FolderDto>();
-			if(origin.folderList.size()>0){
+			if (origin.folderList.size() > 0) {
 				this.leaf = false;
 			}
 		}
 
 		// clone zone
-		this.zoneId = origin.zoneId != null ? new Long(origin.zoneId)
-				: null;
-		
+		this.zoneId = origin.zoneId != null ? new Long(origin.zoneId) : null;
+
 	}
 
 	public boolean getLeaf() {
@@ -93,13 +96,17 @@ public class TreeFolderDto extends FolderDto implements Treeable{
 	public void setLeaf(boolean leaf) {
 		this.leaf = leaf;
 	}
-	
+
 	public String getText() {
 		return getName();
 	}
 
 	public String getType() {
-		return getType();
+		return FolderDto.class.getSimpleName();
+	}
+
+	public Object getData() {
+		return origin;
 	}
 
 }

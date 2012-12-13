@@ -229,11 +229,13 @@ public class FolderEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstra
 	 */
 	public List<AbstractFolderEntity> getChannelFolders(Boolean inZone, Long idZone, Boolean isEnable){
 		Criteria criteria = getSession().createCriteria(persistentClass);
-		//FIXME: remove this fixme when merge 
-		if(inZone){
-			criteria.add(Restrictions.isNotNull(ZONE));
-		}else{
-			criteria.add(Restrictions.isNull(ZONE));
+		//FIXME: remove this fixme when merge
+		if(inZone != null){
+			if(inZone){
+				criteria.add(Restrictions.isNotNull(ZONE));
+			}else{
+				criteria.add(Restrictions.isNull(ZONE));
+			}
 		}
 		if(idZone != null){
 			criteria.createAlias(ZONE, ZONE)

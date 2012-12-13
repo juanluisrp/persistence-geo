@@ -503,23 +503,25 @@ public class RestFoldersAdminController implements Serializable{
 				Long folderId = new Long(idFolder);
 				tree = new LinkedList<Treeable>();
 				
+				// add folders
 				List<FolderDto> previusFolders = foldersAdminService.findByZone(null, folderId, Boolean.TRUE);
 				if(previusFolders != null 
 						&& !previusFolders.isEmpty()){ 
 					for(FolderDto subRes: previusFolders){
 						tree.add((Treeable) FoldersUtils.getFolderDecorator().applyStyle(subRes, FolderStyle.NORMAL));
 					}
-				}else{
-					Boolean isChannel = null;
-					if(ONLY_CHANNEL_MARK.equals(filter)){
-						isChannel = Boolean.TRUE;
-					}else if(ONLY_NOT_CHANNEL_MARK.equals(filter)){
-						isChannel = Boolean.FALSE;
-					}
-					List<LayerDto> previusLayers = layerAdminService.getLayersByFolder(folderId, isChannel, Boolean.TRUE);
-					for(LayerDto subRes: previusLayers){
-						tree.add(new TreeNode(subRes, true));
-					}
+				}
+
+				// add layers
+				Boolean isChannel = null;
+				if(ONLY_CHANNEL_MARK.equals(filter)){
+					isChannel = Boolean.TRUE;
+				}else if(ONLY_NOT_CHANNEL_MARK.equals(filter)){
+					isChannel = Boolean.FALSE;
+				}
+				List<LayerDto> previusLayers = layerAdminService.getLayersByFolder(folderId, isChannel, Boolean.TRUE);
+				for(LayerDto subRes: previusLayers){
+					tree.add(new TreeNode(subRes, true));
 				}
 			}
 			result.put(SUCCESS, true);
