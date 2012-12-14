@@ -79,11 +79,11 @@ public class TreeNode implements Treeable {
 	}
 
 	public TreeNode(AbstractDto origin, boolean isLeaf) {
-        this(origin, isLeaf, "");
+        this(origin, isLeaf, origin.getClass().getSimpleName());
 	}
 
 	public TreeNode(AbstractDto origin) {
-        this(origin, true, "");
+        this(origin, true, origin.getClass().getSimpleName());
 	}
 
 	public Object getData() {

@@ -49,6 +49,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.LayerDto;
+import com.emergya.persistenceGeo.dto.TreeFolderDto;
 import com.emergya.persistenceGeo.dto.TreeNode;
 import com.emergya.persistenceGeo.dto.Treeable;
 import com.emergya.persistenceGeo.dto.UserDto;
@@ -101,6 +102,11 @@ public class RestFoldersAdminController implements Serializable{
 	 * Filter to show  only not channel layers in {@link RestFoldersAdminController#loadFoldersById(String, String)}
 	 */
 	public static final String ONLY_NOT_CHANNEL_MARK = "ONLY_NOT_CHANNEL_MARK";
+
+	/**
+	 * Filter to show layers in channel tree {@link RestFoldersAdminController#loadChannels(String)}
+	 */
+	public static final String SHOW_FOLDER_LAYERS = "SHOW_FOLDER_LAYERS";
 
 	/**
 	 * This method loads layers.json related with a folder
@@ -534,7 +540,7 @@ public class RestFoldersAdminController implements Serializable{
 		result.put(ROOT, tree);
 
 		return result;
-	}
+	} 
 
 	/**
 	 * This method loads all channel folders in a zone
@@ -552,11 +558,16 @@ public class RestFoldersAdminController implements Serializable{
 		List<FolderDto> previusFolders = null;
 		try{
 			if(filter != null){
-				if(ALL_CHANNEL_IN_ZONES.equals(filter)){
+				if(filter.contains(ALL_CHANNEL_IN_ZONES)){
 					previusFolders = foldersAdminService.getChannelFolders(Boolean.TRUE, null, Boolean.TRUE);
 				}else{
-					Long zoneId = Long.decode(filter);
-					previusFolders = foldersAdminService.getChannelFolders(null, zoneId, Boolean.TRUE);
+					Long zoneId = null;
+					try{
+						zoneId = Long.decode(filter);
+						previusFolders = foldersAdminService.getChannelFolders(null, zoneId, Boolean.TRUE);
+					}catch(Exception e){
+						previusFolders = foldersAdminService.getChannelFolders(Boolean.FALSE, null, Boolean.TRUE);	
+					}
 				}
 			}else{
 				previusFolders = foldersAdminService.getChannelFolders(Boolean.FALSE, null, Boolean.TRUE);	
@@ -564,7 +575,14 @@ public class RestFoldersAdminController implements Serializable{
 			folders = new LinkedList<FolderDto>();
 			
 			for(FolderDto subRes: previusFolders){
-				folders.add(FoldersUtils.getFolderDecorator().applyStyle(subRes, FolderStyle.NORMAL));
+				TreeFolderDto folder = (TreeFolderDto) FoldersUtils.getFolderDecorator().applyStyle(subRes, FolderStyle.NORMAL);
+				if(filter != null 
+						&& filter.contains(SHOW_FOLDER_LAYERS)){
+					folder.setLeaf(false);
+				}else{
+					folder.setLeaf(true);
+				}
+				folders.add(folder);
 			}
 			result.put(SUCCESS, true);
 		}catch (Exception e){
