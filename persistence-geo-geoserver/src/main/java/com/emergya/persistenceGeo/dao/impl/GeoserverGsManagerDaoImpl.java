@@ -417,12 +417,13 @@ public class GeoserverGsManagerDaoImpl implements GeoserverDao {
 	 */
 	@Override
 	public boolean existsLayerInWorkspace(String layerName, String workspaceName) {
+		boolean result = false;
 		try {
 			GeoServerRESTManager manager = new GeoServerRESTManager(new URL(
 					gsConfiguration.getServerUrl()),
 					gsConfiguration.getAdminUsername(),
 					gsConfiguration.getAdminPassword());
-			manager.getReader().getLayer(workspaceName + ":" + layerName);
+			result = manager.getReader().getLayer(workspaceName + ":" + layerName) != null;
 
 		} catch (IllegalArgumentException e) {
 			LOG.error(
@@ -434,6 +435,6 @@ public class GeoserverGsManagerDaoImpl implements GeoserverDao {
 							+ gsConfiguration.getServerUrl(), e);
 		}
 
-		return false;
+		return result;
 	}
 }
