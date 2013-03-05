@@ -49,7 +49,6 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	protected String name;
 	protected Boolean enabled;
 	protected Boolean isChannel;
-	protected Boolean isPlain;
 	protected Date createDate;
 	protected Date updateDate;
 	protected AbstractZoneEntity zone;
@@ -79,10 +78,6 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	 * @return the enabled
 	 */
 	public abstract Boolean getEnabled();
-	/**
-	 * @return the isPlain
-	 */
-	public abstract Boolean getIsPlain();
 	/**
 	 * @return the isChannel
 	 */
@@ -148,13 +143,6 @@ public abstract class AbstractFolderEntity extends AbstractEntity {
 	 */
 	public void setIsChannel(Boolean isChannel) {
 		this.isChannel = isChannel;
-	}
-
-	/**
-	 * @param isPlain the isPlain to set
-	 */
-	public void setIsPlain(Boolean isPlain) {
-		this.isPlain = isPlain;
 	}
 
 	/**
