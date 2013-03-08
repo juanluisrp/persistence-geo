@@ -96,4 +96,7 @@ public interface Instancer {
 	
 	
 	public AbstractRulePropertyEntity createRulePropertyEntity();
+	
+	
+	public AbstractResourceEntity createResourceEntity();
 }
