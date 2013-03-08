@@ -48,13 +48,13 @@ public abstract class AbstractResourceEntity extends AbstractEntity{
 	protected String name;
 	protected Long size;
 	protected String type;
-	protected String accessId;
+	protected Long accessId;
 	protected byte[] data;
 
 	public abstract String getName();
 	public abstract Long getSize();
 	public abstract String getType();
-	public abstract String getAccessId();
+	public abstract Long getAccessId();
 	public abstract byte[] getData();
 
 	public void setName(String name) {
@@ -73,7 +73,7 @@ public abstract class AbstractResourceEntity extends AbstractEntity{
 		this.type = type;
 	}
 
-	public void setAccessId(String accessId) {
+	public void setAccessId(Long accessId) {
 		this.accessId = accessId;
 	}
 

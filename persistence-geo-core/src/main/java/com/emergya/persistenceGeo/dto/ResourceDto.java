@@ -49,7 +49,7 @@ public class ResourceDto extends AbstractDto implements Serializable{
 	protected String name;
 	protected Long size;
 	protected String type;
-	protected String accessId;
+	protected Long accessId;
 	protected File data;
 	
 	public Long getId() {
@@ -76,10 +76,10 @@ public class ResourceDto extends AbstractDto implements Serializable{
 	public void setType(String type) {
 		this.type = type;
 	}
-	public String getAccessId() {
+	public Long getAccessId() {
 		return accessId;
 	}
-	public void setAccessId(String accessId) {
+	public void setAccessId(Long accessId) {
 		this.accessId = accessId;
 	}
 	public File getData() {

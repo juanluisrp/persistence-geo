@@ -82,8 +82,8 @@ public class ResourceEntity extends AbstractResourceEntity {
 		return null;
 	}
 
-    @Column(name = "access-d")
-	public String getAccessId() {
+    @Column(name = "access_id")
+	public Long getAccessId() {
 		return accessId;
 	}
 	@Column(name = "data", nullable=true)

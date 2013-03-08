@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,6 +74,17 @@ public class RestResourcesController extends RestPersistenceGeoController
 	private static final Random RANDOM = new Random();
 	
 	/**
+	 * Clean temporary files
+	 */
+	@Scheduled(cron="0 15 04 * * ? *")
+	public void clearLoadFiles() {
+		for(ResourceDto resource: loadFiles.values()){
+			resource.getData().delete();
+		}
+		loadFiles.clear();
+	}
+	
+	/**
 	 * This method upload a resource to server
 	 * 
 	 * @param uploadResource
@@ -86,7 +98,9 @@ public class RestResourcesController extends RestPersistenceGeoController
 			try {
 				Long id = RANDOM.nextLong();
 				result = "{\"results\": 1, \"data\": \""+ id + "_" + uploadfile.getOriginalFilename() + "\", \"success\": true}";
-				loadFiles.put(id, multipartFileToResource(uploadfile, id.toString()));
+				ResourceDto resource = multipartFileToResource(uploadfile, id);
+				loadFiles.put(id, resource);
+				resourceService.create(resource); //FIXME: only when a layer has been saved!!
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -100,7 +114,7 @@ public class RestResourcesController extends RestPersistenceGeoController
 	}
 
 	/**
-	 * This method loads a resource
+	 * This method loads a resource from server
 	 * 
 	 * @param resourceId
 	 * 
@@ -108,10 +122,15 @@ public class RestResourcesController extends RestPersistenceGeoController
 	 */
 	@RequestMapping(value = "/persistenceGeo/getResource/{resourceId}", method = RequestMethod.GET, 
 			produces = {MediaType.APPLICATION_JSON_VALUE})
-	public void loadLayer(@PathVariable String resourceId,
+	public void getResource(@PathVariable String resourceId,
 					HttpServletResponse response){
 		try{
-			ResourceDto resource = loadFiles.get(Long.decode(resourceId.split("_")[0]));
+			Long accessId = Long.decode(resourceId.split("_")[0]);
+			ResourceDto resource = loadFiles.get(accessId);
+			if(resource == null){ // not loaded yet
+				resource = resourceService.getByAccessId(accessId);
+				loadFiles.put(accessId, resource);
+			}
 			response.setContentType(resource.getType());
 			response.setHeader("Content-Length", new Long(resource.getSize()).toString());
 			response.setHeader("Content-Disposition",
@@ -132,7 +151,7 @@ public class RestResourcesController extends RestPersistenceGeoController
 	 * 
 	 * @return resource
 	 */
-	private ResourceDto multipartFileToResource(MultipartFile file, String resourceId){
+	private ResourceDto multipartFileToResource(MultipartFile file, Long resourceId){
 
 		//
 		ResourceDto resource = new ResourceDto();
