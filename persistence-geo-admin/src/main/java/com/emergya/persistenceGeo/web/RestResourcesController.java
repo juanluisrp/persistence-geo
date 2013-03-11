@@ -157,7 +157,7 @@ public class RestResourcesController extends RestPersistenceGeoController
 		ResourceDto resource = new ResourceDto();
 
 		// simple properties
-		resource.setName(file.getName());
+		resource.setName(file.getOriginalFilename());
 		resource.setSize(file.getSize());
 		resource.setType(file.getContentType());
 		resource.setAccessId(resourceId);
