@@ -460,8 +460,7 @@ public class GeoserverGsManagerDaoImpl implements GeoserverDao {
 			gsPublisher = getPublisher();
 			//result = gsPublisher.publishGeoTIFF(workspace, storeName, geotiff);
 			result =gsPublisher.publishGeoTIFF(workspace, storeName, storeName, geotiff,
-					crs, ProjectionPolicy.FORCE_DECLARED,
-					DEFAULT_RASTER_STYLE, null);
+					crs, ProjectionPolicy.FORCE_DECLARED, DEFAULT_RASTER_STYLE, null);
 		} catch (FileNotFoundException e) {
 			LOG.error("File not found", e);
 			throw new GeoserverException("File not found", e);
