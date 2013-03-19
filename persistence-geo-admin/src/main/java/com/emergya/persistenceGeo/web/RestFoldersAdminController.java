@@ -190,16 +190,27 @@ public class RestFoldersAdminController implements Serializable {
 			 * SecurityContextHolder.getContext()
 			 * .getAuthentication().getPrincipal()).getUsername();
 			 */
+			Long folder_type = foldersAdminService.DEFAULT_FOLDER_TYPE;
+			// TODO isPlain should be folderType, but I haven't changed because could be broke down
+			try{
+				if(StringUtils.isEmpty(isPlain) || !StringUtils.isNumeric(isPlain)){
+					// To do anything
+				}else{
+					folder_type = Long.decode(isPlain);
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 			Long idGroup = Long.decode(groupId);
 			FolderDto rootFolder = foldersAdminService
 					.getRootGroupFolder(idGroup);
 			if (StringUtils.isEmpty(parentFolder)
 					|| !StringUtils.isNumeric(parentFolder)) {
-				return saveFolderBy(name, enabled, isChannel, isPlain,
+				return saveFolderBy(name, enabled, isChannel, folder_type,
 						rootFolder != null ? rootFolder.getId() : null, null,
 						idGroup);
 			} else {
-				return saveFolderBy(name, enabled, isChannel, isPlain,
+				return saveFolderBy(name, enabled, isChannel, folder_type,
 						Long.decode(parentFolder), null, idGroup);
 			}
 		} catch (Exception e) {
@@ -228,16 +239,27 @@ public class RestFoldersAdminController implements Serializable {
 			 * SecurityContextHolder.getContext()
 			 * .getAuthentication().getPrincipal()).getUsername();
 			 */
+			Long folder_type = foldersAdminService.DEFAULT_FOLDER_TYPE;
+			// TODO isPlain should be folderType, but I haven't changed because could be broke down
+			try{
+				if(StringUtils.isEmpty(isPlain) || !StringUtils.isNumeric(isPlain)){
+					// To do anything
+				}else{
+					folder_type = Long.decode(isPlain);
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 			UserDto user = userAdminService.obtenerUsuario(username);
 			if (StringUtils.isEmpty(parentFolder)
 					|| !StringUtils.isNumeric(parentFolder)) {
 				FolderDto rootFolder = foldersAdminService.getRootFolder(user
 						.getId());
-				return saveFolderBy(name, enabled, isChannel, isPlain,
+				return saveFolderBy(name, enabled, isChannel, folder_type,
 						rootFolder != null ? rootFolder.getId() : null,
 						user.getId(), null);
 			} else {
-				return saveFolderBy(name, enabled, isChannel, isPlain,
+				return saveFolderBy(name, enabled, isChannel, folder_type,
 						Long.decode(parentFolder), user.getId(), null);
 			}
 		} catch (Exception e) {
@@ -245,23 +267,19 @@ public class RestFoldersAdminController implements Serializable {
 		}
 		return null;
 	}
-
-	private FolderDto saveFolderBy(String name, String enabled,
-			String isChannel, String isPlain, Long parentFolder, Long userId,
-			Long groupId) {
+	
+	private FolderDto saveFolderBy(String name, String enabled, String isChannel,
+			Long folderTypeId, Long parentFolder, Long userId, Long groupId){
 		FolderDto folder = new FolderDto();
 		folder.setName(name);
-		folder.setEnabled(enabled != null ? enabled.toLowerCase()
-				.equals("true") : false);
-		folder.setIsChannel(isChannel != null ? isChannel.toLowerCase().equals(
-				"true") : false);
-		folder.setIsPlain(isPlain != null ? isPlain.toLowerCase()
-				.equals("true") : false);
+		folder.setEnabled(enabled != null ? enabled.toLowerCase().equals("true") : false);
+		folder.setIsChannel(isChannel != null ? isChannel.toLowerCase().equals("true") : false);
 		folder.setIdParent(parentFolder);
 		folder.setIdAuth(groupId);
 		folder.setIdUser(userId);
-
-		// TODO: folder.setZoneList(zoneList);
+		folder.setIdFolderType(folderTypeId);
+		
+		//TODO: folder.setZoneList(zoneList);
 		return foldersAdminService.saveFolder(folder);
 	}
 
@@ -645,7 +663,8 @@ public class RestFoldersAdminController implements Serializable {
 					List<FolderDto> filteredFolders = new ArrayList<FolderDto>();
 
 					for (FolderDto folder : previusFolders) {
-						if (folder.getIsPlain() == null) {
+						if (folder.getIdFolderType() == null 
+							 || folder.getIdFolderType().equals(FoldersAdminService.DEFAULT_FOLDER_TYPE)) {
 							filteredFolders.add(folder);
 						}
 					}
@@ -721,4 +740,40 @@ public class RestFoldersAdminController implements Serializable {
 
 		return result;
 	}
+	
+	/**
+	 * Returns all the folders of a specific folder type
+	 * 
+	 * @param zone Zone the folder belongs to
+     * @param parent Folder parent id
+	 *
+	 * @return JSON file with success
+	 */
+	@RequestMapping(value = "/persistenceGeo/loadFoldersByFoldersType",
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadFoldersByFoldersType(@RequestParam(value="type", required=true) String typeId,
+            @RequestParam(value="parent", required=false) String parentId) {
+
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<FolderDto> folders = null;
+
+		try {
+
+            if (parentId == null) {
+                folders = (List<FolderDto>) foldersAdminService.findFoldersByType(new Long(typeId));
+            } else {
+                //folders = (List<FolderDto>) foldersAdminService.findByZone(new Long(zoneId), new Long(parentId), Boolean.TRUE);
+            }
+			result.put(SUCCESS, true);
+
+		} catch (Exception e) {
+			result.put(SUCCESS, false);
+		}
+
+		result.put(RESULTS, folders != null ? folders.size() : 0);
+		result.put(ROOT, folders != null ? folders : ListUtils.EMPTY_LIST);
+
+		return result;
+    }
 }
