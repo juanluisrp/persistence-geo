@@ -5,11 +5,10 @@
 	<parent>
 		<groupId>com.emergya</groupId>
 		<artifactId>persistence-geo</artifactId>
-	    <version>8.0</version>
+	    <version>8.1-ohiggins-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>persistence-geo-rest</artifactId>
-       <version>8.0</version>
 	<packaging>war</packaging>
 	<!-- Project Information -->
 	<licenses>
