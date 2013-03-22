@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.emergya</groupId>
         <artifactId>persistence-geo</artifactId>
-        <version>8.1-minen-SNAPSHOT</version>
+        <version>8.1-minen</version>
     </parent>
 
     <artifactId>persistence-geo-geoserver</artifactId>
-    <version>8.1-minen-SNAPSHOT</version>
+    <version>8.1-minen</version>
     <packaging>jar</packaging>
     <!-- Project Information -->
     <licenses>
