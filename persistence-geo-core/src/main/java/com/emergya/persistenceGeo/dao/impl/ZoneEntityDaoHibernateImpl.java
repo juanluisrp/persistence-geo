@@ -34,6 +34,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
@@ -202,4 +203,16 @@ public class ZoneEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstract
 		return criteria.list();
 	}
 
+	@Override
+	public String getZoneGeomAsText(Long zoneId, String projectionName) {
+		SQLQuery query = getSession().createSQLQuery(
+				"SELECT st_astext(st_transform(geom,:projectionCode)) FROM ohiggins.gis_zone WHERE id = :zoneId");
+		
+		String projectionCode = projectionName.substring(projectionName.indexOf(":")+1);
+		query.setLong("zoneId", zoneId);
+		query.setInteger("projectionCode", Integer.parseInt(projectionCode));
+		
+		String geomAsText = (String)query.uniqueResult();
+		return geomAsText;
+	}
 }
