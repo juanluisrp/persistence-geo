@@ -128,8 +128,8 @@ public class ZoneAdminServiceImpl
 	 * @return zones
 	 */
     @SuppressWarnings("unchecked")
-    public List<ZoneDto> findByParent(Long idZone, Boolean isEnabled){
-    	return (List<ZoneDto>) entitiesToDtos(zoneDao.findByParent(idZone, isEnabled));	
+    public List<ZoneDto> findByParent(Long idZone){
+    	return (List<ZoneDto>) entitiesToDtos(zoneDao.findByParent(idZone));	
     }
 
 	@Override
