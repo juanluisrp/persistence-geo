@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.emergya</groupId>
 		<artifactId>persistence-geo</artifactId>
-	    <version>8.1-ohiggins</version>
+	    <version>8.2-ohiggins-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>persistence-geo-rest</artifactId>
