@@ -289,6 +289,7 @@ public class RestLayersAdminController extends RestPersistenceGeoController
 		}catch (Exception e){
 			e.printStackTrace();
 			result.put(SUCCESS, false);
+			return result;
 		}
 		
 		result.put(RESULTS, layers.size());
