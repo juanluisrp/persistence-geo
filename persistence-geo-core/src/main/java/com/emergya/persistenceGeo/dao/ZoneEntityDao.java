@@ -80,11 +80,10 @@ public interface ZoneEntityDao extends GenericDAO<AbstractZoneEntity, Long> {
 	 * Find zone by id
 	 * 
 	 * @param idParent
-	 * @param isEnabled
 	 * 
 	 * @return zones
 	 */
-	public List<AbstractZoneEntity> findByParent(Long idParent, Boolean isEnabled);
+	public List<AbstractZoneEntity> findByParent(Long idParent);
 	
 	/**
 	 * Get all zones enabled
@@ -112,4 +111,12 @@ public interface ZoneEntityDao extends GenericDAO<AbstractZoneEntity, Long> {
 	 * @return Entities list associated with the zone name or null if not found 
 	 */
 	public List<AbstractZoneEntity> getZones(String zoneName, Boolean isEnabled);
+
+	/**
+	 * Gets a zone's geometry as it Well Known Text representation.
+	 * @param zoneId
+	 * @param projectionName
+	 * @return
+	 */
+	public String getZoneGeomAsText(Long zoneId, String projectionName);
 }

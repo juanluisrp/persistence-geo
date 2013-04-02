@@ -34,6 +34,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.hibernate.Criteria;
+import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Restrictions;
@@ -52,7 +53,9 @@ import com.emergya.persistenceGeo.metaModel.Instancer;
  */
 @SuppressWarnings("unchecked")
 @Repository("zoneEntityDao")
-public class ZoneEntityDaoHibernateImpl extends GenericHibernateDAOImpl<AbstractZoneEntity, Long> implements ZoneEntityDao {
+public class ZoneEntityDaoHibernateImpl extends
+		GenericHibernateDAOImpl<AbstractZoneEntity, Long> implements
+		ZoneEntityDao {
 
 	@Resource
 	private Instancer instancer;
@@ -60,7 +63,8 @@ public class ZoneEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstract
 	@Autowired
     public void init(SessionFactory sessionFactory) {
         super.init(sessionFactory);
-		this.persistentClass = (Class<AbstractZoneEntity>) instancer.createZone().getClass();
+		this.persistentClass = (Class<AbstractZoneEntity>) instancer
+				.createZone().getClass();
     }
 
 	/**
@@ -122,8 +126,8 @@ public class ZoneEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstract
 	 */
 	public List<AbstractZoneEntity> getZones(String zoneName, Boolean isEnabled){
 
-		Criteria criteria = getSession().createCriteria(persistentClass)
-				.add(Restrictions.eq("name", zoneName));
+		Criteria criteria = getSession().createCriteria(persistentClass).add(
+				Restrictions.eq("name", zoneName));
 		
 		if(isEnabled == null){
 			criteria.add(Restrictions.isNull("enabled"));
@@ -147,10 +151,11 @@ public class ZoneEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstract
 	 *
 	 * @return Entities list associated with the zone type or null if not found
 	 */
-	public List<AbstractZoneEntity> findByType(String zoneType, Boolean isEnabled){
+	public List<AbstractZoneEntity> findByType(String zoneType,
+			Boolean isEnabled) {
 
-		Criteria criteria = getSession().createCriteria(persistentClass)
-				.add(Restrictions.eq("type", zoneType));
+		Criteria criteria = getSession().createCriteria(persistentClass).add(
+				Restrictions.eq("type", zoneType));
 		
 		if(isEnabled == null){
 			criteria.add(Restrictions.isNull("enabled"));
@@ -183,23 +188,46 @@ public class ZoneEntityDaoHibernateImpl extends GenericHibernateDAOImpl<Abstract
 	 * 
 	 * @return zones
 	 */
-	public List<AbstractZoneEntity> findByParent(Long idParent, Boolean isEnabled){
-		Criteria criteria = getSession().createCriteria(persistentClass)
-				.add(Restrictions.eq("id", idParent))
-				.createAlias("zoneList", "child");
+	public List<AbstractZoneEntity> findByParent(Long idParent) {
+		// Criteria criteria = getSession().createCriteria(persistentClass)
+		// .add(Restrictions.eq("id", idParent))
+		// .createAlias("zoneList", "child");
+		//
+		// if(isEnabled == null){
+		// criteria.add(Restrictions.isNull("enabled"));
+		// }else if(isEnabled){
+		// criteria.add(Restrictions.eq("enabled", isEnabled));
+		// }else{
+		// Disjunction dis = Restrictions.disjunction();
+		// dis.add(Restrictions.isNull("enabled"));
+		// dis.add(Restrictions.eq("enabled", isEnabled));
+		// criteria.add(dis);
+		// }
+		//
+		// return criteria.list();
 		
-		if(isEnabled == null){
-			criteria.add(Restrictions.isNull("enabled"));
-		}else if(isEnabled){
-			criteria.add(Restrictions.eq("enabled", isEnabled));
-		}else{
-			Disjunction dis = Restrictions.disjunction();
-			dis.add(Restrictions.isNull("enabled"));
-			dis.add(Restrictions.eq("enabled", isEnabled));
-			criteria.add(dis);
-		}
+		Criteria criteria = getSession()
+				.createCriteria(persistentClass)
+				.createAlias("nivelPadre", "parent")
+				.add(Restrictions.eq("parent.id", idParent))
+				.add(Restrictions.or(Restrictions.eq("enabled", true),
+						Restrictions.isNull("enabled")))
+				.add(Restrictions.or(Restrictions.eq("parent.enabled", true),
+						Restrictions.isNull("parent.enabled")));
 		
 		return criteria.list();
 	}
 
+	@Override
+	public String getZoneGeomAsText(Long zoneId, String projectionName) {
+		SQLQuery query = getSession().createSQLQuery(
+				"SELECT st_astext(st_transform(geom,:projectionCode)) FROM ohiggins.gis_zone WHERE id = :zoneId");
+		
+		String projectionCode = projectionName.substring(projectionName.indexOf(":")+1);
+		query.setLong("zoneId", zoneId);
+		query.setInteger("projectionCode", Integer.parseInt(projectionCode));
+		
+		String geomAsText = (String)query.uniqueResult();
+		return geomAsText;
+	}
 }

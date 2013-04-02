@@ -33,6 +33,7 @@ import it.geosolutions.geoserver.rest.decoder.RESTWorkspaceList;
 import java.io.File;
 import java.net.URI;
 
+import com.emergya.persistenceGeo.utils.GsCoverageDetails;
 import com.emergya.persistenceGeo.utils.GsCoverageStoreData;
 import com.emergya.persistenceGeo.utils.GsFeatureDescriptor;
 import com.emergya.persistenceGeo.utils.GsLayerDescriptor;
@@ -120,7 +121,7 @@ public interface GeoserverDao {
 	 * @return <code>true</code> if the feature type has been successfully
 	 *         deleted. Otherwise return <code>false</code>.
 	 */
-	boolean deletePostgisFeatureTye(String workspaceName, String datastoreName,
+	boolean deletePostgisFeatureType(String workspaceName, String datastoreName,
 			String layerName);
 
 	/**
@@ -209,5 +210,32 @@ public interface GeoserverDao {
 	 * @return A {@link GsCoverageStoreData} object if succesful or null if not.
 	 */
 	GsCoverageStoreData getCoverageStoreData(
-			String workspaceName, String coverageStoreName); 
+			String workspaceName, String coverageStoreName);
+
+	/**
+	 * Removes a coverage store from the geoserver.
+	 * 
+	 * @param workspaceName
+	 * @param coverageStoreName
+	 * @return
+	 */
+	boolean deleteGsCoverageStore(String workspaceName, String coverageStoreName);
+
+	/**
+	 * Unpublishes a coverage layer from the geoserver.
+	 * @param workspaceName
+	 * @param coverageLayer
+	 * @return
+	 */
+	boolean deleteCoverage(String workspaceName, String coverageLayer);
+
+	/**
+	 * Gets the details of a coverage layer.
+	 * @param workspaceName
+	 * @param coverageStoreName
+	 * @param coverageName
+	 * @return
+	 */
+	GsCoverageDetails getCoverageDetails(
+			String workspaceName, String coverageStoreName, String coverageName); 
 }

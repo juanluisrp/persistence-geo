@@ -48,5 +48,7 @@ public interface ZoneAdminService extends AbstractService{
     
     public List<ZoneDto> findAllEnabled();
     
-    public List<ZoneDto> findByParent(Long idParent, Boolean isEnabled);
+    public List<ZoneDto> findByParent(Long idParent);
+
+    public String getZoneGeomAsText(Long zoneId, String projectionName);
 }

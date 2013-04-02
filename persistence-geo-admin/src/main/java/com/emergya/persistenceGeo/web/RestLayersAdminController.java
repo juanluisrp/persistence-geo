@@ -201,7 +201,62 @@ public class RestLayersAdminController extends RestPersistenceGeoController
 
 		return result;
 	}
+	
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/persistenceGeo/loadPublicLayers/{userId}", method = RequestMethod.GET, 
+			produces = {MediaType.APPLICATION_JSON_VALUE})
+	public @ResponseBody
+	Map<String, Object> loadPublicLayers(@PathVariable Long userId){
+		Map<String, Object> result = new HashMap<String, Object>();
+		List<LayerDto> layers = null;
+		try{
+			
+//			//TODO: Secure with logged user
+//			String loggedUser = ((UserDetails) SecurityContextHolder.getContext()
+//					.getAuthentication().getPrincipal()).getUsername(); 
+//			
+			if(userId != null){
+				UserDto userDto = (UserDto) userAdminService.getById(userId);
+				
+				if(userDto==null) {
+					result.put(SUCCESS, false);
+					return result;
+				}
+				
+				if(userDto.getAdmin()){
+					if(!userDto.getAdmin()){
+						result.put(SUCCESS, false);
+						return result;
+					}
+					
+					layers = layerAdminService.getPublicLayers();
+				}else{
+					layers = ListUtils.EMPTY_LIST;
+				}
+				
+				for(LayerDto layer: layers){
+					layer.setEnabled(false);
+					if(layer.getId() != null && layer.getData() != null){
+						loadedLayers.put(layer.getId(), layer.getData());
+						layer.setData(null);
+						layer.setServer_resource("rest/persistenceGeo/getLayerResource/"+layer.getId());
+					}
+				}
+			}
+			result.put(SUCCESS, true);
+		}catch (Exception e){
+			e.printStackTrace();
+			result.put(SUCCESS, false);
+			return result;
+		}
+		
+		result.put(RESULTS, layers.size());
+		result.put(ROOT, layers);
 
+		return result;
+	}
+
+	
 	/**
 	 * This method loads layers.json related with a user
 	 * 
@@ -838,7 +893,7 @@ public class RestLayersAdminController extends RestPersistenceGeoController
 	
 	@RequestMapping(value = "/persistenceGeo/deleteLayerByLayerId/{layerId}", method = RequestMethod.POST)
 	public @ResponseBody
-	Map<String, Object> DeleteLayerByLayerId(@PathVariable String layerId){
+	Map<String, Object> deleteLayerByLayerId(@PathVariable String layerId){
 		Map<String, Object> result = new HashMap<String, Object>();
 		try{
 			/*
@@ -846,6 +901,8 @@ public class RestLayersAdminController extends RestPersistenceGeoController
 			String username = ((UserDetails) SecurityContextHolder.getContext()
 					.getAuthentication().getPrincipal()).getUsername(); 
 			 */
+			
+			// TODO: Delete layer from geoserver
 			Long idLayer = Long.decode(layerId);
 			layerAdminService.deleteLayerById(idLayer);
 			result.put(SUCCESS, true);

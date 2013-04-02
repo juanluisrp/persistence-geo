@@ -41,6 +41,7 @@ import com.emergya.persistenceGeo.dao.GeoserverDao;
 import com.emergya.persistenceGeo.exceptions.GeoserverException;
 import com.emergya.persistenceGeo.service.GeoserverService;
 import com.emergya.persistenceGeo.utils.BoundingBox;
+import com.emergya.persistenceGeo.utils.GsCoverageDetails;
 import com.emergya.persistenceGeo.utils.GsCoverageStoreData;
 import com.emergya.persistenceGeo.utils.GsFeatureDescriptor;
 import com.emergya.persistenceGeo.utils.GsLayerDescriptor;
@@ -214,12 +215,12 @@ public class GeoserverServiceImpl implements GeoserverService {
 	 * (boolean)
 	 */
 	@Override
-	public boolean unpublishGsLayer(String workspaceName, String layerName) {
+	public boolean unpublishGsDbLayer(String workspaceName, String layerName) {
 		if (LOG.isInfoEnabled()) {
 			LOG.info("Unpublishig geoserver layer");
 		}
 		boolean result = false;
-		result = gsDao.deletePostgisFeatureTye(workspaceName, workspaceName
+		result = gsDao.deletePostgisFeatureType(workspaceName, workspaceName
 				+ DATASTORE_SUFFIX, layerName);
 		return result;
 	}
@@ -271,5 +272,26 @@ public class GeoserverServiceImpl implements GeoserverService {
 	@Override
 	public GsCoverageStoreData getCoverageStoreData(String workspaceName, String coverageStoreName) {
 		return gsDao.getCoverageStoreData(workspaceName, coverageStoreName);
+	}
+	
+	@Override
+	public boolean unpublishGsCoverageLayer(
+			String workspaceName, String coverageLayer) {
+		
+		if(!gsDao.deleteCoverage(workspaceName, coverageLayer)){
+			return false;
+		}
+		
+		if(!gsDao.deleteGsCoverageStore(workspaceName, coverageLayer)){
+			return false;
+		}
+		
+		return true;
+	}
+	
+	@Override
+	public GsCoverageDetails getCoverageDetails(
+			String workspaceName, String coverageStore, String coverageName) {
+		return gsDao.getCoverageDetails(workspaceName, coverageStore, coverageName);
 	}
 }
