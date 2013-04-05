@@ -9,7 +9,6 @@
 	</parent>
 
 	<artifactId>persistence-geo-rest</artifactId>
-       <version>8.2-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<!-- Project Information -->
 	<licenses>

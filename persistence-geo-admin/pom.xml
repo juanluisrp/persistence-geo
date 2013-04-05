@@ -9,7 +9,6 @@
 	</parent>
 
 	<artifactId>persistence-geo-admin</artifactId>
-  	<version>8.2-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<!-- Project Information -->
 	<licenses>
