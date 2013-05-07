@@ -4,6 +4,7 @@
 package com.emergya.persistenceGeo.service.impl;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public abstract class AbstractServiceImpl<DTO extends Serializable, ENTITY exten
 	}
 	
 	protected List<? extends Serializable> entitiesToDtos(List<ENTITY> entities) {
-		List<DTO> dtos = new LinkedList<DTO>();
+		List<DTO> dtos = new ArrayList<DTO>(entities.size());
 		for (ENTITY entity: entities){
 			dtos.add(entityToDto(entity));
 		}
