@@ -188,4 +188,6 @@ public interface GeoserverService {
 	 * Removes an style from GeoServer. 
 	 */
 	public boolean deleteStyle(String styleName);
+
+	public boolean reset();
 }
