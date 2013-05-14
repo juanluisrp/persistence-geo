@@ -51,9 +51,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.emergya.persistenceGeo.dto.AuthorityDto;
 import com.emergya.persistenceGeo.dto.FolderDto;
 import com.emergya.persistenceGeo.dto.UserDto;
-import com.emergya.persistenceGeo.dto.ZoneDto;
 import com.emergya.persistenceGeo.service.FoldersAdminService;
 import com.emergya.persistenceGeo.service.LayerAdminService;
+import com.emergya.persistenceGeo.service.ToolPermissionService;
 import com.emergya.persistenceGeo.service.UserAdminService;
 import com.emergya.persistenceGeo.service.ZoneAdminService;
 import com.google.common.base.Strings;
@@ -82,6 +82,9 @@ public class RestUserAdminController implements Serializable{
 	
 	@Resource
 	private FoldersAdminService foldersAdminService;
+	
+	@Resource
+	private ToolPermissionService toolPermissionService;
 	
 	protected final String RESULTS= "results";
 	protected final String ROOT= "data";
@@ -316,6 +319,8 @@ public class RestUserAdminController implements Serializable{
 			if(user.getAuthorityZoneId()!=null){
 				zoneGeom = zoneAdminService.getZoneGeomAsText(user.getAuthorityZoneId(),projectionName);
 			}
+			
+			user.setPermissions(toolPermissionService.getPermissionsByAuthority(user.getAuthorityId()));
 			
 			result.put(SUCCESS, true);
 		}catch (Exception e){
