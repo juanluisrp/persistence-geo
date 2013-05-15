@@ -281,6 +281,8 @@ public class RestUserAdminController implements Serializable{
 				user = userAdminService.obtenerUsuario(userLogged);
 				if (user != null) {
 					user.setPassword("");
+					// save user permissions. always by 
+					user.setPermissions(toolPermissionService.getPermissionsByAuthority(user.getAuthorityId())); 
 				}
 			}
 			result.put(SUCCESS, true);
@@ -319,8 +321,6 @@ public class RestUserAdminController implements Serializable{
 			if(user.getAuthorityZoneId()!=null){
 				zoneGeom = zoneAdminService.getZoneGeomAsText(user.getAuthorityZoneId(),projectionName);
 			}
-			
-			user.setPermissions(toolPermissionService.getPermissionsByAuthority(user.getAuthorityId()));
 			
 			result.put(SUCCESS, true);
 		}catch (Exception e){
