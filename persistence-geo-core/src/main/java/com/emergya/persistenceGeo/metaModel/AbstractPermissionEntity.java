@@ -46,7 +46,6 @@ public abstract class AbstractPermissionEntity extends AbstractToolEntity {
 	 */
 	protected static final long serialVersionUID = 8185264482816302475L;
 	
-	protected String name;
 	protected Date createDate;
 	protected Date updateDate;
 	
