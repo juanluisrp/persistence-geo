@@ -775,7 +775,7 @@ public class GeoserverGsManagerDaoImpl implements GeoserverDao {
 		}
 		
 		// The name is sanitized.
-		String newStyleNameSanitized = GeoserverUtils.createUniqueName(newStyleName);
+		String newStyleNameSanitized = GeoserverUtils.createName(newStyleName);
 		return publisher.publishStyle(layerSDLContent, newStyleNameSanitized);
 	}
 
@@ -795,7 +795,7 @@ public class GeoserverGsManagerDaoImpl implements GeoserverDao {
 		}
 
 		// The name is sanitized.
-		String newStyleNameSanitized = GeoserverUtils.createUniqueName(newLayerStyleName);
+		String newStyleNameSanitized = GeoserverUtils.createName(newLayerStyleName);
 		String payload = String.format(SET_LAYER_STYLE_PAYLOAD, newStyleNameSanitized);
 
 		return this.put(url, payload) != null;
