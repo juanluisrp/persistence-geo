@@ -1,17 +1,15 @@
 package com.emergya.persistenceGeo.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.Random;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
-import org.springframework.util.FileCopyUtils;
 
 public class FileUtilsTest {
 	
@@ -42,6 +40,8 @@ public class FileUtilsTest {
 			zipEntries++;
 		}
 		
+		
+		
 		assertEquals("The number of files is not equal to the number of created files!", ZIP_FILE_COUNT, zipEntries);
 		
 		Random r = new Random();
@@ -53,6 +53,8 @@ public class FileUtilsTest {
 		String fileContent = IOUtils.toString(openZip.getInputStream(entry));
 		
 		assertEquals("The file content is not equal to the contents of the source files!", FILE_CONTENT, fileContent);
+		
+		openZip.close();
 		
 	}
 
