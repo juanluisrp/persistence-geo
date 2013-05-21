@@ -48,7 +48,7 @@ import com.emergya.persistenceGeo.dao.DBManagementDao;
 @Repository
 public class PostgisDBManagementDaoHibernateImpl extends HibernateDaoSupport implements DBManagementDao{
 	
-	private final String getSize = "pg_relation_size";
+	private final String getSize = "pg_table_size";
 	private final String getSizeText = "pg_size_pretty";
 	
 	@Autowired
